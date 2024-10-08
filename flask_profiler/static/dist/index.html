@@ -11,6 +11,26 @@
         .sortable:hover {
             cursor: pointer;
         }
+        .loading {
+            display: none;
+            position: fixed;
+            left: 50%;
+            top: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 1000;
+            font-size: 24px;
+            color: #333;
+        }
+        @media (max-width: 768px) {
+            .col-md-10 {
+                padding-left: 0;
+                padding-right: 0;
+            }
+            .navbar-brand {
+                text-align: center;
+                width: 100%;
+            }
+        }
     </style>
 </head>
 <body>
@@ -41,6 +61,7 @@
                     </label>
                 </div>
                 <div class="btn-group pull-right" style="margin-left: 10px;">
+                    <button class="btn btn-primary" id="refreshData">Refresh Data</button>
                     <button class="btn btn-primary" id="exportCsv">Export CSV</button>
                     <button class="btn btn-primary" id="exportJson">Export JSON</button>
                 </div>
@@ -79,6 +100,9 @@
     </div>
 </div>
 
+<!-- Loading Indicator -->
+<div class="loading">Loading...</div>
+
 <div class="modal fade filteredModal" tabindex="-1" role="dialog" aria-labelledby="filteredModal">
     <div class="modal-dialog modal-lg">
         <div class="modal-content">
@@ -89,7 +113,6 @@
                 </button>
             </div>
             <div class="modal-body">
-                <!-- Detailed request data will be displayed here -->
                 <div id="requestDetails"></div>
             </div>
             <div class="modal-footer">
@@ -106,29 +129,45 @@
 
 <script>
     $(document).ready(function () {
-        // Example data (replace with actual data)
-        const data = [
-            { method: "GET", name: "/api/data", count: 100, avgElapsed: 200, maxElapsed: 500, minElapsed: 100 },
-            { method: "POST", name: "/api/update", count: 80, avgElapsed: 300, maxElapsed: 600, minElapsed: 200 },
-            // Add more data as necessary...
-        ];
+        const tableBody = $('#big-users-table tbody');
+        let currentData = [];
 
-        // Populate the table
-        data.forEach(item => {
-            $('#big-users-table tbody').append(`
-                <tr>
-                    <td>${item.method}</td>
-                    <td>${item.name}</td>
-                    <td>${item.count}</td>
-                    <td>${item.avgElapsed}</td>
-                    <td>${item.maxElapsed}</td>
-                    <td>${item.minElapsed}</td>
-                </tr>
-            `);
-        });
+        // Function to fetch data
+        function fetchData() {
+            $('.loading').show(); // Show loading indicator
+            $.ajax({
+                type: "GET",
+                url: "api/measurements/grouped", // Adjust this URL as necessary
+                dataType: "json",
+                success: function (data) {
+                    currentData = data.measurements || [];
+                    populateTable(currentData);
+                },
+                complete: function () {
+                    $('.loading').hide(); // Hide loading indicator after data is fetched
+                }
+            });
+        }
+
+        // Populate the table with data
+        function populateTable(data) {
+            tableBody.empty(); // Clear existing data
+            data.forEach(item => {
+                tableBody.append(`
+                    <tr>
+                        <td>${item.method}</td>
+                        <td>${item.name}</td>
+                        <td>${item.count}</td>
+                        <td>${item.avgElapsed}</td>
+                        <td>${item.maxElapsed}</td>
+                        <td>${item.minElapsed}</td>
+                    </tr>
+                `);
+            });
+        }
 
         // Row click event to show modal
-        $('#big-users-table tbody').on('click', 'tr', function () {
+        tableBody.on('click', 'tr', function () {
             const rowData = $(this).children('td').map(function () {
                 return $(this).text();
             }).get();
@@ -144,13 +183,18 @@
             $('.filteredModal').modal('show');
         });
 
+        // Refresh Data button click
+        $('#refreshData').click(function () {
+            fetchData();
+        });
+
         // Export to CSV
         $('#exportCsv').on('click', function () {
             let csvContent = "data:text/csv;charset=utf-8,";
             const headers = ['Method', 'Name', 'Count', 'Avg Elapsed', 'Max Elapsed', 'Min Elapsed'];
             csvContent += headers.join(",") + "\n";
             
-            $('#big-users-table tbody tr').each(function () {
+            tableBody.find('tr').each(function () {
                 const row = $(this).children('td').map(function () {
                     return $(this).text();
                 }).get().join(",");
@@ -169,7 +213,7 @@
         // Export to JSON
         $('#exportJson').on('click', function () {
             const jsonData = [];
-            $('#big-users-table tbody tr').each(function () {
+            tableBody.find('tr').each(function () {
                 const row = {
                     method: $(this).children('td').eq(0).text(),
                     name: $(this).children('td').eq(1).text(),
@@ -215,6 +259,9 @@
         function getCellValue(row, index) {
             return $(row).children('td').eq(index).text();
         }
+
+        // Initial data fetch
+        fetchData();
     });
 </script>
 </body>
