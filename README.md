@@ -36,7 +36,7 @@ It is easy to understand flask-profiler going through an example. Let's dive in.
 
 Install flask-profiler by pip.
 ```sh
-pip install flask_profilerforked
+pip install flask_profilerfork
 ```
 
 
