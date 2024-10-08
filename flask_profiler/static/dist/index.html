@@ -1,199 +1,40 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <title>Flask Profiler</title>
-    <meta charset="UTF-8">
-    <meta name="robots" content="noindex, nofollow">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <link href="static/dist/css/main.css" rel="stylesheet">
-    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet">
-    <style>
-        body.dark-mode {
-            background-color: #121212;
-            color: #ffffff;
-        }
-        body.dark-mode .navbar-inverse {
-            background-color: #1e1e1e;
-            border-color: #444;
-        }
-        body.dark-mode .panel {
-            background-color: #1e1e1e;
-            border-color: #444;
-        }
-        body.dark-mode .table {
-            background-color: #1e1e1e;
-            color: #ffffff;
-        }
-        .sortable:hover {
-            cursor: pointer;
-        }
-    </style>
-</head>
-<body>
-<div class="navbar navbar-inverse navbar-fixed-top" role="navigation">
-    <div class="container">
-        <div class="col-md-10 col-md-offset-1">
-            <div class="navbar-header">
-                <a class="navbar-brand" href="./">Flask Profiler</a>
-                <button class="btn btn-default navbar-btn" id="toggleDarkMode">Toggle Dark Mode</button>
-            </div>
-        </div>
-    </div>
-</div>
-
-<div class="container">
-    <div class="col-xs-12 col-md-10 col-md-offset-1">
-        <div class="panel panel-default">
-            <div class="panel-heading clearfix">
-                <h3 class="panel-title pull-left">Dashboard <small class="created-time"></small></h3>
-                <div class="btn-group day-filter pull-right" data-toggle="buttons">
-                    <label class="btn btn-default">
-                        <input type="radio" value="hours" id="hours" autocomplete="off"> 24 hours
-                    </label>
-                    <label class="btn btn-default active">
-                        <input type="radio" value="days" id="days" autocomplete="off" checked> 7 days
-                    </label>
-                    <label class="btn btn-default">
-                        <input type="radio" value="all" id="all" autocomplete="off"> 30 days
-                    </label>
-                </div>
-                <div class="btn-group pull-right" style="margin-left: 10px;">
-                    <button class="btn btn-primary" id="exportCsv">Export CSV</button>
-                    <button class="btn btn-primary" id="exportJson">Export JSON</button>
-                    <button class="btn btn-primary" id="exportHtml">Export HTML</button>
-                </div>
-            </div>
-            <div class="panel-body">
-                <div class="row">
-                    <div class="col-md-3 col-xs-6">
-                        <h4 class="text-center">Method Distribution</h4>
-                        <div class="loading" id="pieChart"></div>
-                    </div>
-                    <div class="col-md-9 col-xs-12">
-                        <h4 class="text-center">Request Count by Time</h4>
-                        <div class="loading" id="lineChart"></div>
-                    </div>
-                </div>
-                <hr>
-                <div class="table-responsive">
-                    <table class="table table-hover" id="big-users-table">
-                        <thead>
-                            <tr>
-                                <th class="sortable" data-sort="method">Method</th>
-                                <th class="sortable" data-sort="name">Name</th>
-                                <th class="sortable" data-sort="count">Count</th>
-                                <th class="sortable" data-sort="avgElapsed">Avg Elapsed</th>
-                                <th class="sortable" data-sort="maxElapsed">Max Elapsed</th>
-                                <th class="sortable" data-sort="minElapsed">Min Elapsed</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr>
-                                <td>GET</td>
-                                <td>/api/data</td>
-                                <td>100</td>
-                                <td>200</td>
-                                <td>500</td>
-                                <td>100</td>
-                            </tr>
-                            <tr>
-                                <td>POST</td>
-                                <td>/api/update</td>
-                                <td>80</td>
-                                <td>300</td>
-                                <td>600</td>
-                                <td>200</td>
-                            </tr>
-                            <!-- Add more rows as necessary -->
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
-
-<div class="modal fade filteredModal" tabindex="-1" role="dialog" aria-labelledby="filteredModal">
-    <div class="modal-dialog modal-lg">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h4 class="modal-title">Request Details</h4>
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
-                </button>
-            </div>
-            <div class="modal-body">
-                <!-- Detailed request data will be displayed here -->
-                <div id="requestDetails"></div>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-            </div>
-        </div>
-    </div>
-</div>
-
-<script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
-<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
-<script src="static/dist/js/vendor.js"></script>
-<script src="static/dist/js/main.js"></script>
-
 <script>
     $(document).ready(function () {
-        // Extract data from the table for exporting
-        function getDataFromTable() {
-            const rows = $('#big-users-table tbody tr');
-            const extractedData = [];
+        // Populate the table with existing incoming data
+        // Example data (replace with actual data)
+        const data = [
+            { method: "GET", name: "/api/data", count: 100, avgElapsed: 200, maxElapsed: 500, minElapsed: 100 },
+            { method: "POST", name: "/api/update", count: 80, avgElapsed: 300, maxElapsed: 600, minElapsed: 200 },
+            // Add more data as necessary...
+        ];
 
-            rows.each(function () {
-                const cols = $(this).children('td');
-                extractedData.push({
-                    method: cols.eq(0).text(),
-                    name: cols.eq(1).text(),
-                    count: parseInt(cols.eq(2).text()),
-                    avgElapsed: parseInt(cols.eq(3).text()),
-                    maxElapsed: parseInt(cols.eq(4).text()),
-                    minElapsed: parseInt(cols.eq(5).text())
-                });
-            });
-
-            return extractedData;
-        }
-
-        // Populate the table from existing rows (if needed)
-        $('#big-users-table tbody tr').each(function () {
-            const rowData = $(this).children('td').map(function () {
-                return $(this).text();
-            }).get();
-        });
-
-        // Row click event to show modal
-        $('#big-users-table tbody').on('click', 'tr', function () {
-            const rowData = $(this).children('td').map(function () {
-                return $(this).text();
-            }).get();
-
-            $('#requestDetails').html(`
-                <strong>Method:</strong> ${rowData[0]}<br>
-                <strong>Name:</strong> ${rowData[1]}<br>
-                <strong>Count:</strong> ${rowData[2]}<br>
-                <strong>Avg Elapsed:</strong> ${rowData[3]}<br>
-                <strong>Max Elapsed:</strong> ${rowData[4]}<br>
-                <strong>Min Elapsed:</strong> ${rowData[5]}<br>
+        // Populate the table
+        data.forEach(item => {
+            $('#big-users-table tbody').append(`
+                <tr>
+                    <td>${item.method}</td>
+                    <td>${item.name}</td>
+                    <td>${item.count}</td>
+                    <td>${item.avgElapsed}</td>
+                    <td>${item.maxElapsed}</td>
+                    <td>${item.minElapsed}</td>
+                </tr>
             `);
-            $('.filteredModal').modal('show');
         });
 
         // Export to CSV
         $('#exportCsv').on('click', function () {
-            const data = getDataFromTable();
             let csvContent = "data:text/csv;charset=utf-8,";
             const headers = ['Method', 'Name', 'Count', 'Avg Elapsed', 'Max Elapsed', 'Min Elapsed'];
             csvContent += headers.join(",") + "\n";
-            data.forEach(item => {
-                const row = [item.method, item.name, item.count, item.avgElapsed, item.maxElapsed, item.minElapsed].join(",");
+
+            $('#big-users-table tbody tr').each(function () {
+                const row = $(this).find('td').map(function () {
+                    return $(this).text();
+                }).get().join(",");
                 csvContent += row + "\n";
             });
+
             const encodedUri = encodeURI(csvContent);
             const link = document.createElement("a");
             link.setAttribute("href", encodedUri);
@@ -205,8 +46,19 @@
 
         // Export to JSON
         $('#exportJson').on('click', function () {
-            const data = getDataFromTable();
-            const jsonString = JSON.stringify(data, null, 2);
+            const jsonArray = [];
+            $('#big-users-table tbody tr').each(function () {
+                const row = {
+                    method: $(this).find('td').eq(0).text(),
+                    name: $(this).find('td').eq(1).text(),
+                    count: $(this).find('td').eq(2).text(),
+                    avgElapsed: $(this).find('td').eq(3).text(),
+                    maxElapsed: $(this).find('td').eq(4).text(),
+                    minElapsed: $(this).find('td').eq(5).text()
+                };
+                jsonArray.push(row);
+            });
+            const jsonString = JSON.stringify(jsonArray, null, 2);
             const blob = new Blob([jsonString], { type: "application/json" });
             const url = URL.createObjectURL(blob);
             const link = document.createElement("a");
@@ -219,42 +71,40 @@
 
         // Export to HTML
         $('#exportHtml').on('click', function () {
-            const data = getDataFromTable();
             let htmlContent = `
                 <html>
                 <head>
-                    <title>Request Data</title>
-                    <style>
-                        table { width: 100%; border-collapse: collapse; }
-                        th, td { border: 1px solid #ddd; padding: 8px; }
-                        th { background-color: #f2f2f2; }
-                    </style>
+                    <title>Exported Request Data</title>
+                    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
                 </head>
                 <body>
-                    <h2>Request Data</h2>
-                    <table>
-                        <thead>
-                            <tr>
-                                <th>Method</th>
-                                <th>Name</th>
-                                <th>Count</th>
-                                <th>Avg Elapsed</th>
-                                <th>Max Elapsed</th>
-                                <th>Min Elapsed</th>
-                            </tr>
-                        </thead>
-                        <tbody>`;
-            data.forEach(item => {
+                    <div class="container">
+                        <h2>Request Data</h2>
+                        <table class="table table-hover">
+                            <thead>
+                                <tr>
+                                    <th>Method</th>
+                                    <th>Name</th>
+                                    <th>Count</th>
+                                    <th>Avg Elapsed</th>
+                                    <th>Max Elapsed</th>
+                                    <th>Min Elapsed</th>
+                                </tr>
+                            </thead>
+                            <tbody>`;
+
+            $('#big-users-table tbody tr').each(function () {
                 htmlContent += `
                     <tr>
-                        <td>${item.method}</td>
-                        <td>${item.name}</td>
-                        <td>${item.count}</td>
-                        <td>${item.avgElapsed}</td>
-                        <td>${item.maxElapsed}</td>
-                        <td>${item.minElapsed}</td>
+                        <td>${$(this).find('td').eq(0).text()}</td>
+                        <td>${$(this).find('td').eq(1).text()}</td>
+                        <td>${$(this).find('td').eq(2).text()}</td>
+                        <td>${$(this).find('td').eq(3).text()}</td>
+                        <td>${$(this).find('td').eq(4).text()}</td>
+                        <td>${$(this).find('td').eq(5).text()}</td>
                     </tr>`;
             });
+
             htmlContent += `
                             </tbody>
                         </table>
@@ -270,36 +120,8 @@
             link.click();
             document.body.removeChild(link);
         });
+        
+        // Rest of your existing code...
 
-        // Sorting feature
-        $('.sortable').on('click', function () {
-            const table = $(this).closest('table');
-            const tbody = table.find('tbody');
-            const rows = tbody.find('tr').toArray().sort(comparer($(this).data('sort')));
-            this.asc = !this.asc;
-            if (!this.asc) {
-                rows.reverse();
-            }
-            tbody.empty().append(rows);
-        });
-
-        function comparer(index) {
-            return function (a, b) {
-                const valA = getCellValue(a, index);
-                const valB = getCellValue(b, index);
-                return $.isNumeric(valA) && $.isNumeric(valB) ? valA - valB : valA.localeCompare(valB);
-            };
-        }
-
-        function getCellValue(row, index) {
-            return $(row).children('td').eq(index).text();
-        }
-
-        // Toggle Dark Mode
-        $('#toggleDarkMode').on('click', function () {
-            $('body').toggleClass('dark-mode');
-        });
     });
 </script>
-</body>
-</html>
