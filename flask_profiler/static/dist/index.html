@@ -7,20 +7,43 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link href="static/dist/css/main.css" rel="stylesheet">
     <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet">
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
-        .sortable:hover {
-            cursor: pointer;
+        body {
+            background-color: #1e1e1e; /* Dark background */
+            color: #f1f1f1; /* Light text color */
+        }
+        .navbar {
+            background-color: #222; /* Dark navbar */
+        }
+        .panel {
+            background-color: #333; /* Dark panel background */
+            border-color: #444; /* Darker border */
+        }
+        .panel-heading {
+            background-color: #444; /* Darker panel heading */
+            border-bottom: 1px solid #555; /* Slightly lighter border */
+        }
+        .table {
+            background-color: #444; /* Dark table background */
+            color: #f1f1f1; /* Light text in table */
+        }
+        th, td {
+            border-color: #555; /* Darker borders for table cells */
+        }
+        th {
+            background-color: #555; /* Dark header background */
+            color: #fff; /* White text in header */
         }
         .loading {
-            display: none;
-            position: fixed;
-            left: 50%;
-            top: 50%;
-            transform: translate(-50%, -50%);
-            z-index: 1000;
-            font-size: 24px;
-            color: #333;
+            color: #fff; /* Loading indicator text color */
+        }
+        .btn-primary {
+            background-color: #007bff; /* Bootstrap primary button color */
+            border-color: #007bff; /* Button border color */
+        }
+        .btn-primary:hover {
+            background-color: #0056b3; /* Darker on hover */
+            border-color: #0056b3; /* Darker border on hover */
         }
         @media (max-width: 768px) {
             .col-md-10 {
@@ -71,11 +94,11 @@
                 <div class="row">
                     <div class="col-md-3 col-xs-6">
                         <h4 class="text-center">Method Distribution</h4>
-                        <canvas id="methodDistributionChart"></canvas>
+                        <div class="loading" id="pieChart"></div>
                     </div>
                     <div class="col-md-9 col-xs-12">
                         <h4 class="text-center">Request Count by Time</h4>
-                        <canvas id="requestCountChart"></canvas>
+                        <div class="loading" id="lineChart"></div>
                     </div>
                 </div>
                 <hr>
@@ -106,7 +129,7 @@
 
 <div class="modal fade filteredModal" tabindex="-1" role="dialog" aria-labelledby="filteredModal">
     <div class="modal-dialog modal-lg">
-        <div class="modal-content">
+        <div class="modal-content" style="background-color: #333; color: #f1f1f1;"> <!-- Dark modal -->
             <div class="modal-header">
                 <h4 class="modal-title">Request Details</h4>
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
@@ -131,64 +154,18 @@
 <script>
     $(document).ready(function () {
         const tableBody = $('#big-users-table tbody');
-        const methodDistributionCtx = document.getElementById('methodDistributionChart').getContext('2d');
-        const requestCountCtx = document.getElementById('requestCountChart').getContext('2d');
         let currentData = [];
 
-        const methodDistributionChart = new Chart(methodDistributionCtx, {
-            type: 'pie',
-            data: {
-                labels: [], // Method names will go here
-                datasets: [{
-                    data: [], // Counts will go here
-                    backgroundColor: [
-                        'rgba(255, 99, 132, 0.2)',
-                        'rgba(54, 162, 235, 0.2)',
-                        'rgba(255, 206, 86, 0.2)',
-                        'rgba(75, 192, 192, 0.2)',
-                        'rgba(153, 102, 255, 0.2)',
-                        'rgba(255, 159, 64, 0.2)'
-                    ],
-                    borderColor: [
-                        'rgba(255, 99, 132, 1)',
-                        'rgba(54, 162, 235, 1)',
-                        'rgba(255, 206, 86, 1)',
-                        'rgba(75, 192, 192, 1)',
-                        'rgba(153, 102, 255, 1)',
-                        'rgba(255, 159, 64, 1)'
-                    ],
-                    borderWidth: 1
-                }]
-            }
-        });
-
-        const requestCountChart = new Chart(requestCountCtx, {
-            type: 'line',
-            data: {
-                labels: [], // Time labels will go here
-                datasets: [{
-                    label: 'Request Count',
-                    data: [], // Counts will go here
-                    backgroundColor: 'rgba(75, 192, 192, 0.2)',
-                    borderColor: 'rgba(75, 192, 192, 1)',
-                    borderWidth: 1,
-                    fill: true
-                }]
-            }
-        });
-
         // Function to fetch data
-        function fetchData(filter = 'days') {
+        function fetchData() {
             $('.loading').show(); // Show loading indicator
             $.ajax({
                 type: "GET",
                 url: "api/measurements/grouped", // Adjust this URL as necessary
-                data: { timeFrame: filter }, // Sending filter parameter
                 dataType: "json",
                 success: function (data) {
                     currentData = data.measurements || [];
                     populateTable(currentData);
-                    updateCharts(currentData);
                 },
                 complete: function () {
                     $('.loading').hide(); // Hide loading indicator after data is fetched
@@ -213,33 +190,8 @@
             });
         }
 
-        // Update the charts with new data
-        function updateCharts(data) {
-            const methodCount = {};
-            const timeCount = {};
-
-            // Process data for pie and line charts
-            data.forEach(item => {
-                methodCount[item.method] = (methodCount[item.method] || 0) + item.count;
-
-                // Assuming item.timestamp contains the time info
-                const timeLabel = new Date(item.timestamp).toLocaleDateString(); // Adjust as necessary
-                timeCount[timeLabel] = (timeCount[timeLabel] || 0) + item.count;
-            });
-
-            // Update pie chart
-            methodDistributionChart.data.labels = Object.keys(methodCount);
-            methodDistributionChart.data.datasets[0].data = Object.values(methodCount);
-            methodDistributionChart.update();
-
-            // Update line chart
-            requestCountChart.data.labels = Object.keys(timeCount);
-            requestCountChart.data.datasets[0].data = Object.values(timeCount);
-            requestCountChart.update();
-        }
-
         // Row click event to show modal
-        $('#big-users-table tbody').on('click', 'tr', function () {
+        tableBody.on('click', 'tr', function () {
             const rowData = $(this).children('td').map(function () {
                 return $(this).text();
             }).get();
@@ -253,6 +205,11 @@
                 <strong>Min Elapsed:</strong> ${rowData[5]}<br>
             `);
             $('.filteredModal').modal('show');
+        });
+
+        // Refresh Data button click
+        $('#refreshData').click(function () {
+            fetchData();
         });
 
         // Export to CSV
@@ -327,13 +284,7 @@
             return $(row).children('td').eq(index).text();
         }
 
-        // Refresh Data button event
-        $('#refreshData').on('click', function () {
-            const selectedFilter = $('.day-filter input[type=radio]:checked').val();
-            fetchData(selectedFilter);
-        });
-
-        // Fetch initial data
+        // Initial data fetch
         fetchData();
     });
 </script>
