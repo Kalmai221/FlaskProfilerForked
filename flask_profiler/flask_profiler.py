@@ -175,7 +175,7 @@ def registerInternalRouters(app):
     :param app: Flask application instance
     :return:
     """
-    urlPath = CONF.get("endpointRoot", "flask-profiler")
+    urlPath = CONF.get("endpointRoot", "dashboard")
 
     fp = Blueprint(
         'flask-profiler', __name__,
