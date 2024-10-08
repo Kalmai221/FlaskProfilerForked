@@ -238,17 +238,102 @@
             requestCountChart.update();
         }
 
-        // Event listeners
-        $('#refreshData').click(function () {
-            fetchData();
+        // Row click event to show modal
+        $('#big-users-table tbody').on('click', 'tr', function () {
+            const rowData = $(this).children('td').map(function () {
+                return $(this).text();
+            }).get();
+
+            $('#requestDetails').html(`
+                <strong>Method:</strong> ${rowData[0]}<br>
+                <strong>Name:</strong> ${rowData[1]}<br>
+                <strong>Count:</strong> ${rowData[2]}<br>
+                <strong>Avg Elapsed:</strong> ${rowData[3]}<br>
+                <strong>Max Elapsed:</strong> ${rowData[4]}<br>
+                <strong>Min Elapsed:</strong> ${rowData[5]}<br>
+            `);
+            $('.filteredModal').modal('show');
         });
 
-        $('input[name="day-filter"]').change(function () {
-            const filter = $(this).val();
-            fetchData(filter);
+        // Export to CSV
+        $('#exportCsv').on('click', function () {
+            let csvContent = "data:text/csv;charset=utf-8,";
+            const headers = ['Method', 'Name', 'Count', 'Avg Elapsed', 'Max Elapsed', 'Min Elapsed'];
+            csvContent += headers.join(",") + "\n";
+            
+            tableBody.find('tr').each(function () {
+                const row = $(this).children('td').map(function () {
+                    return $(this).text();
+                }).get().join(",");
+                csvContent += row + "\n";
+            });
+            
+            const encodedUri = encodeURI(csvContent);
+            const link = document.createElement("a");
+            link.setAttribute("href", encodedUri);
+            link.setAttribute("download", "request_data.csv");
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
         });
 
-        // Initial data fetch
+        // Export to JSON
+        $('#exportJson').on('click', function () {
+            const jsonData = [];
+            tableBody.find('tr').each(function () {
+                const row = {
+                    method: $(this).children('td').eq(0).text(),
+                    name: $(this).children('td').eq(1).text(),
+                    count: $(this).children('td').eq(2).text(),
+                    avgElapsed: $(this).children('td').eq(3).text(),
+                    maxElapsed: $(this).children('td').eq(4).text(),
+                    minElapsed: $(this).children('td').eq(5).text()
+                };
+                jsonData.push(row);
+            });
+
+            const jsonString = JSON.stringify(jsonData, null, 2);
+            const blob = new Blob([jsonString], { type: "application/json" });
+            const url = URL.createObjectURL(blob);
+            const link = document.createElement("a");
+            link.href = url;
+            link.download = "request_data.json";
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        });
+
+        // Sorting feature
+        $('.sortable').on('click', function () {
+            const table = $(this).closest('table');
+            const tbody = table.find('tbody');
+            const rows = tbody.find('tr').toArray().sort(comparer($(this).data('sort')));
+            this.asc = !this.asc;
+            if (!this.asc) {
+                rows.reverse();
+            }
+            tbody.empty().append(rows);
+        });
+
+        function comparer(index) {
+            return function (a, b) {
+                const valA = getCellValue(a, index);
+                const valB = getCellValue(b, index);
+                return $.isNumeric(valA) && $.isNumeric(valB) ? valA - valB : valA.localeCompare(valB);
+            };
+        }
+
+        function getCellValue(row, index) {
+            return $(row).children('td').eq(index).text();
+        }
+
+        // Refresh Data button event
+        $('#refreshData').on('click', function () {
+            const selectedFilter = $('.day-filter input[type=radio]:checked').val();
+            fetchData(selectedFilter);
+        });
+
+        // Fetch initial data
         fetchData();
     });
 </script>
