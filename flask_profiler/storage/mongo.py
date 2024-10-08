@@ -20,19 +20,21 @@ class Mongo(BaseStorage):
         self.collection_name = self.config.get("COLLECTION", "measurements")
 
         def createIndex():
-            self.collection.ensure_index(
+            # Updated to use create_index
+            self.collection.create_index(
                 [
                     ('startedAt', 1),
                     ('endedAt', 1),
                     ('elapsed', 1),
                     ('name', 1),
-                    ('method', 1)]
-                )
+                    ('method', 1)
+                ]
+            )
 
         self.client = pymongo.MongoClient(self.mongo_url)
         self.db = self.client[self.database_name]
         self.collection = self.db[self.collection_name]
-        createIndex()
+        createIndex()  # Call the updated createIndex function
 
     def filter(self, filtering={}):
         query = {}
@@ -86,10 +88,11 @@ class Mongo(BaseStorage):
         measurement["endedAt"] = datetime.datetime.fromtimestamp(
             measurement["endedAt"])
 
-        result = self.collection.insert(measurement)
+        result = self.collection.insert_one(measurement)  # Updated from insert to insert_one
         if result:
             return True
         return False
+
 
     def truncate(self):
         result = self.collection.remove()
@@ -103,7 +106,7 @@ class Mongo(BaseStorage):
             return True
         return False
 
-    def getSummary(self,  filtering={}):
+    def getSummary(self, filtering={}):
         match_condition = {}
         endedAt = datetime.datetime.fromtimestamp(
             float(filtering.get('endedAt', time.time())))
@@ -263,7 +266,7 @@ class Mongo(BaseStorage):
 
     def aggregate(self, pipeline, **kwargs):
         """Perform an aggregation and make sure that result will be everytime
-        CommandCursor. Will take care for pymongo version differencies
+        CommandCursor. Will take care for pymongo version differences
         :param pipeline: {list} of aggregation pipeline stages
         :return: {pymongo.command_cursor.CommandCursor}
         """
