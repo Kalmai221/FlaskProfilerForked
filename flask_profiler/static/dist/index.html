@@ -7,6 +7,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link href="static/dist/css/main.css" rel="stylesheet">
     <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        .sortable:hover {
+            cursor: pointer;
+        }
+    </style>
 </head>
 <body>
 <div class="navbar navbar-inverse navbar-fixed-top" role="navigation">
@@ -15,131 +20,59 @@
             <div class="navbar-header">
                 <a class="navbar-brand" href="./">Flask Profiler</a>
             </div>
-            <div class="navbar-collapse collapse">
-                <ul class="nav navbar-nav navbar-left" role="tablist">
-                    <li role="presentation" class="active">
-                        <a href="#tab-dashboard" data-target="#tab-dashboard" role="tab" data-toggle="tab"
-                           data-tab-history="true" data-tab-history-changer="push" data-tab-history-update-url="true">
-                           Dashboard
-                        </a>
-                    </li>
-                    <li role="presentation">
-                        <a href="#tab-filtering" data-target="#tab-filtering" role="tab" data-toggle="tab"
-                           data-tab-history="true" data-tab-history-changer="push" data-tab-history-update-url="true">
-                           Filtering
-                        </a>
-                    </li>
-                </ul>
-            </div>
         </div>
     </div>
 </div>
 
 <div class="container">
     <div class="col-xs-12 col-md-10 col-md-offset-1">
-        <div class="row">
-            <div class="tab-content">
-                <div role="tabpanel" class="tab-pane active" id="tab-dashboard">
-                    <div class="panel panel-default">
-                        <div class="panel-heading clearfix">
-                            <h3 class="panel-title pull-left">Dashboard <small class="created-time"></small></h3>
-                            <div class="btn-group day-filter pull-right" data-toggle="buttons">
-                                <label class="btn btn-default">
-                                    <input type="radio" value="hours" id="hours" autocomplete="off"> 24 hours
-                                </label>
-                                <label class="btn btn-default active">
-                                    <input type="radio" value="days" id="days" autocomplete="off" checked> 7 days
-                                </label>
-                                <label class="btn btn-default">
-                                    <input type="radio" value="all" id="all" autocomplete="off"> 30 days
-                                </label>
-                            </div>
-                        </div>
-                        <div class="panel-body">
-                            <div class="row">
-                                <div class="col-md-12">
-                                    <div class="row">
-                                        <div class="col-md-3 col-xs-6 col-xs-offset-3">
-                                            <h4 class="text-center">Method Distribution</h4>
-                                            <div class="loading" id="pieChart"></div>
-                                        </div>
-                                        <div class="col-md-9 col-xs-12">
-                                            <h4 class="text-center">Request Count by Time</h4>
-                                            <div class="loading" id="lineChart"></div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <hr>
-                            <div class="table-responsive">
-                                <table class="table table-hover" id="big-users-table">
-                                    <thead>
-                                        <tr>
-                                            <th>Method</th>
-                                            <th>Name</th>
-                                            <th>Count</th>
-                                            <th>Avg Elapsed</th>
-                                            <th>Max Elapsed</th>
-                                            <th>Min Elapsed</th>
-                                        </tr>
-                                    </thead>
-                                </table>
-                            </div>
-                        </div>
+        <div class="panel panel-default">
+            <div class="panel-heading clearfix">
+                <h3 class="panel-title pull-left">Dashboard <small class="created-time"></small></h3>
+                <div class="btn-group day-filter pull-right" data-toggle="buttons">
+                    <label class="btn btn-default">
+                        <input type="radio" value="hours" id="hours" autocomplete="off"> 24 hours
+                    </label>
+                    <label class="btn btn-default active">
+                        <input type="radio" value="days" id="days" autocomplete="off" checked> 7 days
+                    </label>
+                    <label class="btn btn-default">
+                        <input type="radio" value="all" id="all" autocomplete="off"> 30 days
+                    </label>
+                </div>
+                <div class="btn-group pull-right" style="margin-left: 10px;">
+                    <button class="btn btn-primary" id="exportCsv">Export CSV</button>
+                    <button class="btn btn-primary" id="exportJson">Export JSON</button>
+                </div>
+            </div>
+            <div class="panel-body">
+                <div class="row">
+                    <div class="col-md-3 col-xs-6">
+                        <h4 class="text-center">Method Distribution</h4>
+                        <div class="loading" id="pieChart"></div>
+                    </div>
+                    <div class="col-md-9 col-xs-12">
+                        <h4 class="text-center">Request Count by Time</h4>
+                        <div class="loading" id="lineChart"></div>
                     </div>
                 </div>
-
-                <div role="tabpanel" class="tab-pane" id="tab-filtering">
-                    <div class="panel panel-default">
-                        <div class="panel-heading clearfix">
-                            <h3 class="panel-title pull-left">Filtering</h3>
-                            <button type="button" class="btn btn-default pull-right clear-filter"
-                                    style="padding: 3px 7px; margin-bottom: 0; font-size: 13px;">
-                                Clear
-                            </button>
-                        </div>
-                        <div class="panel-body">
-                            <div class="table-responsive">
-                                <div class="row">
-                                    <div class="col-md-4">
-                                        <input type="text" class="form-control search-filter" placeholder="Search...">
-                                    </div>
-                                </div>
-                                <table class="table table-hover" id="filteredTable">
-                                    <thead>
-                                        <tr class="filter-row">
-                                            <th>
-                                                <select class='method form-control'>
-                                                    <option value="ALL">ALL</option>
-                                                    <option value="GET">GET</option>
-                                                    <option value="POST">POST</option>
-                                                    <option value="PUT">PUT</option>
-                                                    <option value="DELETE">DELETE</option>
-                                                    <option value="PATCH">PATCH</option>
-                                                    <option value="COPY">COPY</option>
-                                                    <option value="HEAD">HEAD</option>
-                                                    <option value="OPTIONS">OPTIONS</option>
-                                                    <option value="LINK">LINK</option>
-                                                    <option value="UNLINK">UNLINK</option>
-                                                    <option value="PURGE">PURGE</option>
-                                                    <option value="LOCK">LOCK</option>
-                                                    <option value="UNLOCK">UNLOCK</option>
-                                                    <option value="PROPFIND">PROPFIND</option>
-                                                    <option value="VIEW">VIEW</option>
-                                                </select>
-                                            </th>
-                                            <th><input type="text" class="filtered-name form-control" placeholder="Filter by Name"></th>
-                                            <th><input type="text" class="elapsed form-control" placeholder="Elapsed Time"></th>
-                                            <th>
-                                                <input type="text" class="filtered-datepicker form-control" placeholder="Date Range">
-                                            </th>
-                                        </tr>
-                                    </thead>
-                                </table>
-                            </div>
-                        </div>
-                    </div>
+                <hr>
+                <div class="table-responsive">
+                    <table class="table table-hover" id="big-users-table">
+                        <thead>
+                            <tr>
+                                <th class="sortable" data-sort="method">Method</th>
+                                <th class="sortable" data-sort="name">Name</th>
+                                <th class="sortable" data-sort="count">Count</th>
+                                <th class="sortable" data-sort="avgElapsed">Avg Elapsed</th>
+                                <th class="sortable" data-sort="maxElapsed">Max Elapsed</th>
+                                <th class="sortable" data-sort="minElapsed">Min Elapsed</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <!-- Rows will be populated dynamically -->
+                        </tbody>
+                    </table>
                 </div>
             </div>
         </div>
@@ -150,13 +83,14 @@
     <div class="modal-dialog modal-lg">
         <div class="modal-content">
             <div class="modal-header">
-                <h4 class="modal-title">Filtered Data</h4>
+                <h4 class="modal-title">Request Details</h4>
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                     <span aria-hidden="true">&times;</span>
                 </button>
             </div>
             <div class="modal-body">
-                <!-- JSON data will be displayed here -->
+                <!-- Detailed request data will be displayed here -->
+                <div id="requestDetails"></div>
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
@@ -172,13 +106,98 @@
 
 <script>
     $(document).ready(function () {
-        // Search filter functionality
-        $('.search-filter').on('keyup', function () {
-            var value = $(this).val().toLowerCase();
-            $('#filteredTable tr').filter(function () {
-                $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)
-            });
+        // Example data (replace with actual data)
+        const data = [
+            { method: "GET", name: "/api/data", count: 100, avgElapsed: 200, maxElapsed: 500, minElapsed: 100 },
+            { method: "POST", name: "/api/update", count: 80, avgElapsed: 300, maxElapsed: 600, minElapsed: 200 },
+            // Add more data as necessary...
+        ];
+
+        // Populate the table
+        data.forEach(item => {
+            $('#big-users-table tbody').append(`
+                <tr>
+                    <td>${item.method}</td>
+                    <td>${item.name}</td>
+                    <td>${item.count}</td>
+                    <td>${item.avgElapsed}</td>
+                    <td>${item.maxElapsed}</td>
+                    <td>${item.minElapsed}</td>
+                </tr>
+            `);
         });
+
+        // Row click event to show modal
+        $('#big-users-table tbody').on('click', 'tr', function () {
+            const rowData = $(this).children('td').map(function () {
+                return $(this).text();
+            }).get();
+
+            $('#requestDetails').html(`
+                <strong>Method:</strong> ${rowData[0]}<br>
+                <strong>Name:</strong> ${rowData[1]}<br>
+                <strong>Count:</strong> ${rowData[2]}<br>
+                <strong>Avg Elapsed:</strong> ${rowData[3]}<br>
+                <strong>Max Elapsed:</strong> ${rowData[4]}<br>
+                <strong>Min Elapsed:</strong> ${rowData[5]}<br>
+            `);
+            $('.filteredModal').modal('show');
+        });
+
+        // Export to CSV
+        $('#exportCsv').on('click', function () {
+            let csvContent = "data:text/csv;charset=utf-8,";
+            const headers = ['Method', 'Name', 'Count', 'Avg Elapsed', 'Max Elapsed', 'Min Elapsed'];
+            csvContent += headers.join(",") + "\n";
+            data.forEach(item => {
+                const row = [item.method, item.name, item.count, item.avgElapsed, item.maxElapsed, item.minElapsed].join(",");
+                csvContent += row + "\n";
+            });
+            const encodedUri = encodeURI(csvContent);
+            const link = document.createElement("a");
+            link.setAttribute("href", encodedUri);
+            link.setAttribute("download", "request_data.csv");
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        });
+
+        // Export to JSON
+        $('#exportJson').on('click', function () {
+            const jsonString = JSON.stringify(data, null, 2);
+            const blob = new Blob([jsonString], { type: "application/json" });
+            const url = URL.createObjectURL(blob);
+            const link = document.createElement("a");
+            link.href = url;
+            link.download = "request_data.json";
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        });
+
+        // Sorting feature
+        $('.sortable').on('click', function () {
+            const table = $(this).closest('table');
+            const tbody = table.find('tbody');
+            const rows = tbody.find('tr').toArray().sort(comparer($(this).data('sort')));
+            this.asc = !this.asc;
+            if (!this.asc) {
+                rows.reverse();
+            }
+            tbody.empty().append(rows);
+        });
+
+        function comparer(index) {
+            return function (a, b) {
+                const valA = getCellValue(a, index);
+                const valB = getCellValue(b, index);
+                return $.isNumeric(valA) && $.isNumeric(valB) ? valA - valB : valA.localeCompare(valB);
+            };
+        }
+
+        function getCellValue(row, index) {
+            return $(row).children('td').eq(index).text();
+        }
     });
 </script>
 </body>
