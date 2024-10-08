@@ -2,7 +2,6 @@ import time
 import datetime
 import pymongo
 from .base import BaseStorage
-import datetime
 from bson.objectid import ObjectId
 
 
@@ -13,28 +12,26 @@ class Mongo(BaseStorage):
     """
 
     def __init__(self, config=None):
-        super(Mongo, self).__init__(),
+        super(Mongo, self).__init__()
         self.config = config
         self.mongo_url = self.config.get("MONGO_URL", "mongodb://localhost")
         self.database_name = self.config.get("DATABASE", "flask_profiler")
         self.collection_name = self.config.get("COLLECTION", "measurements")
 
-        def createIndex():
-            # Updated to use create_index
-            self.collection.create_index(
-                [
-                    ('startedAt', 1),
-                    ('endedAt', 1),
-                    ('elapsed', 1),
-                    ('name', 1),
-                    ('method', 1)
-                ]
-            )
-
+        # Initialize MongoDB client and create index
         self.client = pymongo.MongoClient(self.mongo_url)
         self.db = self.client[self.database_name]
         self.collection = self.db[self.collection_name]
-        createIndex()  # Call the updated createIndex function
+        self.create_index()
+
+    def create_index(self):
+        self.collection.create_index([
+            ('startedAt', 1),
+            ('endedAt', 1),
+            ('elapsed', 1),
+            ('name', 1),
+            ('method', 1)
+        ])
 
     def filter(self, filtering={}):
         query = {}
@@ -42,76 +39,43 @@ class Mongo(BaseStorage):
         skip = int(filtering.get('skip', 0))
         sort = filtering.get('sort', "endedAt,desc").split(",")
 
-        startedAt = datetime.datetime.fromtimestamp(float(
-            filtering.get('startedAt', time.time() - 3600 * 24 * 7)))
-        endedAt = datetime.datetime.fromtimestamp(
-            float(filtering.get('endedAt', time.time())))
-        elapsed = float(filtering.get('elapsed', 0))
-        name = filtering.get('name', None)
-        method = filtering.get('method', None)
-        args = filtering.get('args', None)
-        kwargs = filtering.get('kwargs', None)
+        # Parse time filters
+        startedAt = datetime.datetime.fromtimestamp(float(filtering.get('startedAt', time.time() - 3600 * 24 * 7)))
+        endedAt = datetime.datetime.fromtimestamp(float(filtering.get('endedAt', time.time())))
 
-        if sort[1] == "desc":
-            sort_dir = pymongo.DESCENDING
-        else:
-            sort_dir = pymongo.ASCENDING
+        # Build query
+        if filtering.get('name'):
+            query['name'] = filtering['name']
+        if filtering.get('method'):
+            query['method'] = filtering['method']
+        if filtering.get('elapsed'):
+            query['elapsed'] = {"$gte": float(filtering['elapsed'])}
+        query['endedAt'] = {"$lte": endedAt}
+        query['startedAt'] = {"$gt": startedAt}
 
-        if name:
-            query['name'] = name
-        if method:
-            query['method'] = method
-        if endedAt:
-            query['endedAt'] = {"$lte": endedAt}
-        if startedAt:
-            query['startedAt'] = {"$gt": startedAt}
-        if elapsed:
-            query['elapsed'] = {"$gte": elapsed}
-        if args:
-            query['args'] = args
-        if kwargs:
-            query['kwargs'] = kwargs
-
-        if limit:
-            cursor = self.collection.find(
-                query
-                ).sort(sort[0], sort_dir).skip(skip)
-        else:
-            cursor = self.collection.find(
-                query
-                ).sort(sort[0], sort_dir).skip(skip).limit(limit)
+        # Execute query with sorting and pagination
+        cursor = self.collection.find(query).sort(sort[0], pymongo.DESCENDING if sort[1] == "desc" else pymongo.ASCENDING).skip(skip).limit(limit)
         return (self.clearify(record) for record in cursor)
 
     def insert(self, measurement):
-        measurement["startedAt"] = datetime.datetime.fromtimestamp(
-            measurement["startedAt"])
-        measurement["endedAt"] = datetime.datetime.fromtimestamp(
-            measurement["endedAt"])
+        measurement["startedAt"] = datetime.datetime.fromtimestamp(measurement["startedAt"])
+        measurement["endedAt"] = datetime.datetime.fromtimestamp(measurement["endedAt"])
 
-        result = self.collection.insert_one(measurement)  # Updated from insert to insert_one
-        if result:
-            return True
-        return False
-
+        result = self.collection.insert_one(measurement)
+        return result.acknowledged
 
     def truncate(self):
-        result = self.collection.remove()
-        if result:
-            return True
-        return False
+        result = self.collection.delete_many({})
+        return result.deleted_count > 0
 
     def delete(self, measurementId):
-        result = self.collection.remove({"_id": ObjectId(measurementId)})
-        if result:
-            return True
-        return False
+        result = self.collection.delete_one({"_id": ObjectId(measurementId)})
+        return result.deleted_count > 0
 
     def getSummary(self, filtering={}):
         match_condition = {}
-        endedAt = datetime.datetime.fromtimestamp(
-            float(filtering.get('endedAt', time.time())))
-        startedAt = datetime.datetime.fromtimestamp(
-            float(filtering.get('startedAt', time.time() - 3600 * 24 * 7)))
+        endedAt = datetime.datetime.fromtimestamp(float(filtering.get('endedAt', time.time())))
+        startedAt = datetime.datetime.fromtimestamp(float(filtering.get('startedAt', time.time() - 3600 * 24 * 7)))
         elapsed = filtering.get('elapsed', None)
         name = filtering.get('name', None)
         method = filtering.get('method', None)
@@ -128,10 +92,7 @@ class Mongo(BaseStorage):
         if elapsed:
             match_condition['elapsed'] = {"$gte": elapsed}
 
-        if sort[1] == "desc":
-            sort_dir = -1
-        else:
-            sort_dir = 1
+        sort_dir = -1 if sort[1] == "desc" else 1
 
         return self.aggregate([
             {"$match": match_condition},
@@ -140,7 +101,7 @@ class Mongo(BaseStorage):
                     "_id": {
                         "method": "$method",
                         "name": "$name"
-                       },
+                    },
                     "count": {"$sum": 1},
                     "minElapsed": {"$min": "$elapsed"},
                     "maxElapsed": {"$max": "$elapsed"},
@@ -183,7 +144,7 @@ class Mongo(BaseStorage):
                 "$group": {
                     "_id": {
                         "method": "$method"
-                       },
+                    },
                     "count": {"$sum": 1}
                 }
             },
@@ -196,7 +157,7 @@ class Mongo(BaseStorage):
             }
         ])
 
-        distribution = dict((i["method"], i["count"]) for i in result)
+        distribution = {i["method"]: i["count"] for i in result}
         return distribution
 
     def getTimeseries(self, filtering=None):
@@ -204,12 +165,12 @@ class Mongo(BaseStorage):
             filtering = {}
         if filtering.get('interval', None) == "daily":
             dateFormat = '%Y-%m-%d'
-            interval = 3600 * 24   # daily
+            interval = 3600 * 24  # daily
             groupId = {
                 "month": {"$month": "$startedAt"},
                 "day": {"$dayOfMonth": "$startedAt"},
-                "year": {"$year": "$startedAt"}}
-
+                "year": {"$year": "$startedAt"}
+            }
         else:
             dateFormat = '%Y-%m-%d %H'
             interval = 3600  # hourly
@@ -217,10 +178,10 @@ class Mongo(BaseStorage):
                 "hour": {"$hour": "$startedAt"},
                 "day": {"$dayOfMonth": "$startedAt"},
                 "month": {"$month": "$startedAt"},
-                "year": {"$year": "$startedAt"}}
+                "year": {"$year": "$startedAt"}
+            }
 
-        startedAt = float(
-            filtering.get('startedAt', time.time() - 3600 * 24 * 7))
+        startedAt = float(filtering.get('startedAt', time.time() - 3600 * 24 * 7))
         startedAtF = datetime.datetime.fromtimestamp(startedAt)
         endedAt = float(filtering.get('endedAt', time.time()))
         endedAtF = datetime.datetime.fromtimestamp(endedAt)
@@ -248,25 +209,29 @@ class Mongo(BaseStorage):
         return series
 
     def clearify(self, obj):
-        available_types = [int, dict, str, list]
-        obj["startedAt"] = obj["startedAt"].strftime("%s")
-        obj["endedAt"] = obj["endedAt"].strftime("%s")
-        for k, v in obj.items():
-            if any([isinstance(v, av_type) for av_type in available_types]):
+        if 'startedAt' in obj:
+            obj["startedAt"] = int(obj["startedAt"].timestamp())  # Convert to UNIX timestamp
+        if 'endedAt' in obj:
+            obj["endedAt"] = int(obj["endedAt"].timestamp())  # Convert to UNIX timestamp
+
+        for k, v in list(obj.items()):
+            if isinstance(v, (int, dict, str, list)):
                 continue
             if k == "_id":
-                k = "id"
-                obj.pop("_id")
-            obj[k] = str(v)
+                obj["id"] = str(v)
+                del obj["_id"]
+            else:
+                obj[k] = str(v)
+
         return obj
 
     def get(self, measurementId):
         record = self.collection.find_one({'_id': ObjectId(measurementId)})
-        return self.clearify(record)
+        return self.clearify(record) if record else None
 
     def aggregate(self, pipeline, **kwargs):
-        """Perform an aggregation and make sure that result will be everytime
-        CommandCursor. Will take care for pymongo version differences
+        """Perform an aggregation and make sure that result will be every time
+        CommandCursor. Will take care of pymongo version differences
         :param pipeline: {list} of aggregation pipeline stages
         :return: {pymongo.command_cursor.CommandCursor}
         """
