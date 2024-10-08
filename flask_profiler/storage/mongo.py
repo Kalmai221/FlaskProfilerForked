@@ -72,6 +72,13 @@ class Mongo(BaseStorage):
         result = self.collection.delete_one({"_id": ObjectId(measurementId)})
         return result.deleted_count > 0
 
+    def delete_all(self):
+        """
+        Delete all documents in the collection.
+        """
+        result = self.collection.delete_many({})
+        return result.deleted_count > 0  # Returns True if any documents were deleted
+
     def getSummary(self, filtering={}):
         match_condition = {}
         endedAt = datetime.datetime.fromtimestamp(float(filtering.get('endedAt', time.time())))
