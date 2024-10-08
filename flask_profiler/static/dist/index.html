@@ -7,6 +7,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link href="static/dist/css/main.css" rel="stylesheet">
     <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
         .sortable:hover {
             cursor: pointer;
@@ -70,11 +71,11 @@
                 <div class="row">
                     <div class="col-md-3 col-xs-6">
                         <h4 class="text-center">Method Distribution</h4>
-                        <div class="loading" id="pieChart"></div>
+                        <canvas id="methodDistributionChart"></canvas>
                     </div>
                     <div class="col-md-9 col-xs-12">
                         <h4 class="text-center">Request Count by Time</h4>
-                        <div class="loading" id="lineChart"></div>
+                        <canvas id="requestCountChart"></canvas>
                     </div>
                 </div>
                 <hr>
@@ -130,18 +131,64 @@
 <script>
     $(document).ready(function () {
         const tableBody = $('#big-users-table tbody');
+        const methodDistributionCtx = document.getElementById('methodDistributionChart').getContext('2d');
+        const requestCountCtx = document.getElementById('requestCountChart').getContext('2d');
         let currentData = [];
 
+        const methodDistributionChart = new Chart(methodDistributionCtx, {
+            type: 'pie',
+            data: {
+                labels: [], // Method names will go here
+                datasets: [{
+                    data: [], // Counts will go here
+                    backgroundColor: [
+                        'rgba(255, 99, 132, 0.2)',
+                        'rgba(54, 162, 235, 0.2)',
+                        'rgba(255, 206, 86, 0.2)',
+                        'rgba(75, 192, 192, 0.2)',
+                        'rgba(153, 102, 255, 0.2)',
+                        'rgba(255, 159, 64, 0.2)'
+                    ],
+                    borderColor: [
+                        'rgba(255, 99, 132, 1)',
+                        'rgba(54, 162, 235, 1)',
+                        'rgba(255, 206, 86, 1)',
+                        'rgba(75, 192, 192, 1)',
+                        'rgba(153, 102, 255, 1)',
+                        'rgba(255, 159, 64, 1)'
+                    ],
+                    borderWidth: 1
+                }]
+            }
+        });
+
+        const requestCountChart = new Chart(requestCountCtx, {
+            type: 'line',
+            data: {
+                labels: [], // Time labels will go here
+                datasets: [{
+                    label: 'Request Count',
+                    data: [], // Counts will go here
+                    backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                    borderColor: 'rgba(75, 192, 192, 1)',
+                    borderWidth: 1,
+                    fill: true
+                }]
+            }
+        });
+
         // Function to fetch data
-        function fetchData() {
+        function fetchData(filter = 'days') {
             $('.loading').show(); // Show loading indicator
             $.ajax({
                 type: "GET",
                 url: "api/measurements/grouped", // Adjust this URL as necessary
+                data: { timeFrame: filter }, // Sending filter parameter
                 dataType: "json",
                 success: function (data) {
                     currentData = data.measurements || [];
                     populateTable(currentData);
+                    updateCharts(currentData);
                 },
                 complete: function () {
                     $('.loading').hide(); // Hide loading indicator after data is fetched
@@ -166,8 +213,33 @@
             });
         }
 
+        // Update the charts with new data
+        function updateCharts(data) {
+            const methodCount = {};
+            const timeCount = {};
+
+            // Process data for pie and line charts
+            data.forEach(item => {
+                methodCount[item.method] = (methodCount[item.method] || 0) + item.count;
+
+                // Assuming item.timestamp contains the time info
+                const timeLabel = new Date(item.timestamp).toLocaleDateString(); // Adjust as necessary
+                timeCount[timeLabel] = (timeCount[timeLabel] || 0) + item.count;
+            });
+
+            // Update pie chart
+            methodDistributionChart.data.labels = Object.keys(methodCount);
+            methodDistributionChart.data.datasets[0].data = Object.values(methodCount);
+            methodDistributionChart.update();
+
+            // Update line chart
+            requestCountChart.data.labels = Object.keys(timeCount);
+            requestCountChart.data.datasets[0].data = Object.values(timeCount);
+            requestCountChart.update();
+        }
+
         // Row click event to show modal
-        tableBody.on('click', 'tr', function () {
+        $('#big-users-table tbody').on('click', 'tr', function () {
             const rowData = $(this).children('td').map(function () {
                 return $(this).text();
             }).get();
@@ -181,11 +253,6 @@
                 <strong>Min Elapsed:</strong> ${rowData[5]}<br>
             `);
             $('.filteredModal').modal('show');
-        });
-
-        // Refresh Data button click
-        $('#refreshData').click(function () {
-            fetchData();
         });
 
         // Export to CSV
@@ -260,7 +327,13 @@
             return $(row).children('td').eq(index).text();
         }
 
-        // Initial data fetch
+        // Refresh Data button event
+        $('#refreshData').on('click', function () {
+            const selectedFilter = $('.day-filter input[type=radio]:checked').val();
+            fetchData(selectedFilter);
+        });
+
+        // Fetch initial data
         fetchData();
     });
 </script>
