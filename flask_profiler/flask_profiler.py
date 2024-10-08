@@ -200,6 +200,18 @@ def registerInternalRouters(app):
         args = dict(request.args.items())
         measurements = collection.getSummary(args)
         return jsonify({"measurements": list(measurements)})
+    
+    @fp.route("/api/measurements/deleteall".format(urlPath))
+    @auth.login_required
+    def delete_all_measurements():
+        try:
+            deleted_count = collection.delete_all()
+            if deleted_count:
+                return jsonify({"message": "All measurements have been deleted."}), 200
+            else:
+                return jsonify({"message": "No measurements found to delete."}), 404
+        except Exception as e:
+            return jsonify({"error": f"An error occurred: {str(e)}"}), 500
 
     @fp.route("/api/measurements/<measurementId>".format(urlPath))
     @auth.login_required
