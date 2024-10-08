@@ -8,55 +8,26 @@
     <link href="static/dist/css/main.css" rel="stylesheet">
     <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet">
     <style>
-        body {
-            background-color: #1e1e1e; /* Dark background */
-            color: #f1f1f1; /* Light text color */
+        body.dark-mode {
+            background-color: #121212;
+            color: #ffffff;
         }
-        .navbar {
-            background-color: #222; /* Dark navbar */
+        body.dark-mode .navbar-inverse {
+            background-color: #1e1e1e;
+            border-color: #444;
         }
-        .panel {
-            background-color: #333; /* Dark panel background */
-            border-color: #444; /* Darker border */
+        body.dark-mode .panel {
+            background-color: #1e1e1e;
+            border-color: #444;
         }
-        .panel-heading {
-            background-color: #444; /* Darker panel heading */
-            border-bottom: 1px solid #555; /* Slightly lighter border */
+        body.dark-mode .table {
+            background-color: #1e1e1e;
+            color: #ffffff;
         }
-        .table {
-            background-color: #444; /* Dark table background */
-            color: #f1f1f1; /* Light text in table */
-        }
-        th, td {
-            border-color: #555; /* Darker borders for table cells */
-        }
-        th {
-            background-color: #555; /* Dark header background */
-            color: #fff; /* White text in header */
-        }
-        .loading {
-            color: #fff; /* Loading indicator text color */
-        }
-        .btn-primary {
-            background-color: #007bff; /* Bootstrap primary button color */
-            border-color: #007bff; /* Button border color */
-        }
-        .btn-primary:hover {
-            background-color: #0056b3; /* Darker on hover */
-            border-color: #0056b3; /* Darker border on hover */
-        }
-        @media (max-width: 768px) {
-            .col-md-10 {
-                padding-left: 0;
-                padding-right: 0;
-            }
-            .navbar-brand {
-                text-align: center;
-                width: 100%;
-            }
+        .sortable:hover {
+            cursor: pointer;
         }
     </style>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body>
 <div class="navbar navbar-inverse navbar-fixed-top" role="navigation">
@@ -64,6 +35,7 @@
         <div class="col-md-10 col-md-offset-1">
             <div class="navbar-header">
                 <a class="navbar-brand" href="./">Flask Profiler</a>
+                <button class="btn btn-default navbar-btn" id="toggleDarkMode">Toggle Dark Mode</button>
             </div>
         </div>
     </div>
@@ -86,9 +58,9 @@
                     </label>
                 </div>
                 <div class="btn-group pull-right" style="margin-left: 10px;">
-                    <button class="btn btn-primary" id="refreshData">Refresh Data</button>
                     <button class="btn btn-primary" id="exportCsv">Export CSV</button>
                     <button class="btn btn-primary" id="exportJson">Export JSON</button>
+                    <button class="btn btn-primary" id="exportHtml">Export HTML</button>
                 </div>
             </div>
             <div class="panel-body">
@@ -96,10 +68,6 @@
                     <div class="col-md-3 col-xs-6">
                         <h4 class="text-center">Method Distribution</h4>
                         <div class="loading" id="pieChart"></div>
-                    </div>
-                    <div class="col-md-3 col-xs-6">
-                        <h4 class="text-center">Number of Requests</h4>
-                        <canvas id="requestChart"></canvas>
                     </div>
                     <div class="col-md-9 col-xs-12">
                         <h4 class="text-center">Request Count by Time</h4>
@@ -120,7 +88,23 @@
                             </tr>
                         </thead>
                         <tbody>
-                            <!-- Rows will be populated dynamically -->
+                            <tr>
+                                <td>GET</td>
+                                <td>/api/data</td>
+                                <td>100</td>
+                                <td>200</td>
+                                <td>500</td>
+                                <td>100</td>
+                            </tr>
+                            <tr>
+                                <td>POST</td>
+                                <td>/api/update</td>
+                                <td>80</td>
+                                <td>300</td>
+                                <td>600</td>
+                                <td>200</td>
+                            </tr>
+                            <!-- Add more rows as necessary -->
                         </tbody>
                     </table>
                 </div>
@@ -129,12 +113,9 @@
     </div>
 </div>
 
-<!-- Loading Indicator -->
-<div class="loading">Loading...</div>
-
 <div class="modal fade filteredModal" tabindex="-1" role="dialog" aria-labelledby="filteredModal">
     <div class="modal-dialog modal-lg">
-        <div class="modal-content" style="background-color: #333; color: #f1f1f1;"> <!-- Dark modal -->
+        <div class="modal-content">
             <div class="modal-header">
                 <h4 class="modal-title">Request Details</h4>
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
@@ -142,6 +123,7 @@
                 </button>
             </div>
             <div class="modal-body">
+                <!-- Detailed request data will be displayed here -->
                 <div id="requestDetails"></div>
             </div>
             <div class="modal-footer">
@@ -158,93 +140,35 @@
 
 <script>
     $(document).ready(function () {
-        const tableBody = $('#big-users-table tbody');
-        let currentData = [];
+        // Extract data from the table for exporting
+        function getDataFromTable() {
+            const rows = $('#big-users-table tbody tr');
+            const extractedData = [];
 
-        // Initialize the request chart
-        let requestChart;
-
-        function initRequestChart() {
-            const ctx = document.getElementById('requestChart').getContext('2d');
-            requestChart = new Chart(ctx, {
-                type: 'bar', // Change to 'bar' for a bar chart
-                data: {
-                    labels: [], // Method labels will be added dynamically
-                    datasets: [{
-                        label: 'Number of Requests',
-                        data: [], // Data will be added dynamically
-                        backgroundColor: 'rgba(0, 123, 255, 0.5)',
-                        borderColor: 'rgba(0, 123, 255, 1)',
-                        borderWidth: 1
-                    }]
-                },
-                options: {
-                    scales: {
-                        y: {
-                            beginAtZero: true,
-                            title: {
-                                display: true,
-                                text: 'Number of Requests'
-                            }
-                        },
-                        x: {
-                            title: {
-                                display: true,
-                                text: 'Method'
-                            }
-                        }
-                    }
-                }
+            rows.each(function () {
+                const cols = $(this).children('td');
+                extractedData.push({
+                    method: cols.eq(0).text(),
+                    name: cols.eq(1).text(),
+                    count: parseInt(cols.eq(2).text()),
+                    avgElapsed: parseInt(cols.eq(3).text()),
+                    maxElapsed: parseInt(cols.eq(4).text()),
+                    minElapsed: parseInt(cols.eq(5).text())
+                });
             });
+
+            return extractedData;
         }
 
-        // Update the request chart data
-        function updateRequestChart(data) {
-            const labels = data.map(item => item.method);
-            const values = data.map(item => item.count);
-
-            requestChart.data.labels = labels;
-            requestChart.data.datasets[0].data = values;
-            requestChart.update();
-        }
-
-        // Function to fetch data
-        function fetchData() {
-            $('.loading').show(); // Show loading indicator
-            $.ajax({
-                type: "GET",
-                url: "api/measurements/grouped", // Adjust this URL as necessary
-                dataType: "json",
-                success: function (data) {
-                    currentData = data.measurements || [];
-                    populateTable(currentData);
-                    updateRequestChart(currentData); // Update the request chart with the fetched data
-                },
-                complete: function () {
-                    $('.loading').hide(); // Hide loading indicator after data is fetched
-                }
-            });
-        }
-
-        // Populate the table with data
-        function populateTable(data) {
-            tableBody.empty(); // Clear existing data
-            data.forEach(item => {
-                tableBody.append(`
-                    <tr>
-                        <td>${item.method}</td>
-                        <td>${item.name}</td>
-                        <td>${item.count}</td>
-                        <td>${item.avgElapsed}</td>
-                        <td>${item.maxElapsed}</td>
-                        <td>${item.minElapsed}</td>
-                    </tr>
-                `);
-            });
-        }
+        // Populate the table from existing rows (if needed)
+        $('#big-users-table tbody tr').each(function () {
+            const rowData = $(this).children('td').map(function () {
+                return $(this).text();
+            }).get();
+        });
 
         // Row click event to show modal
-        tableBody.on('click', 'tr', function () {
+        $('#big-users-table tbody').on('click', 'tr', function () {
             const rowData = $(this).children('td').map(function () {
                 return $(this).text();
             }).get();
@@ -260,24 +184,16 @@
             $('.filteredModal').modal('show');
         });
 
-        // Refresh Data button click
-        $('#refreshData').click(function () {
-            fetchData();
-        });
-
         // Export to CSV
         $('#exportCsv').on('click', function () {
+            const data = getDataFromTable();
             let csvContent = "data:text/csv;charset=utf-8,";
             const headers = ['Method', 'Name', 'Count', 'Avg Elapsed', 'Max Elapsed', 'Min Elapsed'];
             csvContent += headers.join(",") + "\n";
-            
-            tableBody.find('tr').each(function () {
-                const row = $(this).children('td').map(function () {
-                    return $(this).text();
-                }).get().join(",");
+            data.forEach(item => {
+                const row = [item.method, item.name, item.count, item.avgElapsed, item.maxElapsed, item.minElapsed].join(",");
                 csvContent += row + "\n";
             });
-            
             const encodedUri = encodeURI(csvContent);
             const link = document.createElement("a");
             link.setAttribute("href", encodedUri);
@@ -289,25 +205,67 @@
 
         // Export to JSON
         $('#exportJson').on('click', function () {
-            const jsonData = [];
-            tableBody.find('tr').each(function () {
-                const row = {
-                    method: $(this).children('td').eq(0).text(),
-                    name: $(this).children('td').eq(1).text(),
-                    count: $(this).children('td').eq(2).text(),
-                    avgElapsed: $(this).children('td').eq(3).text(),
-                    maxElapsed: $(this).children('td').eq(4).text(),
-                    minElapsed: $(this).children('td').eq(5).text()
-                };
-                jsonData.push(row);
-            });
-
-            const jsonString = JSON.stringify(jsonData, null, 2);
+            const data = getDataFromTable();
+            const jsonString = JSON.stringify(data, null, 2);
             const blob = new Blob([jsonString], { type: "application/json" });
             const url = URL.createObjectURL(blob);
             const link = document.createElement("a");
             link.href = url;
             link.download = "request_data.json";
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        });
+
+        // Export to HTML
+        $('#exportHtml').on('click', function () {
+            const data = getDataFromTable();
+            let htmlContent = `
+                <html>
+                <head>
+                    <title>Request Data</title>
+                    <style>
+                        table { width: 100%; border-collapse: collapse; }
+                        th, td { border: 1px solid #ddd; padding: 8px; }
+                        th { background-color: #f2f2f2; }
+                    </style>
+                </head>
+                <body>
+                    <h2>Request Data</h2>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Method</th>
+                                <th>Name</th>
+                                <th>Count</th>
+                                <th>Avg Elapsed</th>
+                                <th>Max Elapsed</th>
+                                <th>Min Elapsed</th>
+                            </tr>
+                        </thead>
+                        <tbody>`;
+            data.forEach(item => {
+                htmlContent += `
+                    <tr>
+                        <td>${item.method}</td>
+                        <td>${item.name}</td>
+                        <td>${item.count}</td>
+                        <td>${item.avgElapsed}</td>
+                        <td>${item.maxElapsed}</td>
+                        <td>${item.minElapsed}</td>
+                    </tr>`;
+            });
+            htmlContent += `
+                            </tbody>
+                        </table>
+                    </div>
+                </body>
+                </html>`;
+            const blob = new Blob([htmlContent], { type: "text/html" });
+            const url = URL.createObjectURL(blob);
+            const link = document.createElement("a");
+            link.href = url;
+            link.download = "request_data.html";
             document.body.appendChild(link);
             link.click();
             document.body.removeChild(link);
@@ -337,9 +295,10 @@
             return $(row).children('td').eq(index).text();
         }
 
-        // Initial chart setup
-        initRequestChart(); // Initialize the request chart
-        fetchData(); // Fetch data
+        // Toggle Dark Mode
+        $('#toggleDarkMode').on('click', function () {
+            $('body').toggleClass('dark-mode');
+        });
     });
 </script>
 </body>
