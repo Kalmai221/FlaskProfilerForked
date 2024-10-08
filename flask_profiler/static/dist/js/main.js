@@ -224,6 +224,25 @@ $(document).ready(function () {
         for (key in d) d.hasOwnProperty(key) && (c[key] = d[key]);
     });
 
+    // Event listener for the delete button
+    $("#delete-all-data").on("click", function () {
+        // Show a confirmation dialog
+        if (confirm("Are you sure you want to delete all data? This action cannot be undone.")) {
+            // Proceed with the delete operation
+            $.ajax({
+                url: "api/measurements/deleteall", // Adjust this URL as necessary
+                success: function () {
+                    alert("All data has been successfully deleted.");
+                    // Optionally, refresh or update your data tables or charts here
+                },
+                error: function () {
+                    alert("There was an error deleting the data. Please try again.");
+                }
+            });
+        }
+    });
+
+
     var a = $("#big-users-table").DataTable({
         processing: true,
         serverSide: true,
