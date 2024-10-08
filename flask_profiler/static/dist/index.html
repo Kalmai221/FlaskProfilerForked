@@ -1,146 +1,185 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <title></title>
-
+    <title>Flask Profiler</title>
+    <meta charset="UTF-8">
     <meta name="robots" content="noindex, nofollow">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link href="static/dist/css/main.css" rel="stylesheet">
-
+    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet">
 </head>
 <body>
 <div class="navbar navbar-inverse navbar-fixed-top" role="navigation">
-  <div class="container">
-  <div class="col-md-10 col-md-offset-1">
-    <div class="navbar-header">
-      <a class="navbar-brand" href="./">Flask Profiler</a>
+    <div class="container">
+        <div class="col-md-10 col-md-offset-1">
+            <div class="navbar-header">
+                <a class="navbar-brand" href="./">Flask Profiler</a>
+            </div>
+            <div class="navbar-collapse collapse">
+                <ul class="nav navbar-nav navbar-left" role="tablist">
+                    <li role="presentation" class="active">
+                        <a href="#tab-dashboard" data-target="#tab-dashboard" role="tab" data-toggle="tab"
+                           data-tab-history="true" data-tab-history-changer="push" data-tab-history-update-url="true">
+                           Dashboard
+                        </a>
+                    </li>
+                    <li role="presentation">
+                        <a href="#tab-filtering" data-target="#tab-filtering" role="tab" data-toggle="tab"
+                           data-tab-history="true" data-tab-history-changer="push" data-tab-history-update-url="true">
+                           Filtering
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </div>
     </div>
-    <div class="navbar-collapse collapse">
-      <ul class="nav navbar-nav navbar-left" role="tablist">
-        <li role="presentation" class="active">
-            <a href="#tab-dashboard" data-target="#tab-dashboard" role="tab" data-toggle="tab" data-tab-history="true" data-tab-history-changer="push" data-tab-history-update-url="true">Dashboard</a>
-        </li>
-        <li role="presentation">
-            <a href="#tab-filtering" data-target="#tab-filtering" role="tab" data-toggle="tab" data-tab-history="true" data-tab-history-changer="push" data-tab-history-update-url="true">Filtering</a>
-        </li>
-      </ul>
-    </div>
-  </div>
-  </div>
 </div>
+
 <div class="container">
     <div class="col-xs-12 col-md-10 col-md-offset-1">
         <div class="row">
             <div class="tab-content">
-
                 <div role="tabpanel" class="tab-pane active" id="tab-dashboard">
                     <div class="panel panel-default">
-                      <div class="panel-heading clearfix">
-                        <h3 class="panel-title pull-left">Dashboard <small class="created-time"></small></h3>
-
-                        <div class="btn-group day-filter pull-right" data-toggle="buttons">
-                          <label class="btn btn-default">
-                            <input type="radio" value="hours" id="hours" autocomplete="off"> 24 hours </label>
-                          <label class="btn btn-default active">
-                            <input type="radio" value="days" id="days" autocomplete="off" checked> 7 days </label>
-                          <label class="btn btn-default">
-                            <input type="radio" value="all" id="all" autocomplete="off"> 30 days </label>
-                        </div>
-                      </div>
-                      <div class="panel-body">
-                    <div class="row">
-                        <div class="col-md-12">
-                        <div class="row">
-                            <div class="col-md-3  col-md-offset-0 col-xs-6 col-xs-offset-3">
-                                <h4 class="text-center">Method distribution</h5>
-                                <div class="loading" id="pieChart"></div>
-                            </div>
-                            <div class="col-md-9 col-xs-12">
-                                <h4 class="text-center">Request count by time</h5>
-                                <div class="loading" id="lineChart"></div>
+                        <div class="panel-heading clearfix">
+                            <h3 class="panel-title pull-left">Dashboard <small class="created-time"></small></h3>
+                            <div class="btn-group day-filter pull-right" data-toggle="buttons">
+                                <label class="btn btn-default">
+                                    <input type="radio" value="hours" id="hours" autocomplete="off"> 24 hours
+                                </label>
+                                <label class="btn btn-default active">
+                                    <input type="radio" value="days" id="days" autocomplete="off" checked> 7 days
+                                </label>
+                                <label class="btn btn-default">
+                                    <input type="radio" value="all" id="all" autocomplete="off"> 30 days
+                                </label>
                             </div>
                         </div>
-                        </div>
-                    </div>
+                        <div class="panel-body">
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <div class="row">
+                                        <div class="col-md-3 col-xs-6 col-xs-offset-3">
+                                            <h4 class="text-center">Method Distribution</h4>
+                                            <div class="loading" id="pieChart"></div>
+                                        </div>
+                                        <div class="col-md-9 col-xs-12">
+                                            <h4 class="text-center">Request Count by Time</h4>
+                                            <div class="loading" id="lineChart"></div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
 
-                    <hr>
-                    <div class="table-responsive">
-                        <table class="table table-hover" id="big-users-table"></table>
-
+                            <hr>
+                            <div class="table-responsive">
+                                <table class="table table-hover" id="big-users-table">
+                                    <thead>
+                                        <tr>
+                                            <th>Method</th>
+                                            <th>Name</th>
+                                            <th>Count</th>
+                                            <th>Avg Elapsed</th>
+                                            <th>Max Elapsed</th>
+                                            <th>Min Elapsed</th>
+                                        </tr>
+                                    </thead>
+                                </table>
+                            </div>
                         </div>
-                    </div>
                     </div>
                 </div>
 
                 <div role="tabpanel" class="tab-pane" id="tab-filtering">
                     <div class="panel panel-default">
-                      <div class="panel-heading clearfix">
-                        <h3 class="panel-title pull-left">Filtering</h3>
-                        <button type="button" class="btn btn-default pull-right clear-filter" style="padding: 3px 7px; margin-bottom: 0; font-size: 13px;">Clear</button>
-                      </div>
-                      <div class="panel-body">
-                          <div class="table-responsive">
-                            <table class="table table-hover" id="filteredTable">
-                                <thead>
-                                    <tr class="filter-row">
-                                        <th>
-                                            <select class='method form-control'>
-                                                <option value="ALL">ALL</option>
-                                                <option value="GET">GET</option>
-                                                <option value="POST">POST</option>
-                                                <option value="PUT">PUT</option>
-                                                <option value="DELETE">DELETE</option>
-                                                <option value="PATCH">PATCH</option>
-                                                <option value="COPY">COPY</option>
-                                                <option value="HEAD">HEAD</option>
-                                                <option value="OPTIONS">OPTIONS</option>
-                                                <option value="LINK">LINK</option>
-                                                <option value="UNLINK">UNLINK</option>
-                                                <option value="PURGE">PURGE</option>
-                                                <option value="LOCK">LOCK</option>
-                                                <option value="UNLOCK">UNLOCK</option>
-                                                <option value="PROPFIND">PROPFIND</option>
-                                                <option value="VIEW">VIEW</option>
-                                            </select>
-                                        </th>
-                                        <th><input type="text" class="filtered-name form-control"></th>
-                                        <th><input type="text" class="elapsed form-control"></th>
-                                        <th>
-                                            <input type="text" class="filtered-datepicker form-control">
-                                        </th>
-                                    </tr>
-                                    <tr>
-
-                                    <th></th>
-                                    <th></th>
-                                    <th></th>
-                                    <th></th>
-                                    </tr>
-                                </thead>
-                            </table>
-                          </div>
-                      </div>
+                        <div class="panel-heading clearfix">
+                            <h3 class="panel-title pull-left">Filtering</h3>
+                            <button type="button" class="btn btn-default pull-right clear-filter"
+                                    style="padding: 3px 7px; margin-bottom: 0; font-size: 13px;">
+                                Clear
+                            </button>
+                        </div>
+                        <div class="panel-body">
+                            <div class="table-responsive">
+                                <div class="row">
+                                    <div class="col-md-4">
+                                        <input type="text" class="form-control search-filter" placeholder="Search...">
+                                    </div>
+                                </div>
+                                <table class="table table-hover" id="filteredTable">
+                                    <thead>
+                                        <tr class="filter-row">
+                                            <th>
+                                                <select class='method form-control'>
+                                                    <option value="ALL">ALL</option>
+                                                    <option value="GET">GET</option>
+                                                    <option value="POST">POST</option>
+                                                    <option value="PUT">PUT</option>
+                                                    <option value="DELETE">DELETE</option>
+                                                    <option value="PATCH">PATCH</option>
+                                                    <option value="COPY">COPY</option>
+                                                    <option value="HEAD">HEAD</option>
+                                                    <option value="OPTIONS">OPTIONS</option>
+                                                    <option value="LINK">LINK</option>
+                                                    <option value="UNLINK">UNLINK</option>
+                                                    <option value="PURGE">PURGE</option>
+                                                    <option value="LOCK">LOCK</option>
+                                                    <option value="UNLOCK">UNLOCK</option>
+                                                    <option value="PROPFIND">PROPFIND</option>
+                                                    <option value="VIEW">VIEW</option>
+                                                </select>
+                                            </th>
+                                            <th><input type="text" class="filtered-name form-control" placeholder="Filter by Name"></th>
+                                            <th><input type="text" class="elapsed form-control" placeholder="Elapsed Time"></th>
+                                            <th>
+                                                <input type="text" class="filtered-datepicker form-control" placeholder="Date Range">
+                                            </th>
+                                        </tr>
+                                    </thead>
+                                </table>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
     </div>
-
 </div>
 
 <div class="modal fade filteredModal" tabindex="-1" role="dialog" aria-labelledby="filteredModal">
-  <div class="modal-dialog modal-lg">
-    <div class="modal-content">
-    <div class="modal-body">
-      </div>
-
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title">Filtered Data</h4>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <!-- JSON data will be displayed here -->
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+            </div>
+        </div>
     </div>
-  </div>
-  </div>
+</div>
 
-
+<script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
 <script src="static/dist/js/vendor.js"></script>
 <script src="static/dist/js/main.js"></script>
 
+<script>
+    $(document).ready(function () {
+        // Search filter functionality
+        $('.search-filter').on('keyup', function () {
+            var value = $(this).val().toLowerCase();
+            $('#filteredTable tr').filter(function () {
+                $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)
+            });
+        });
+    });
+</script>
 </body>
 </html>
