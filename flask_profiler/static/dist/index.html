@@ -1,3 +1,143 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Flask Profiler</title>
+    <meta charset="UTF-8">
+    <meta name="robots" content="noindex, nofollow">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link href="static/dist/css/main.css" rel="stylesheet">
+    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body.dark-mode {
+            background-color: #121212;
+            color: #ffffff;
+        }
+        body.dark-mode .navbar-inverse {
+            background-color: #1e1e1e;
+            border-color: #444;
+        }
+        body.dark-mode .panel {
+            background-color: #1e1e1e;
+            border-color: #444;
+        }
+        body.dark-mode .table {
+            background-color: #1e1e1e;
+            color: #ffffff;
+        }
+        .sortable:hover {
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+<div class="navbar navbar-inverse navbar-fixed-top" role="navigation">
+    <div class="container">
+        <div class="col-md-10 col-md-offset-1">
+            <div class="navbar-header">
+                <a class="navbar-brand" href="./">Flask Profiler</a>
+                <button class="btn btn-default navbar-btn" id="toggleDarkMode">Toggle Dark Mode</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="container">
+    <div class="col-xs-12 col-md-10 col-md-offset-1">
+        <div class="panel panel-default">
+            <div class="panel-heading clearfix">
+                <h3 class="panel-title pull-left">Dashboard <small class="created-time"></small></h3>
+                <div class="btn-group day-filter pull-right" data-toggle="buttons">
+                    <label class="btn btn-default">
+                        <input type="radio" value="hours" id="hours" autocomplete="off"> 24 hours
+                    </label>
+                    <label class="btn btn-default active">
+                        <input type="radio" value="days" id="days" autocomplete="off" checked> 7 days
+                    </label>
+                    <label class="btn btn-default">
+                        <input type="radio" value="all" id="all" autocomplete="off"> 30 days
+                    </label>
+                </div>
+                <div class="btn-group pull-right" style="margin-left: 10px;">
+                    <button class="btn btn-primary" id="exportCsv">Export CSV</button>
+                    <button class="btn btn-primary" id="exportJson">Export JSON</button>
+                    <button class="btn btn-primary" id="exportHtml">Export HTML</button>
+                </div>
+            </div>
+            <div class="panel-body">
+                <div class="row">
+                    <div class="col-md-3 col-xs-6">
+                        <h4 class="text-center">Method Distribution</h4>
+                        <div class="loading" id="pieChart"></div>
+                    </div>
+                    <div class="col-md-9 col-xs-12">
+                        <h4 class="text-center">Request Count by Time</h4>
+                        <div class="loading" id="lineChart"></div>
+                    </div>
+                </div>
+                <hr>
+                <div class="table-responsive">
+                    <table class="table table-hover" id="big-users-table">
+                        <thead>
+                            <tr>
+                                <th class="sortable" data-sort="method">Method</th>
+                                <th class="sortable" data-sort="name">Name</th>
+                                <th class="sortable" data-sort="count">Count</th>
+                                <th class="sortable" data-sort="avgElapsed">Avg Elapsed</th>
+                                <th class="sortable" data-sort="maxElapsed">Max Elapsed</th>
+                                <th class="sortable" data-sort="minElapsed">Min Elapsed</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>GET</td>
+                                <td>/api/data</td>
+                                <td>100</td>
+                                <td>200</td>
+                                <td>500</td>
+                                <td>100</td>
+                            </tr>
+                            <tr>
+                                <td>POST</td>
+                                <td>/api/update</td>
+                                <td>80</td>
+                                <td>300</td>
+                                <td>600</td>
+                                <td>200</td>
+                            </tr>
+                            <!-- Add more rows as necessary -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade filteredModal" tabindex="-1" role="dialog" aria-labelledby="filteredModal">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title">Request Details</h4>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <!-- Detailed request data will be displayed here -->
+                <div id="requestDetails"></div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+<script src="static/dist/js/vendor.js"></script>
+<script src="static/dist/js/main.js"></script>
+
 <script>
     $(document).ready(function () {
         // Populate the table with existing incoming data
@@ -125,3 +265,5 @@
 
     });
 </script>
+</body>
+</html>
