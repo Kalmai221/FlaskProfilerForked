@@ -69,11 +69,7 @@
             </div>
             <div class="panel-body">
                 <div class="row">
-                    <div class="col-md-3 col-xs-6">
-                        <h4 class="text-center">Method Distribution</h4>
-                        <canvas id="methodDistributionChart"></canvas>
-                    </div>
-                    <div class="col-md-9 col-xs-12">
+                    <div class="col-md-12">
                         <h4 class="text-center">Request Count by Time</h4>
                         <canvas id="requestCountChart"></canvas>
                     </div>
@@ -86,9 +82,17 @@
                                 <th class="sortable" data-sort="method">Method</th>
                                 <th class="sortable" data-sort="name">Name</th>
                                 <th class="sortable" data-sort="count">Count</th>
-                                <th class="sortable" data-sort="avgElapsed">Avg Elapsed</th>
-                                <th class="sortable" data-sort="maxElapsed">Max Elapsed</th>
-                                <th class="sortable" data-sort="minElapsed">Min Elapsed</th>
+                                <th class="sortable avg-elapsed">Avg Elapsed</th>
+                                <th class="sortable max-elapsed">Max Elapsed</th>
+                                <th class="sortable min-elapsed">Min Elapsed</th>
+                                <th>Actions</th>
+                            </tr>
+                            <tr>
+                                <th colspan="6" class="text-center">
+                                    <button class="btn btn-info toggle-col" data-col="avg-elapsed">Toggle Avg Elapsed</button>
+                                    <button class="btn btn-info toggle-col" data-col="max-elapsed">Toggle Max Elapsed</button>
+                                    <button class="btn btn-info toggle-col" data-col="min-elapsed">Toggle Min Elapsed</button>
+                                </th>
                             </tr>
                         </thead>
                         <tbody>
@@ -131,36 +135,8 @@
 <script>
     $(document).ready(function () {
         const tableBody = $('#big-users-table tbody');
-        const methodDistributionCtx = document.getElementById('methodDistributionChart').getContext('2d');
         const requestCountCtx = document.getElementById('requestCountChart').getContext('2d');
         let currentData = [];
-
-        const methodDistributionChart = new Chart(methodDistributionCtx, {
-            type: 'pie',
-            data: {
-                labels: [], // Method names will go here
-                datasets: [{
-                    data: [], // Counts will go here
-                    backgroundColor: [
-                        'rgba(255, 99, 132, 0.2)',
-                        'rgba(54, 162, 235, 0.2)',
-                        'rgba(255, 206, 86, 0.2)',
-                        'rgba(75, 192, 192, 0.2)',
-                        'rgba(153, 102, 255, 0.2)',
-                        'rgba(255, 159, 64, 0.2)'
-                    ],
-                    borderColor: [
-                        'rgba(255, 99, 132, 1)',
-                        'rgba(54, 162, 235, 1)',
-                        'rgba(255, 206, 86, 1)',
-                        'rgba(75, 192, 192, 1)',
-                        'rgba(153, 102, 255, 1)',
-                        'rgba(255, 159, 64, 1)'
-                    ],
-                    borderWidth: 1
-                }]
-            }
-        });
 
         const requestCountChart = new Chart(requestCountCtx, {
             type: 'line',
@@ -205,9 +181,10 @@
                         <td>${item.method}</td>
                         <td>${item.name}</td>
                         <td>${item.count}</td>
-                        <td>${item.avgElapsed}</td>
-                        <td>${item.maxElapsed}</td>
-                        <td>${item.minElapsed}</td>
+                        <td class="avg-elapsed">${item.avgElapsed}</td>
+                        <td class="max-elapsed">${item.maxElapsed}</td>
+                        <td class="min-elapsed">${item.minElapsed}</td>
+                        <td><button class="btn btn-info view-details">View Details</button></td>
                     </tr>
                 `);
             });
@@ -215,22 +192,13 @@
 
         // Update the charts with new data
         function updateCharts(data) {
-            const methodCount = {};
             const timeCount = {};
-
-            // Process data for pie and line charts
+            
+            // Process data for line chart
             data.forEach(item => {
-                methodCount[item.method] = (methodCount[item.method] || 0) + item.count;
-
-                // Assuming item.timestamp contains the time info
                 const timeLabel = new Date(item.timestamp).toLocaleDateString(); // Adjust as necessary
                 timeCount[timeLabel] = (timeCount[timeLabel] || 0) + item.count;
             });
-
-            // Update pie chart
-            methodDistributionChart.data.labels = Object.keys(methodCount);
-            methodDistributionChart.data.datasets[0].data = Object.values(methodCount);
-            methodDistributionChart.update();
 
             // Update line chart
             requestCountChart.data.labels = Object.keys(timeCount);
@@ -238,9 +206,21 @@
             requestCountChart.update();
         }
 
+        // Toggle column visibility
+        $('.toggle-col').on('click', function () {
+            const colClass = $(this).data('col');
+            const column = $(`.${colClass}`);
+
+            if (column.is(':visible')) {
+                column.hide();
+            } else {
+                column.show();
+            }
+        });
+
         // Row click event to show modal
-        $('#big-users-table tbody').on('click', 'tr', function () {
-            const rowData = $(this).children('td').map(function () {
+        $('#big-users-table tbody').on('click', '.view-details', function () {
+            const rowData = $(this).closest('tr').children('td').map(function () {
                 return $(this).text();
             }).get();
 
