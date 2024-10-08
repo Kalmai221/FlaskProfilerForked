@@ -111,7 +111,7 @@ var setFilteredTable = function () {
             {
                 title: "startedAt",
                 data: function (a) {
-                    return moment.unix(a.startedAt).format("DD/MM/YYYY h:mm:ss.MS A");
+                    return moment.unix(a.startedAt).format("DD/MM/YYYY h:mm:ss A");
                 },
                 "class": "startedAt"
             }
