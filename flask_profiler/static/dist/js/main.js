@@ -6,7 +6,8 @@ var profile = {
     },
     getData: function (a, b) {
         a = a || "grouped";
-        var c, d = this, b = this.createQueryParams(a);
+        var c, d = this;
+        b = this.createQueryParams(a);  
         return $.ajax({
             type: "GET",
             async: false,
@@ -40,7 +41,7 @@ var profile = {
     createQueryParams: function (a, b) {
         var c, d = b || this.dataTableOption, e = d.order[0], f = {};
         if ("filtered" === a) {
-            var g = $("#filteredTable select.method").val();
+            var g = $("#filteredTable select.method").val() || ""; // Simplified check
             c = this.columnsIndex.filter, "ALL" === g && (g = ""),
             f.method = g,
             f.name = $("#filteredTable input.filtered-name").val(),
@@ -65,6 +66,11 @@ window.profile.dateTime = {
 };
 
 var setFilteredTable = function () {
+    // Check if DataTable is already initialized and destroy it if it is
+    if ($.fn.DataTable.isDataTable("#filteredTable")) {
+        $("#filteredTable").DataTable().clear().destroy(); // Clear and destroy the existing DataTable
+    }
+
     var a = $("#filteredTable").DataTable({
         processing: true,
         serverSide: true,
@@ -72,7 +78,7 @@ var setFilteredTable = function () {
             window.profile.dataTableOption = a,
             b(window.profile.getData("filtered"));
         },
-        responsive: false,
+        responsive: true,
         paging: true,
         pageLength: 100,
         dom: "Btrtip",
@@ -151,8 +157,6 @@ var setFilteredTable = function () {
         a.draw();
     });
 };
-
-
 
 var getCharts = function () {
     $.ajax({
@@ -253,12 +257,12 @@ $(document).ready(function () {
             }
         },
         responsive: false,
-        paging: false,
+        paging: true,
         pageLength: 1e4,
         dom: "Btrtip",
         stateSave: true,
         autoWidth: false,
-        order: [2, "desc"],
+        order: [[{data: 'columnName'}, "desc"]],
         language: {
             processing: "Loading...",
             buttons: {
@@ -315,17 +319,33 @@ $(document).ready(function () {
             }
         ],
         drawCallback: function () {
-            $("#big-users-table tbody tr").off().on("click", function (a) {
-                if ("A" !== $(a.target).prop("tagName")) {
-                    var b = $(".filtered-datepicker");
-                    $("#filteredTable .filter-row .filtered-name").val($(this).find("td.name").text()).trigger("input");
-                    $("#filteredTable .filter-row .method").val($(this).find(".method .row--method").text()).trigger("input");
-                    "object" == typeof b.data("daterangepicker") && (b.data("daterangepicker").setStartDate(moment.unix(window.profile.dateTime.startedAt).format("MM/DD/YYYY")), b.data("daterangepicker").setEndDate(moment.unix(window.profile.dateTime.endedAt).format("MM/DD/YYYY")));
+            // Use event delegation to avoid repeated binding/unbinding
+            $("#big-users-table").on("click", "tbody tr", function (a) {
+                if ($(a.target).prop("tagName") !== "A") {
+                    var $row = $(this);
+                    var $filteredTable = $("#filteredTable");
+                    
+                    // Set the filtered name and method inputs
+                    $filteredTable.find(".filter-row .filtered-name")
+                        .val($row.find("td.name").text())
+                        .trigger("input");
+                    $filteredTable.find(".filter-row .method")
+                        .val($row.find(".method .row--method").text())
+                        .trigger("input");
+        
+                    // Update date range if the datepicker is initialized
+                    var datepicker = $(".filtered-datepicker").data("daterangepicker");
+                    if (datepicker) {
+                        datepicker.setStartDate(moment.unix(window.profile.dateTime.startedAt).format("MM/DD/YYYY"));
+                        datepicker.setEndDate(moment.unix(window.profile.dateTime.endedAt).format("MM/DD/YYYY"));
+                    }
+        
+                    // Re-draw the filtered table and switch to the filtering tab
                     setFilteredTable();
                     $('[data-target="#tab-filtering"]').tab("show");
                 }
             });
-        },
+        },        
         initComplete: function () { }
     });
 
@@ -333,8 +353,8 @@ $(document).ready(function () {
         console.log(a);
     });
 
-    $('[data-target="#tab-filtering"]').on("show.bs.tab", function () {
-        setFilteredTable();
+    $('[data-target="#tab-filtering"]').on("show.bs.tab", function (e) {
+        setFilteredTable(); // Ensure this method is not directly returning or interacting with Bootstrap tab.js methods
     });
 
     $(document).on("click", ".day-filter button", function (b) {
