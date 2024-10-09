@@ -96,7 +96,7 @@ var setFilteredTable = function () {
                 data: function (a, b) {
                     var c = document.createElement("div");
                     return c.innerText = a.name,
-                    "display" === b ? "<span data-json='" + JSON.stringify(a.context) + "'>" + c.innerHTML + "</span>" : c.innerHTML;
+                    'display' === b ? '<span class="valuestext" data-json="' + JSON.stringify(a.context) + '">' + c.innerHTML + "</span>" : c.innerHTML;
                 },
                 "class": "name",
                 orderable: false
@@ -263,8 +263,9 @@ $(document).ready(function () {
         language: {
             processing: "Loading...",
             buttons: {
-                colvis: '<span class="glyphicon glyphicon-filter"></span>'
+                colvis: '<button class="btn" aria-label="Filter Columns" title="Filter Columns"><span class="glyphicon glyphicon-filter" aria-hidden="true"></span></button>'
             }
+
         },
         buttons: [{
             extend: "colvis",
