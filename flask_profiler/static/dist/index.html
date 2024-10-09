@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title></title>
+    <title>Metrics Dashboard</title>
 
     <meta name="robots" content="noindex, nofollow">
     <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -163,15 +163,21 @@
 
 </div>
 
-<div class="modal fade filteredModal" tabindex="-1" role="dialog" aria-labelledby="filteredModal">
-  <div class="modal-dialog modal-lg">
-    <div class="modal-content">
-    <div class="modal-body">
+<div class="modal fade filteredModal" tabindex="-1" role="dialog" aria-labelledby="filteredModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-lg" role="document" style="max-width: 90%; max-height: 80vh;"> <!-- Limit modal size -->
+    <div class="modal-content" style="height: 100%; overflow: hidden;"> <!-- Ensure content fills the height -->
+      <div class="modal-header" style="background-color: #343a40;"> <!-- Header background -->
+        <h5 class="modal-title" id="filteredModalLabel" style="color: white;">Filtered Results</h5> <!-- Title text set to white -->
       </div>
-
+      <div class="modal-body" style="height: calc(80vh - 56px); overflow-y: auto; overflow-x: auto; white-space: pre-wrap; position: relative;"> <!-- Scrollable area for content -->
+        <!-- Content goes here -->
+        <!-- Add your dynamic content here -->
+      </div>
+      <div class="modal-footer"></div>
     </div>
   </div>
-  </div>
+</div>
+
 
 
 <script src="static/dist/js/vendor.js"></script>
