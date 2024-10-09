@@ -91,7 +91,7 @@ var setFilteredTable = function () {
         }],
         columns: [
             {
-                title: "method",
+                title: "Method",
                 data: function (a) {
                     return '<span class="row--method ' + a.method.toLowerCase() + '">' + a.method + "</span>";
                 },
@@ -99,7 +99,7 @@ var setFilteredTable = function () {
                 orderable: false
             },
             {
-                title: "name",
+                title: "Route",
                 data: function (a, b) {
                     var c = document.createElement("div");
                     return c.innerText = a.name,
@@ -109,14 +109,14 @@ var setFilteredTable = function () {
                 orderable: false
             },
             {
-                title: "elapsed",
+                title: "Elapsed",
                 data: function (a) {
                     return a.elapsed.toString().slice(0, 8);
                 },
                 "class": "elapsed number"
             },
             {
-                title: "startedAt",
+                title: "Started At",
                 data: function (a) {
                     return moment.unix(a.startedAt).format("DD/MM/YYYY h:mm:ss A");
                 },
@@ -150,17 +150,9 @@ var setFilteredTable = function () {
         $("#filteredTable").addClass("loading");
         a.draw();
     });
-
-    $(".clear-filter").off().on("click", function () {
-        var b = $(".filtered-datepicker");
-        $("#filteredTable select.method").val("ALL");
-        $("#filteredTable input.filtered-name").val("");
-        $("#filteredTable input.elapsed").val("");
-        b.data("daterangepicker").setStartDate(moment().subtract(7, "days").format("MM/DD/YYYY"));
-        b.data("daterangepicker").setEndDate(moment().format("MM/DD/YYYY"));
-        a.draw();
-    });
 };
+
+
 
 var getCharts = function () {
     $.ajax({
@@ -279,7 +271,7 @@ $(document).ready(function () {
         }],
         columns: [
             {
-                title: "method",
+                title: "Method",
                 data: function (a) {
                     return '<span class="row--method ' + a.method.toLowerCase() + '">' + a.method + "</span>";
                 },
@@ -287,7 +279,7 @@ $(document).ready(function () {
                 orderable: false
             },
             {
-                title: "name",
+                title: "Route",
                 data: function (a) {
                     var b = document.createElement("div");
                     return b.innerText = a.name, b.innerHTML;
@@ -296,26 +288,26 @@ $(document).ready(function () {
                 orderable: false
             },
             {
-                title: "count",
+                title: "Request Count",
                 data: "count",
                 "class": "number"
             },
             {
-                title: "avg elapsed",
+                title: "Average Time Elapsed",
                 data: function (a) {
                     return a.avgElapsed.toString().slice(0, 8);
                 },
                 "class": "number"
             },
             {
-                title: "max elapsed",
+                title: "Max Time Elapsed",
                 data: function (a) {
                     return a.maxElapsed.toString().slice(0, 8);
                 },
                 "class": "number"
             },
             {
-                title: "min elapsed",
+                title: "Min Time Elapsed",
                 data: function (a) {
                     return a.minElapsed.toString().slice(0, 8);
                 },
@@ -345,23 +337,39 @@ $(document).ready(function () {
         setFilteredTable();
     });
 
-    $(".day-filter label").on("click", function (b) {
+    $(document).on("click", ".day-filter button", function (b) {
         $("#lineChart, #pieChart").addClass("loading");
-        var c, d = $(this).find("input").val();
-        window.dayFilterValue !== d, window.dayFilterValue = $(this).find("input").val(),
-        c = "min" === window.dayFilterValue ? { startedAt: moment().subtract(1, "hours").unix(), endedAt: moment().unix() }
-            : "hours" === window.dayFilterValue ? { startedAt: moment().subtract(24, "hours").unix(), endedAt: moment().unix() }
-                : "days" === window.dayFilterValue ? { startedAt: moment().subtract(7, "days").unix(), endedAt: moment().unix() }
-                    : { startedAt: moment().subtract(30, "days").unix(), endedAt: moment().unix() },
-        window.profile.dateTime = c,
-        getCharts(),
-        a.draw();
+    
+        // Get the button's id or a custom value (e.g., 'min', 'hours', 'days', '30days')
+        var d = $(this).attr("id"); // Getting the button ID
+    
+        // Only proceed if the value has changed
+        if (window.dayFilterValue !== d) {
+            window.dayFilterValue = d;
+    
+            // Set date ranges based on the button clicked
+            var c = (d === "min") ? 
+                { startedAt: moment().subtract(1, "hours").unix(), endedAt: moment().unix() } :
+                (d === "hours") ? 
+                { startedAt: moment().subtract(24, "hours").unix(), endedAt: moment().unix() } :
+                (d === "days") ? 
+                { startedAt: moment().subtract(7, "days").unix(), endedAt: moment().unix() } :
+                { startedAt: moment().subtract(30, "days").unix(), endedAt: moment().unix() };
+    
+            // Store dateTime in the profile
+            window.profile.dateTime = c;
+    
+            // Call your chart update functions
+            getCharts();
+            a.draw();
+        }
     });
+    
 
     getCharts();
 
     function b() {
-        $(".created-time").text("Created " + moment(profile.createdTime).fromNow());
+        $(".created-time").text("Last Updated " + moment(profile.createdTime).fromNow());
         setTimeout(b, 5e3);
     }
 
