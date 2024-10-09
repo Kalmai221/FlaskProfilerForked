@@ -13,9 +13,16 @@ var profile = {
             url: "api/measurements/" + ("grouped" === a ? a + "/" : ""),
             dataType: "json",
             data: b,
-            success: function (a) {
-                c = d.dataTableClassifier(a.measurements);
+            success: function (response) {
+                c = d.dataTableClassifier(response.measurements);
                 d.createdTime = moment();
+            },
+            error: function (xhr, status, error) {
+                console.error("Error fetching data: ", status, error);
+                alert("An error occurred while fetching data. Please try again.");
+            },
+            complete: function () {
+                $("#filteredTable").removeClass("loading"); // Ensure loading state is cleared
             }
         }), c;
     },
@@ -96,7 +103,7 @@ var setFilteredTable = function () {
                 data: function (a, b) {
                     var c = document.createElement("div");
                     return c.innerText = a.name,
-                    'display' === b ? '<span class="valuestext" data-json="' + JSON.stringify(a.context) + '">' + c.innerHTML + "</span>" : c.innerHTML;
+                    "display" === b ? "<span data-json='" + JSON.stringify(a.context) + "'>" + c.innerHTML + "</span>" : c.innerHTML;
                 },
                 "class": "name",
                 orderable: false
@@ -263,9 +270,8 @@ $(document).ready(function () {
         language: {
             processing: "Loading...",
             buttons: {
-                colvis: '<button class="btn" aria-label="Filter Columns" title="Filter Columns"><span class="glyphicon glyphicon-filter" aria-hidden="true"></span></button>'
+                colvis: '<span class="glyphicon glyphicon-filter"></span>'
             }
-
         },
         buttons: [{
             extend: "colvis",
