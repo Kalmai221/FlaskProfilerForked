@@ -6922,7 +6922,7 @@ a.dt-button,button.dt-button,div.dt-button {
     display: inline-block;
     box-sizing: border-box;
     margin-right: .333em;
-    padding: .2em .2em;
+    padding: .5em .4em;
     border: 1px solid #999;
     border-radius: 20px;
     cursor: pointer;
@@ -7932,6 +7932,10 @@ div.dt-button-background {
     -moz-user-select: none;
     user-select: none;
     color: #fff
+}
+
+tspan{
+    color: #fff;
 }
 
 .c3-bars path,.c3-event-rect,.c3-legend-item-tile,.c3-xgrid-focus,.c3-ygrid {
