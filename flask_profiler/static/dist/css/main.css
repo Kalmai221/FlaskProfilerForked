@@ -2547,7 +2547,7 @@ th {
 }
 
 .table-hover>tbody>tr:hover>td,.table-hover>tbody>tr:hover>th,.table>tbody>tr.active>td,.table>tbody>tr.active>th,.table>tbody>tr>td.active,.table>tbody>tr>th.active,.table>tfoot>tr.active>td,.table>tfoot>tr.active>th,.table>tfoot>tr>td.active,.table>tfoot>tr>th.active,.table>thead>tr.active>td,.table>thead>tr.active>th,.table>thead>tr>td.active,.table>thead>tr>th.active {
-    background-color: #f5f5f5
+    background-color: #000000
 }
 
 table col[class*=col-] {
@@ -7456,81 +7456,117 @@ div.dt-button-background {
 }
 
 .jsonview {
-    font-family: monospace;
-    font-size: 1.1em;
-    white-space: pre-wrap
+    font-family: monospace; /* Use a monospace font for JSON view */
+    font-size: 1.1em; /* Base font size */
+    white-space: pre-wrap; /* Preserve whitespace */
+    color: #d4d4d4; /* Default text color */
+    background-color: #000000; /* Black background */
+    max-height: 100%; /* Ensure it doesn’t exceed its container */
+    overflow-y: auto; /* Enable vertical scrolling */
+    overflow-x: auto; /* Enable horizontal scrolling */
 }
 
+/* Property styles */
 .jsonview .prop {
-    font-weight: 700
+    font-weight: bold; /* Use bold for properties */
+    color: #9CDCFE; /* Blue color for property names */
 }
 
+/* Value styles */
 .jsonview .null {
-    color: red
+    color: #D16969; /* Color for null values */
 }
 
-.jsonview .bool,.jsonview .num {
-    color: #00f
+.jsonview .bool,
+.jsonview .num {
+    color: #569CD6; /* Color for boolean and number values */
 }
 
 .jsonview .string {
-    color: green;
-    white-space: pre-wrap
+    color: #CE9178; /* Color for string values */
+    white-space: pre-wrap; /* Preserve whitespace in strings */
 }
 
+/* Multiline string handling */
 .jsonview .string.multiline {
-    display: inline-block;
-    vertical-align: text-top
+    display: inline-block; /* Ensure multiline strings are treated correctly */
+    vertical-align: text-top; /* Align text to the top */
 }
 
+/* Collapsible elements */
 .jsonview .collapser {
-    position: absolute;
-    left: -1em;
-    cursor: pointer
+    position: absolute; /* Position collapser absolutely */
+    left: -1em; /* Position offset for visibility */
+    cursor: pointer; /* Indicate clickable */
 }
 
 .jsonview .collapsible {
-    transition: height 1.2s;
-    transition: width 1.2s
+    transition: height 1.2s ease, width 1.2s ease; /* Smooth transitions for height and width */
 }
 
 .jsonview .collapsible.collapsed {
-    height: .8em;
-    width: 1em;
-    display: inline-block;
-    overflow: hidden;
-    margin: 0
+    height: 0.8em; /* Height of collapsed elements */
+    width: 1em; /* Width of collapsed elements */
+    display: inline-block; /* Maintain inline-block behavior */
+    overflow: hidden; /* Hide overflow content */
+    margin: 0; /* Reset margin */
 }
 
 .jsonview .collapsible.collapsed:before {
-    content: "…";
-    width: 1em;
-    margin-left: .2em
+    content: "…"; /* Ellipsis for collapsed state */
+    width: 1em; /* Width for ellipsis */
+    margin-left: 0.2em; /* Margin for spacing */
 }
 
 .jsonview .collapser.collapsed {
-    transform: rotate(0)
+    transform: rotate(0); /* Initial state of collapser */
 }
 
+/* Invisible query elements */
 .jsonview .q {
-    display: inline-block;
-    width: 0;
-    color: transparent
+    display: inline-block; /* Allow for spacing */
+    width: 0; /* Zero width to remain hidden */
+    color: transparent; /* Keep text invisible */
 }
 
+/* List styles */
 .jsonview li {
-    position: relative
+    position: relative; /* Enable positioning context */
 }
 
 .jsonview ul {
-    list-style: none;
-    margin: 0 0 0 2em;
-    padding: 0
+    list-style: none; /* Remove bullet points */
+    margin: 0 0 0 2em; /* Left indent for nested lists */
+    padding: 0; /* Remove padding */
 }
 
+/* Heading styles */
 .jsonview h1 {
-    font-size: 1.2em
+    font-size: 1.2em; /* Slightly larger font size for headings */
+    margin-bottom: 0.5em; /* Space below the heading */
+    color: #d4d4d4; /* Heading color to match text */
 }
+
+/* Custom scrollbar styles */
+.jsonview::-webkit-scrollbar {
+    width: 8px; /* Width of the vertical scrollbar */
+    height: 8px; /* Height of the horizontal scrollbar */
+}
+
+.jsonview::-webkit-scrollbar-thumb {
+    background-color: #888; /* Color of the scrollbar thumb */
+    border-radius: 10px; /* Rounded corners for the thumb */
+}
+
+.jsonview::-webkit-scrollbar-thumb:hover {
+    background-color: #555; /* Darker color on hover */
+}
+
+.jsonview::-webkit-scrollbar-track {
+    background: #2C2C2C; /* Background of the scrollbar track */
+    border-radius: 10px; /* Rounded corners for the track */
+}
+
 
 .daterangepicker {
     position: absolute;
