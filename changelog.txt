@@ -1,6 +1,6 @@
 Version 1.8.1.(1-4)
 ====================
-- PyPI Publishing Bugs Fixed
+- PyPi Publishing Bugs Fixed
 
 Version 1.8.1
 ====================
