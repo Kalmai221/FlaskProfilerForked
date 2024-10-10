@@ -66,7 +66,13 @@ class Sqlite(BaseStorage):
         filters["skip"] = int(kwargs.get('skip', 0))
         filters["limit"] = int(kwargs.get('limit', 100))
         return filters
-
+    
+    def delete_all(self):
+        with self.lock:
+            self.cursor.execute("DELETE FROM {0}".format(self.table_name))
+            self.connection.commit()
+        return True if self.cursor.rowcount else False
+    
     def create_database(self):
         with self.lock:
             sql = '''CREATE TABLE {table_name}

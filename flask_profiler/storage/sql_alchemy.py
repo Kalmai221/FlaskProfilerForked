@@ -108,6 +108,17 @@ class Sqlalchemy(BaseStorage):
         filters["skip"] = int(kwargs.get('skip', 0))
         filters["limit"] = int(kwargs.get('limit', 100))
         return filters
+    
+    def delete_all(self):
+        session = sessionmaker(self.db)()
+        try:
+            session.query(Measurements).delete()
+            session.commit()
+            return True
+        except Exception as e:
+            session.rollback()
+            print(f"An error occurred while deleting all records: {e}")
+            return False
 
     def filter(self, kwds={}):
         # Find Operation

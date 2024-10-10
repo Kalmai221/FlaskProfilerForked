@@ -1103,13 +1103,13 @@ canvas {
 }
 
 #pieCanvas {
-    width: 400px;
-    height: 400px;
+    width: 300px;
+    height: 300px;
 }
 
 #lineCanvas {
-    height: 500px;
-    width: 500px;
+    height: 550px;
+    width: 550px;
 }
 
 .container { 

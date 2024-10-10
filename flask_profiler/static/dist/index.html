@@ -73,9 +73,8 @@
     </style>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
 </head>
-<body>
 <header>
-  <nav class="navbar navbar-expand-lg bg-body-tertiary" data-bs-theme="dark">
+  <nav class="navbar navbar-expand-lg bg-body-tertiary" id="mainNavbar" data-bs-theme="dark">
     <div class="container-fluid">
       <a class="navbar-brand" href="./">Flask Profiler</a>
       <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarText" aria-controls="navbarText" aria-expanded="false" aria-label="Toggle navigation">
@@ -84,13 +83,13 @@
       <div class="collapse navbar-collapse" id="navbarText" role="navigation">
         <ul class="navbar-nav me-auto mb-2 mb-lg-0">
           <li class="nav-item">
-            <a class="nav-link active" data-target="#tab-dashboard" role="tab" data-toggle="tab" data-tab-history="true" data-tab-history-changer="push" data-tab-history-update-url="true" href="#tab-dashboard">Dashboard</a>
+            <a class="nav-link active" data-target="#tab-dashboard" role="tab" data-bs-toggle="tab" data-tab-history="true" data-tab-history-changer="push" data-tab-history-update-url="true" href="#tab-dashboard">Dashboard</a>
           </li>
           <li class="nav-item">
-            <a class="nav-link" data-target="#tab-filtering" role="tab" data-toggle="tab" data-tab-history="true" data-tab-history-changer="push" data-tab-history-update-url="true" href="#tab-filtering">Filtering</a>
+            <a class="nav-link" data-target="#tab-filtering" role="tab" data-bs-toggle="tab" data-tab-history="true" data-tab-history-changer="push" data-tab-history-update-url="true" href="#tab-filtering">Filtering</a>
           </li>
           <li class="nav-item">
-            <a class="nav-link" data-target="#tab-admin" role="tab" data-toggle="tab" data-tab-history="true" data-tab-history-changer="push" data-tab-history-update-url="true" href="#tab-admin">Admin</a>
+            <a class="nav-link" data-target="#tab-admin" role="tab" data-bs-toggle="tab" data-tab-history="true" data-tab-history-changer="push" data-tab-history-update-url="true" href="#tab-admin">Admin</a>         
           </li>
         </ul>
         <span class="navbar-text">
@@ -136,7 +135,7 @@
                         </div>
                         <hr>
                         <div class="table-responsive">
-                            <table class="table table-hover table-dark table-striped" id="big-users-table"></table>
+                            <table class="table table-hover table-striped" id="big-users-table"></table>
                         </div>
                     </div>
                     <div class="card-footer text-body-secondary">
@@ -196,14 +195,29 @@
                   </div>                  
                   <div class="card-footer text-body-secondary"></div>                    
               </div>
-          </div>
+            </div>
+            </div>
           
-          <!-- Admin tab content -->
-          <div class="tab-pane fade admin-tab" id="tab-admin">
-              <h3>Admin Panel</h3>
-              <p class="mb-3">Use the button below to delete all data. This action is irreversible!</p>
-              <button class="btn btn-danger" id="deleteAllButton">Delete All Data</button>
-          </div>
+            <!-- Admin tab content -->
+            <div role="tabpanel" class="tab-pane" id="tab-admin">
+                <div class="card shadow p-3 mb-5 rounded">
+                    <h3>Admin Panel</h3>
+                    <p class="mb-3">Use the button below to delete all data. This action is irreversible!</p>
+                    <button class="btn btn-outline-danger" id="deleteAllButton">
+                        <i class="fas fa-trash-alt"></i> Delete All Data
+                    </button>
+                    
+                    <hr class="bg-warning mt-4">
+                    
+                    <h4>Settings</h4>
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" value="" id="darkModeSwitch">
+                        <label class="form-check-label" for="flexCheckDefault">
+                            Dark Mode
+                        </label>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 </main>
@@ -240,14 +254,13 @@
     <div class="toast-header">
       <strong class="me-auto">Error</strong>
       <small>Just now</small>
-      <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
+      <button type="button" class="btn-close" data-bs-theme="light" data-bs-dismiss="toast" aria-label="Close"></button>
     </div>
     <div class="toast-body">
       An unexpected error has occurred on the profiler.
     </div>
   </div>
 </div>
-
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.1/moment.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
@@ -302,8 +315,54 @@
         return `${interval} days ago`;
     }
 
+    function showWarningToast(warningMessage) {
+        // Create a new toast element for warnings
+        var toastElement = document.createElement('div');
+        toastElement.classList.add('toast', 'bg-warning', 'text-dark');
+        toastElement.setAttribute('role', 'alert');
+        toastElement.setAttribute('aria-live', 'assertive');
+        toastElement.setAttribute('aria-atomic', 'true');
+        toastElement.style.marginBottom = '10px';
+
+        // Get the current time for the warning
+        const warningTime = new Date();
+
+        // Define the toast content with a warning icon and initial relative timestamp
+        toastElement.innerHTML = `
+            <div class="toast-header bg-warning text-dark">
+                <i class="fas fa-exclamation-triangle me-2"></i>
+                <strong class="me-auto">Warning</strong>
+                <small class="warning-time">${timeSince(warningTime)}</small>
+                <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
+            </div>
+            <div class="toast-body">${warningMessage}</div>
+        `;
+
+        // Append the new toast to the container
+        document.getElementById('toastContainer').appendChild(toastElement);
+
+        // Initialize and show the new toast
+        var toast = new bootstrap.Toast(toastElement, { autohide: false });
+        toast.show();
+
+        // Function to update the time displayed in the toast
+        function updateTime() {
+            const timeElement = toastElement.querySelector('.warning-time');
+            timeElement.textContent = timeSince(warningTime);
+        }
+
+        // Update the time every minute (60000 milliseconds)
+        const intervalId = setInterval(updateTime, 60000);
+
+        // Clean up the interval when the toast is hidden
+        toastElement.addEventListener('hidden.bs.toast', function () {
+            clearInterval(intervalId);
+            toastElement.remove();
+        });
+    }
+
     function showErrorToast(errorMessage) {
-        // Create a new toast element
+        // Create a new toast element for errors
         var toastElement = document.createElement('div');
         toastElement.classList.add('toast', 'bg-danger', 'text-white');
         toastElement.setAttribute('role', 'alert');
@@ -314,14 +373,15 @@
         // Get the current time for the error
         const errorTime = new Date();
 
-        // Define the toast content with the initial relative timestamp
+        // Define the toast content with an error icon and initial relative timestamp
         toastElement.innerHTML = `
             <div class="toast-header bg-danger text-white">
+                <i class="fas fa-exclamation-circle me-2"></i>
                 <strong class="me-auto">Error</strong>
                 <small class="error-time">${timeSince(errorTime)}</small>
                 <button type="button" class="btn-close btn-close-white" data-bs-dismiss="toast" aria-label="Close"></button>
             </div>
-            <div class="toast-body">An unexpected error has occurred on the profiler.</div>
+            <div class="toast-body">${errorMessage}</div>
         `;
 
         // Append the new toast to the container
@@ -347,18 +407,16 @@
         });
     }
 
-
-    // Catch all JavaScript errors
     window.onerror = function(message, source, lineno, colno, error) {
-        // Use JSON.stringify to print error objects properly if they exist
-        console.error(
-            `Error occurred: ${message instanceof Object ? JSON.stringify(message) : message} 
-            at ${source || 'unknown source'}:${lineno || 'unknown line'}:${colno || 'unknown column'}`, 
-            error ? JSON.stringify(error) : 'No additional error object'
-        );
 
-        // Optionally, display the error in a toast notification
-        showErrorToast(message, source, lineno, colno, error);
+        // Check for specific expected errors like Illegal invocation
+        if (message && message.includes('Illegal invocation')) {
+            // Show a warning toast for expected errors
+            showWarningToast(message);
+        } else {
+            // For all other errors, show the error toast
+            showErrorToast(message);
+        }
     };
 
     // Optionally handle resource loading errors (e.g., images, scripts)
@@ -368,6 +426,25 @@
             showErrorToast('A resource failed to load. Please try again.');
         }
     }, true);
+
+    const toggleSwitch = document.getElementById('darkModeSwitch');
+    const mainNavbar = document.getElementById('mainNavbar');
+
+    // Check the current theme on page load
+    const currentTheme = localStorage.getItem('theme') || 'light';
+    document.documentElement.setAttribute('data-bs-theme', currentTheme);
+    mainNavbar.setAttribute('data-bs-theme', currentTheme); // Set theme for the navbar
+
+    // Set the checkbox state based on the current theme
+    toggleSwitch.checked = currentTheme === 'dark';
+
+    toggleSwitch.addEventListener('change', function () {
+        const newTheme = this.checked ? 'dark' : 'light'; // Determine new theme
+        document.documentElement.setAttribute('data-bs-theme', newTheme); // Set the theme for the document
+        mainNavbar.setAttribute('data-bs-theme', newTheme); // Set the theme for the navbar
+        localStorage.setItem('theme', newTheme); // Store the new theme in localStorage
+        location.reload(); // Reload the page to apply the theme
+    });
 
 </script>
 </body>

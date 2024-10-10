@@ -311,28 +311,29 @@ var getCharts = function () {
 
 $(document).ready(function () {
     // Handle tab switching
-    $('a[data-toggle="tab"]').on('click', function (e) {
+    $('a[data-bs-toggle="tab"]').on('click', function (e) {
         e.preventDefault(); // Prevent default anchor behavior
         var target = $(this).attr('href'); // Get the target tab
-
+        console.log(target)
+    
         // Hide all tabs and remove active class
         $('.tab-pane').removeClass('active show');
-        $('a[data-toggle="tab"]').removeClass('active');
-
+        $('a[data-bs-toggle="tab"]').removeClass('active');
+    
         // Show the selected tab and add active class
         $(target).addClass('active show');
         $(this).addClass('active');
-
+    
         // Manage browser history
         const newUrl = $(this).attr('href'); // Get the href for the new tab
         history.pushState(null, '', newUrl); // Update the URL without reloading
     });
-
+    
     // Handle back/forward button navigation
     window.onpopstate = function () {
         const activeTab = window.location.hash || '#tab-dashboard'; // Default to dashboard tab
-        $('a[data-toggle="tab"][href="' + activeTab + '"]').trigger('click'); // Trigger click on the correct tab
-    };
+        $('a[data-bs-toggle="tab"][href="' + activeTab + '"]').trigger('click'); // Trigger click on the correct tab
+    };    
 
     $("#big-users-table").on("preXhr.dt", function (a, b, c) {
         window.profile.dataTableOption = c;
@@ -369,7 +370,7 @@ $(document).ready(function () {
                 return b.data;
             }
         },
-        responsive: false,
+        responsive: true,
         paging: true,
         pageLength: 1e4,
         dom: "Btrtip",
