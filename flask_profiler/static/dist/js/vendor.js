@@ -6961,9 +6961,15 @@ function(a, b, c) {
         
             // Process the final sorting array
             for (let a = 0; a < l.length; a++) {
-                const i = l[a][0];
+                let i = l[a][0]; // Column index or object
         
-                // Debugging: Log the value of `i` to verify it's not an object
+                // If `i` is an object (like `{data: 'columnName'}`), extract the index
+                if (typeof i === 'object' && i.data) {
+                    console.log('Extracting index from object:', i);
+                    i = getColumnIndexByData(k, i.data); // Custom function to find index by data name
+                }
+        
+                // Debugging: Log the value of `i` to verify it's valid
                 console.log('Value of i (should be an index):', i);
                 
                 // Ensure `i` is a valid index and `k[i]` exists
@@ -6996,7 +7002,7 @@ function(a, b, c) {
             }
         
             return j; // Return the sorting information array
-        }               
+        }                      
         function za(table) {
             let rowIndexMap = [];
             const sortColumns = Ua.ext.type.order;
