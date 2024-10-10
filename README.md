@@ -1,6 +1,6 @@
 # Flask-ProfilerForked
 
-**version: 1.8.1.6**
+**version: 1.8.1.8**
 
 ##### Flask-profiler measures endpoints defined in your flask application and provides you fine-grained reports through a web interface.
 
