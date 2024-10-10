@@ -15,7 +15,7 @@ In short, if you are curious about what your endpoints are doing and what reques
 
 With flask-profiler's web interface, you can monitor all your endpoints' performance and investigate endpoints and received requests by drilling down through filters.
 
-## Screenshots
+## Screenshots (OUTDATED)
 
 Dashboard view displays a summary.
 
