@@ -6961,40 +6961,42 @@ function(a, b, c) {
         
             // Process the final sorting array
             for (let a = 0; a < l.length; a++) {
-                const i = l[a][0]; // The column index
+                const i = l[a][0];
+        
+                // Debugging: Log the value of `i` to verify it's not an object
+                console.log('Value of i (should be an index):', i);
                 
-                // Ensure k[i] exists and has aDataSort before proceeding
-                if (k[i] && k[i].aDataSort) {
-                    const f = k[i].aDataSort;
+                // Ensure `i` is a valid index and `k[i]` exists
+                if (typeof i !== 'number' || !k[i]) {
+                    console.error(`Error: Invalid index or k[${i}] is undefined or missing aDataSort`);
+                    continue; // Skip to the next iteration if invalid
+                }
         
-                    for (let b = 0; b < f.length; b++) {
-                        const g = f[b];
-                        const h = k[g]?.sType || "string";
+                const f = k[i].aDataSort;
         
-                        // Assuming `c` refers to the current sorting index comparison
-                        // Make sure that `l[a]._idx` exists and set it
-                        if (l[a]._idx === undefined) {
-                            l[a]._idx = d.inArray(l[a][1], k[g].asSorting);
-                        }
+                for (let b = 0; b < f.length; b++) {
+                    const g = f[b];
+                    const h = k[g]?.sType || "string";
         
-                        // Push sorting information into the j array
-                        j.push({
-                            src: i,           // Original column index
-                            col: g,           // Column to be sorted
-                            dir: l[a][1],     // Direction of the sort (asc/desc)
-                            index: l[a]._idx, // Sorting index for that column
-                            type: h,          // Data type (e.g., string, number)
-                            formatter: Ua.ext.type.order[h + "-pre"] // Formatter function
-                        });
+                    // Ensure l[a]._idx exists and set it
+                    if (l[a]._idx === undefined) {
+                        l[a]._idx = d.inArray(l[a][1], k[g].asSorting);
                     }
-                } else {
-                    // Log an error if k[i] is undefined or missing aDataSort
-                    console.error(`Error: k[${i}] is undefined or missing aDataSort`);
+        
+                    // Push sorting information into the j array
+                    j.push({
+                        src: i,           // Original column index
+                        col: g,           // Column to be sorted
+                        dir: l[a][1],     // Direction of the sort (asc/desc)
+                        index: l[a]._idx, // Sorting index for that column
+                        type: h,          // Data type (e.g., string, number)
+                        formatter: Ua.ext.type.order[h + "-pre"] // Formatter function
+                    });
                 }
             }
         
             return j; // Return the sorting information array
-        }        
+        }               
         function za(table) {
             let rowIndexMap = [];
             const sortColumns = Ua.ext.type.order;
