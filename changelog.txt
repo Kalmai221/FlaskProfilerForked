@@ -1,4 +1,8 @@
-Version 1.8.1.(1-6)
+Version 1.8.1.9
+====================
+- Fixed the JSON Data Bug on the Filtering Page
+
+Version 1.8.1.(1-8)
 ====================
 - PyPi Publishing Bugs Fixed
 
