@@ -6968,48 +6968,64 @@ function(a, b, c) {
                     });
             return j
         }
-        function za(a) {
-            var b, c, d, e, f = [], g = Ua.ext.type.order, h = a.aoData, i = 0, j = a.aiDisplayMaster;
-            for (s(a),
-            e = ya(a),
-            b = 0,
-            c = e.length; c > b; b++)
-                d = e[b],
-                d.formatter && i++,
-                Ea(a, d.col);
-            if ("ssp" != Qa(a) && 0 !== e.length) {
-                for (b = 0,
-                c = j.length; c > b; b++)
-                    f[j[b]] = b;
-                i === e.length ? j.sort(function(a, b) {
-                    var c, d, g, i, j = e.length, k = h[a]._aSortData, l = h[b]._aSortData;
-                    for (g = 0; j > g; g++)
-                        if (i = e[g],
-                        c = k[i.col],
-                        d = l[i.col],
-                        c = d > c ? -1 : c > d ? 1 : 0,
-                        0 !== c)
-                            return "asc" === i.dir ? c : -c;
-                    return c = f[a],
-                    d = f[b],
-                    d > c ? -1 : c > d ? 1 : 0
-                }) : j.sort(function(a, b) {
-                    var c, d, i, j, k = e.length, l = h[a]._aSortData, m = h[b]._aSortData;
-                    for (i = 0; k > i; i++)
-                        if (j = e[i],
-                        c = l[j.col],
-                        d = m[j.col],
-                        j = g[j.type + "-" + j.dir] || g["string-" + j.dir],
-                        c = j(c, d),
-                        0 !== c)
-                            return c;
-                    return c = f[a],
-                    d = f[b],
-                    d > c ? -1 : c > d ? 1 : 0
-                })
+        function za(table) {
+            let rowIndexMap = [];
+            const sortColumns = Ua.ext.type.order;
+            const rowData = table.aoData;
+            let formatterCount = 0;
+            const displayIndices = table.aiDisplayMaster;
+            
+            // Pre-sorting setup
+            s(table);
+            const columns = ya(table);
+        
+            // Process each column
+            for (let colIdx = 0; colIdx < columns.length; colIdx++) {
+                const column = columns[colIdx];
+                if (column.formatter) formatterCount++;
+                Ea(table, column.col);
             }
-            a.bSorted = !0
-        }
+        
+            // If server-side processing is not enabled and there are columns to sort
+            if (Qa(table) !== "ssp" && columns.length > 0) {
+                // Map display indices
+                for (let i = 0; i < displayIndices.length; i++) {
+                    rowIndexMap[displayIndices[i]] = i;
+                }
+        
+                // If all columns have formatters, sort using custom comparison
+                if (formatterCount === columns.length) {
+                    displayIndices.sort(function (a, b) {
+                        for (let i = 0; i < columns.length; i++) {
+                            const col = columns[i];
+                            const aValue = rowData[a]._aSortData[col.col];
+                            const bValue = rowData[b]._aSortData[col.col];
+                            const comparison = aValue < bValue ? -1 : aValue > bValue ? 1 : 0;
+                            if (comparison !== 0) return col.dir === "asc" ? comparison : -comparison;
+                        }
+                        // Fallback to original row order if all columns are equal
+                        return rowIndexMap[a] - rowIndexMap[b];
+                    });
+                } else {
+                    // Sort using default order type comparison
+                    displayIndices.sort(function (a, b) {
+                        for (let i = 0; i < columns.length; i++) {
+                            const col = columns[i];
+                            const aValue = rowData[a]._aSortData[col.col];
+                            const bValue = rowData[b]._aSortData[col.col];
+                            const sortFunc = sortColumns[col.type + "-" + col.dir] || sortColumns["string-" + col.dir];
+                            const comparison = sortFunc(aValue, bValue);
+                            if (comparison !== 0) return comparison;
+                        }
+                        // Fallback to original row order if all columns are equal
+                        return rowIndexMap[a] - rowIndexMap[b];
+                    });
+                }
+            }
+        
+            // Mark table as sorted
+            table.bSorted = true;
+        }        
         function Aa(a) {
             for (var b, c, d = a.aoColumns, e = ya(a), a = a.oLanguage.oAria, f = 0, g = d.length; g > f; f++) {
                 c = d[f];
@@ -9337,11 +9353,6 @@ function(a, b, c) {
                         p++)
                     }
             };
-            try {
-                l = a(b.activeElement).data("dt-idx")
-            } catch (r) {}
-            q(a(e).empty().html('<ul class="pagination"/>').children("ul"), g),
-            l && a(e).find("[data-dt-idx=" + l + "]").focus()
         }
         ,
         c.TableTools && (a.extend(!0, c.TableTools.classes, {
