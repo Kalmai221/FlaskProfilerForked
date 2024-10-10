@@ -6938,51 +6938,63 @@ function(a, b, c) {
             return a
         }
         function ya(a) {
-            var b, e, f, g, h, i, j = [], k = a.aoColumns;
-            b = a.aaSortingFixed,
+            let b, e, l = [], j = [], k = a.aoColumns;
+        
+            // Get fixed sorting
+            b = a.aaSortingFixed;
             e = d.isPlainObject(b);
-            var l = [];
-            for (f = function(a) {
-                a.length && !d.isArray(a[0]) ? l.push(a) : l.push.apply(l, a)
-            }
-            ,
-            d.isArray(b) && f(b),
-            e && b.pre && f(b.pre),
-            f(a.aaSorting),
-            e && b.post && f(b.post),
+        
+            // Helper function to normalize sorting arrays
+            const processSortingArray = function(sortingArray) {
+                if (sortingArray.length && !d.isArray(sortingArray[0])) {
+                    l.push(sortingArray); // If not an array of arrays, push the whole array
+                } else {
+                    l.push(...sortingArray); // Spread and push the arrays
+                }
+            };
+        
+            // Process fixed and default sorting arrays
+            if (d.isArray(b)) processSortingArray(b);
+            if (e && b.pre) processSortingArray(b.pre);
+            processSortingArray(a.aaSorting);
+            if (e && b.post) processSortingArray(b.post);
+        
+            // Process the final sorting array
             for (let a = 0; a < l.length; a++) {
-                const i = l[a][0];
+                const i = l[a][0]; // The column index
                 
-                // Check if k[i] exists and has aDataSort before proceeding
+                // Ensure k[i] exists and has aDataSort before proceeding
                 if (k[i] && k[i].aDataSort) {
                     const f = k[i].aDataSort;
-                    
+        
                     for (let b = 0; b < f.length; b++) {
                         const g = f[b];
                         const h = k[g]?.sType || "string";
-                        
-                        // Ensure l[a]._idx is defined before comparing
-                        if (l[a]._idx === c) {
+        
+                        // Assuming `c` refers to the current sorting index comparison
+                        // Make sure that `l[a]._idx` exists and set it
+                        if (l[a]._idx === undefined) {
                             l[a]._idx = d.inArray(l[a][1], k[g].asSorting);
                         }
-                        
-                        // Push sorting information to j array
+        
+                        // Push sorting information into the j array
                         j.push({
-                            src: i,
-                            col: g,
-                            dir: l[a][1],
-                            index: l[a]._idx,
-                            type: h,
-                            formatter: Ua.ext.type.order[h + "-pre"]
+                            src: i,           // Original column index
+                            col: g,           // Column to be sorted
+                            dir: l[a][1],     // Direction of the sort (asc/desc)
+                            index: l[a]._idx, // Sorting index for that column
+                            type: h,          // Data type (e.g., string, number)
+                            formatter: Ua.ext.type.order[h + "-pre"] // Formatter function
                         });
                     }
                 } else {
-                    console.error(`Error: k[${i}] is undefined or has no aDataSort property`);
+                    // Log an error if k[i] is undefined or missing aDataSort
+                    console.error(`Error: k[${i}] is undefined or missing aDataSort`);
                 }
             }
-            
-            return j
-        }
+        
+            return j; // Return the sorting information array
+        }        
         function za(table) {
             let rowIndexMap = [];
             const sortColumns = Ua.ext.type.order;
