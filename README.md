@@ -1,6 +1,6 @@
 # Flask-ProfilerFork
 
-**version: 1.8.1.2**
+**version: 1.8.1.5**
 
 ##### Flask-profiler measures endpoints defined in your flask application and provides you fine-grained reports through a web interface.
 
@@ -15,7 +15,7 @@ In short, if you are curious about what your endpoints are doing and what reques
 
 With flask-profiler's web interface, you can monitor all your endpoints' performance and investigate endpoints and received requests by drilling down through filters.
 
-## Screenshots (OUTDATED)
+## Screenshots
 
 Dashboard view displays a summary.
 
