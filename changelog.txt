@@ -1,7 +1,9 @@
 version 1.8.1
 ====================
-- add sqlalchemy to to test requirements
+- Major UI changes
+- Reduced the download size by removing vendor.js which took 1mb
 
-version 1.6
+version 1.8
 ====================
-- sqlalchemy support
+- Forked from muatik/flask-profiler
+- Fixed the MongoDB Support
