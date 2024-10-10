@@ -11,12 +11,6 @@ Links
 import sys
 from setuptools import setup
 
-tests_require = [
-    "Flask-Testing",
-    "simplejson",
-    "sqlalchemy"
-]
-
 install_requires = [
     'Flask',
     'Flask-HTTPAuth',
@@ -48,11 +42,9 @@ setup(
             'static/dist/index.html',
         ]
     },
-    test_suite="tests.suite",
     zip_safe=False,
     platforms='any',
     install_requires=install_requires,
-    tests_require=tests_require,
     classifiers=[
         'Environment :: Web Environment',
         'Intended Audience :: Developers',
