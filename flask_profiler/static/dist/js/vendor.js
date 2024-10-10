@@ -6950,22 +6950,37 @@ function(a, b, c) {
             e && b.pre && f(b.pre),
             f(a.aaSorting),
             e && b.post && f(b.post),
-            a = 0; a < l.length; a++)
-                for (i = l[a][0],
-                f = k[i].aDataSort,
-                b = 0,
-                e = f.length; e > b; b++)
-                    g = f[b],
-                    h = k[g].sType || "string",
-                    l[a]._idx === c && (l[a]._idx = d.inArray(l[a][1], k[g].asSorting)),
-                    j.push({
-                        src: i,
-                        col: g,
-                        dir: l[a][1],
-                        index: l[a]._idx,
-                        type: h,
-                        formatter: Ua.ext.type.order[h + "-pre"]
-                    });
+            for (let a = 0; a < l.length; a++) {
+                const i = l[a][0];
+                
+                // Check if k[i] exists and has aDataSort before proceeding
+                if (k[i] && k[i].aDataSort) {
+                    const f = k[i].aDataSort;
+                    
+                    for (let b = 0; b < f.length; b++) {
+                        const g = f[b];
+                        const h = k[g]?.sType || "string";
+                        
+                        // Ensure l[a]._idx is defined before comparing
+                        if (l[a]._idx === c) {
+                            l[a]._idx = d.inArray(l[a][1], k[g].asSorting);
+                        }
+                        
+                        // Push sorting information to j array
+                        j.push({
+                            src: i,
+                            col: g,
+                            dir: l[a][1],
+                            index: l[a]._idx,
+                            type: h,
+                            formatter: Ua.ext.type.order[h + "-pre"]
+                        });
+                    }
+                } else {
+                    console.error(`Error: k[${i}] is undefined or has no aDataSort property`);
+                }
+            }
+            
             return j
         }
         function za(table) {
