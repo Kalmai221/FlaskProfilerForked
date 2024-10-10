@@ -4,10 +4,13 @@ var profile = {
         grouped: ["method", "name", "count", "avgElapsed", "maxElapsed", "minElapsed"],
         filter: ["method", "name", "elapsed", "startedAt"]
     },
+    dateTime: {
+        startedAt: moment().subtract(6, "days").unix(),
+        endedAt: moment().unix()
+    },
     getData: function (a, b) {
         a = a || "grouped";
-        var c, d = this;
-        b = this.createQueryParams(a);  
+        var c, d = this, b = this.createQueryParams(a);
         return $.ajax({
             type: "GET",
             async: false,
@@ -41,7 +44,7 @@ var profile = {
     createQueryParams: function (a, b) {
         var c, d = b || this.dataTableOption, e = d.order[0], f = {};
         if ("filtered" === a) {
-            var g = $("#filteredTable select.method").val() || ""; // Simplified check
+            var g = $("#filteredTable select.method").val();
             c = this.columnsIndex.filter, "ALL" === g && (g = ""),
             f.method = g,
             f.name = $("#filteredTable input.filtered-name").val(),
@@ -59,10 +62,10 @@ var profile = {
 };
 
 window.profile = profile;
-window.dayFilterValue = "day";
+window.dayFilterValue = "days"; // Set default filter value to "days"
 window.profile.dateTime = {
-    startedAt: moment().subtract(6, "days").unix(),
-    endedAt: moment().unix()
+    startedAt: moment().subtract(7, "days").unix(), // Start date is set to 7 days ago
+    endedAt: moment().unix() // End date is now
 };
 
 var setFilteredTable = function () {
@@ -75,7 +78,7 @@ var setFilteredTable = function () {
         processing: true,
         serverSide: true,
         ajax: function (a, b, c) {
-            window.profile.dataTableOption = a,
+            window.profile.dataTableOption = a;
             b(window.profile.getData("filtered"));
         },
         responsive: true,
@@ -134,17 +137,19 @@ var setFilteredTable = function () {
             $(".filtered-datepicker").daterangepicker({
                 timePicker: true,
                 timePickerSeconds: true,
-                startDate: moment.unix(window.profile.dateTime.startedAt).format("MM/DD/YYYY"),
-                endDate: moment.unix(window.profile.dateTime.endedAt).format("MM/DD/YYYY")
+                startDate: moment.unix(window.profile.dateTime.startedAt).format("DD/MM/YYYY"),
+                endDate: moment.unix(window.profile.dateTime.endedAt).format("DD/MM/YYYY")
             }, function (b, c, d) {
                 profile.dateTime = { startedAt: b.unix(), endedAt: c.unix() };
                 a.draw();
             });
             $("#filteredTable").removeClass("loading");
         },
+        
         drawCallback: function () {
             $("#filteredTable tbody").on("click", "tr", function () {
-                $(".filteredModal .modal-body").JSONView(JSON.stringify($(this).find("[data-json]").data("json")));
+                // Format the JSON data using JSONView and display it in the modal
+                $(".filteredModal .modal-body").JSONView($(this).find("[data-json]").data("json"));
                 $(".filteredModal").modal("show");
             });
             $("#filteredTable").removeClass("loading");
@@ -159,6 +164,7 @@ var setFilteredTable = function () {
 };
 
 var getCharts = function () {
+    // Fetch and render pie chart
     $.ajax({
         type: "GET",
         async: true,
@@ -170,57 +176,158 @@ var getCharts = function () {
         },
         success: function (a) {
             var b = a.distribution, c = [];
-            for (key in b) b.hasOwnProperty(key) && c.push([key, b[key]]);
-            c3.generate({
-                bindto: "#pieChart",
+            for (key in b) {
+                if (b.hasOwnProperty(key)) {
+                    c.push({ label: key, value: b[key] });
+                }
+            }
+
+            var pieLabels = c.map(item => item.label);
+            var pieData = c.map(item => item.value);
+
+            var ctxPie = document.getElementById('pieCanvas').getContext('2d');
+
+            // Destroy the previous chart if it exists
+            if (window.pieChart) {
+                window.pieChart.destroy();
+            }
+
+            window.pieChart = new Chart(ctxPie, {
+                type: 'pie',
                 data: {
-                    columns: c,
-                    type: "pie",
-                    colors: {
-                        GET: "#4BB74B",
-                        PUT: "#0C8DFB",
-                        DELETE: "#FB6464",
-                        POST: "#2758E4"
-                    }
+                    labels: pieLabels,
+                    datasets: [{
+                        data: pieData,
+                        backgroundColor: [
+                            "#4BB74B",
+                            "#0C8DFB",
+                            "#FB6464",
+                            "#2758E4"
+                        ]
+                    }]
                 },
-                tooltip: { format: { value: function (a, b, c) { return a; } } },
-                color: { pattern: ["#9A9A9A"] }
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: true,
+                    plugins: {
+                        tooltip: {
+                            callbacks: {
+                                label: function (context) {
+                                    let label = context.label || '';
+                                    if (label) {
+                                        label += ': ';
+                                    }
+                                    label += context.raw; // Display the value
+                                    return label;
+                                }
+                            }
+                        }
+                    }
+                }
             });
-            $("#pieChart").removeClass("loading");
+        },
+        error: function () {
+            console.error("Error fetching pie chart data.");
         }
     });
 
+    // Fetch and render line chart
     $.ajax({
         type: "GET",
         async: true,
         url: "api/measurements/timeseries/",
         dataType: "json",
         data: {
-            interval: "hours" !== window.dayFilterValue ? "daily" : "hourly",
+            interval: window.dayFilterValue === "hours" ? "hourly" : "daily",
             startedAt: window.profile.dateTime.startedAt,
             endedAt: window.profile.dateTime.endedAt
         },
-        success: function (a) {
-            var b = a.series, c = ["data"], d = [];
-            for (var e in b) c.push(b[e]);
-            if ("hours" === window.dayFilterValue)
-                for (var e in Object.keys(b)) d.push(Object.keys(b)[e].substr(-2, 2));
-            else
-                d = Object.keys(b);
-            c3.generate({
-                bindto: "#lineChart",
-                data: { columns: [c], type: "area" },
-                axis: { x: { type: "category", categories: d } },
-                legend: { show: false },
-                color: { pattern: ["#EC5B19"] }
+        success: function (data) {
+            var labels = [];
+            var chartData = [];
+            var series = data.series;
+
+            for (var key in series) {
+                if (series.hasOwnProperty(key)) {
+                    // Format based on interval: daily as DD/MM/YYYY, hourly as HH:MM
+                    var formattedKey;
+                    if (window.dayFilterValue === "hours") {
+                        // Format as HH:MM for hourly data
+                        formattedKey = moment(key, moment.ISO_8601).isValid() ? moment(key).format("HH:mm") : "Invalid Date";
+                    } else {
+                        // Format as DD/MM/YYYY for daily data
+                        formattedKey = moment(key, moment.ISO_8601).isValid() ? moment(key).format("DD/MM/YYYY") : "Invalid Date";
+                    }
+
+                    // If the formatted date is valid, push it to labels
+                    if (formattedKey !== "Invalid Date") {
+                        labels.push(formattedKey);
+                        chartData.push(series[key]);
+                    }
+                }
+            }
+
+            var ctxLine = document.getElementById('lineCanvas').getContext('2d');
+
+            // Destroy the previous chart if it exists
+            if (window.lineChart) {
+                window.lineChart.destroy();
+            }
+
+            window.lineChart = new Chart(ctxLine, {
+                type: 'line',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: 'Total Requests',
+                        data: chartData,
+                        backgroundColor: 'rgba(236, 91, 25, 0.2)',
+                        borderColor: '#EC5B19',
+                        borderWidth: 1,
+                        fill: true
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    scales: {
+                        y: {
+                            beginAtZero: true
+                        }
+                    }
+                }
             });
-            $("#lineChart").removeClass("loading");
+        },
+        error: function () {
+            console.error("Error fetching time series data.");
         }
     });
 };
 
 $(document).ready(function () {
-    $('a[data-toggle="tab"]').historyTabs();
+    // Handle tab switching
+    $('a[data-toggle="tab"]').on('click', function (e) {
+        e.preventDefault(); // Prevent default anchor behavior
+        var target = $(this).attr('href'); // Get the target tab
+
+        // Hide all tabs and remove active class
+        $('.tab-pane').removeClass('active show');
+        $('a[data-toggle="tab"]').removeClass('active');
+
+        // Show the selected tab and add active class
+        $(target).addClass('active show');
+        $(this).addClass('active');
+
+        // Manage browser history
+        const newUrl = $(this).attr('href'); // Get the href for the new tab
+        history.pushState(null, '', newUrl); // Update the URL without reloading
+    });
+
+    // Handle back/forward button navigation
+    window.onpopstate = function () {
+        const activeTab = window.location.hash || '#tab-dashboard'; // Default to dashboard tab
+        $('a[data-toggle="tab"][href="' + activeTab + '"]').trigger('click'); // Trigger click on the correct tab
+    };
+
     $("#big-users-table").on("preXhr.dt", function (a, b, c) {
         window.profile.dataTableOption = c;
         var d = profile.createQueryParams("grouped", c);
@@ -262,7 +369,7 @@ $(document).ready(function () {
         dom: "Btrtip",
         stateSave: true,
         autoWidth: false,
-        order: [[{data: 'columnName'}, "desc"]],
+        order: [2, "desc"],
         language: {
             processing: "Loading...",
             buttons: {
@@ -319,33 +426,17 @@ $(document).ready(function () {
             }
         ],
         drawCallback: function () {
-            // Use event delegation to avoid repeated binding/unbinding
-            $("#big-users-table").on("click", "tbody tr", function (a) {
-                if ($(a.target).prop("tagName") !== "A") {
-                    var $row = $(this);
-                    var $filteredTable = $("#filteredTable");
-                    
-                    // Set the filtered name and method inputs
-                    $filteredTable.find(".filter-row .filtered-name")
-                        .val($row.find("td.name").text())
-                        .trigger("input");
-                    $filteredTable.find(".filter-row .method")
-                        .val($row.find(".method .row--method").text())
-                        .trigger("input");
-        
-                    // Update date range if the datepicker is initialized
-                    var datepicker = $(".filtered-datepicker").data("daterangepicker");
-                    if (datepicker) {
-                        datepicker.setStartDate(moment.unix(window.profile.dateTime.startedAt).format("MM/DD/YYYY"));
-                        datepicker.setEndDate(moment.unix(window.profile.dateTime.endedAt).format("MM/DD/YYYY"));
-                    }
-        
-                    // Re-draw the filtered table and switch to the filtering tab
+            $("#big-users-table tbody tr").off().on("click", function (a) {
+                if ("A" !== $(a.target).prop("tagName")) {
+                    var b = $(".filtered-datepicker");
+                    $("#filteredTable .filter-row .filtered-name").val($(this).find("td.name").text()).trigger("input");
+                    $("#filteredTable .filter-row .method").val($(this).find(".method .row--method").text()).trigger("input");
+                    "object" == typeof b.data("daterangepicker") && (b.data("daterangepicker").setStartDate(moment.unix(window.profile.dateTime.startedAt).format("MM/DD/YYYY")), b.data("daterangepicker").setEndDate(moment.unix(window.profile.dateTime.endedAt).format("MM/DD/YYYY")));
                     setFilteredTable();
                     $('[data-target="#tab-filtering"]').tab("show");
                 }
             });
-        },        
+        },
         initComplete: function () { }
     });
 
@@ -353,15 +444,15 @@ $(document).ready(function () {
         console.log(a);
     });
 
-    $('[data-target="#tab-filtering"]').on("show.bs.tab", function (e) {
-        setFilteredTable(); // Ensure this method is not directly returning or interacting with Bootstrap tab.js methods
+    $('[data-target="#tab-filtering"]').on("show.bs.tab", function () {
+        setFilteredTable();
     });
 
-    $(document).on("click", ".day-filter button", function (b) {
+    $(document).on("click", ".day-filter button", function () {
         $("#lineChart, #pieChart").addClass("loading");
     
-        // Get the button's id or a custom value (e.g., 'min', 'hours', 'days', '30days')
-        var d = $(this).attr("id"); // Getting the button ID
+        // Get the button's id or a custom value
+        var d = $(this).attr("id");
     
         // Only proceed if the value has changed
         if (window.dayFilterValue !== d) {
@@ -381,11 +472,11 @@ $(document).ready(function () {
     
             // Call your chart update functions
             getCharts();
-            a.draw();
+            // Update any filtered tables if necessary
+            setFilteredTable();
         }
-    });
+    });    
     
-
     getCharts();
 
     function b() {
