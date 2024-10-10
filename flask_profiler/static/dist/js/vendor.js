@@ -6952,7 +6952,18 @@ function(a, b, c) {
                     l.push(...sortingArray); // Spread and push the arrays
                 }
             };
-        
+            
+            // Function to map column name (data) to the column index
+            function getColumnIndexByData(columns, columnName) {
+                for (let index = 0; index < columns.length; index++) {
+                    if (columns[index].data === columnName) {
+                        return index;
+                    }
+                }
+                console.error(`Column with data '${columnName}' not found.`);
+                return -1; // Return -1 if the column is not found
+            }
+
             // Process fixed and default sorting arrays
             if (d.isArray(b)) processSortingArray(b);
             if (e && b.pre) processSortingArray(b.pre);
