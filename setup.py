@@ -5,14 +5,11 @@ Flask-ProfilerForked
 Flask Profiler Forked
 
 Links
-`````
-
 * `development version <http://github.com/Kalmai221/flask-profiler/>`
-
 """
+
 import sys
 from setuptools import setup
-
 
 tests_require = [
     "Flask-Testing",
@@ -38,6 +35,7 @@ setup(
         'profiler', 'flask', 'performance', 'optimization'
     ],
     long_description=open('README.md').read(),
+    long_description_content_type='text/markdown',  # Specify the content type for long description
     packages=['flask_profiler'],
     package_data={
         'flask_profiler': [
@@ -46,11 +44,10 @@ setup(
             'static/dist/css/*',
             'static/dist/js/*',
             'static/dist/images/*',
-            'static/dist/js/*'
-            'static/dist/*',
+            'static/dist/*',  # Fixed missing comma here
             'static/dist/index.html',
-            ]
-        },
+        ]
+    },
     test_suite="tests.suite",
     zip_safe=False,
     platforms='any',
