@@ -36,7 +36,7 @@ setup(
     ],
     long_description=open('README.md').read(),
     long_description_content_type='text/markdown',  # Specify the content type for long description
-    packages=['Flask-ProfilerForked'],
+    packages=['flask_profiler'],
     package_data={
         'flask_profiler': [
             'storage/*',
