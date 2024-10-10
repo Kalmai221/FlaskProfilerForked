@@ -19,7 +19,7 @@ install_requires = [
 
 setup(
     name='Flask-ProfilerForked',
-    version='1.8.1.9',
+    version='1.8.1.10',
     url='https://github.com/Kalmai221/flask-profiler',
     license=open('LICENSE').read(),
     author='Kalmai221',
