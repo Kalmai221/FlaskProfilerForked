@@ -1,13 +1,13 @@
 """
-Flask-Profiler
+Flask-ProfilerForked
 -------------
 
-Flask Profiler
+Flask Profiler Forked
 
 Links
 `````
 
-* `development version <http://github.com/muatik/flask-profiler/>`
+* `development version <http://github.com/Kalmai221/flask-profiler/>`
 
 """
 import sys
@@ -27,12 +27,12 @@ install_requires = [
 ]
 
 setup(
-    name='flask_profiler',
-    version='1.8',
-    url='https://github.com/muatik/flask-profiler',
+    name='Flask-ProfilerForked',
+    version='1.8.1',
+    url='https://github.com/Kalmai221/flask-profiler',
     license=open('LICENSE').read(),
-    author='Mustafa Atik',
-    author_email='muatik@gmail.com',
+    author='Kalmai221',
+    author_email='Kalmai221PlaysOfficial@gmail.com',
     description='API endpoint profiler for Flask framework',
     keywords=[
         'profiler', 'flask', 'performance', 'optimization'
