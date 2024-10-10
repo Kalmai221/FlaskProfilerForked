@@ -107,7 +107,7 @@ You can use flask-profiler with **SQLite**, **MongoDB**, **PostgreSQL**, **MySQL
 ### SQLite
 In order to use SQLite, just specify it as the value of `storage.engine` directive as follows:
 
-```json
+```python
 app.config["flask_profiler"] = {
     "storage": {
         "engine": "sqlite",
