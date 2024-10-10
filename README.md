@@ -125,7 +125,7 @@ Below the other options are listed.
 ### MongoDB
 In order to use MongoDB, just specify it as the value of `storage.engine` directive as follows:
 
-```json
+```python
 app.config["flask_profiler"] = {
     "storage": {
         "engine": "mongodb",
@@ -148,7 +148,7 @@ app.config["flask_profiler"] = {
 ### Custom database engine
 Specify engine as string module and class path:
 
-```json
+```python
 app.config["flask_profiler"] = {
     "storage": {
         "engine": "custom.project.flask_profiler.mysql.MysqlStorage",
