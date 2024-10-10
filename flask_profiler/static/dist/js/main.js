@@ -147,14 +147,20 @@ var setFilteredTable = function () {
         },
         
         drawCallback: function () {
-            $("#filteredTable tbody").on("click", "tr", function () {
-                // Format the JSON data using JSONView and display it in the modal
-                $(".filteredModal .modal-body").JSONView($(this).find("[data-json]").data("json"));
-                $(".filteredModal").modal("show");
+             $("#filteredTable tbody").on("click", "tr", function () {
+                // Get the JSON data from the clicked row
+                const jsonData = $(this).find("[data-json]").data("json");
+                
+                // Format and display the JSON data in the modal
+                $(".modal-body").jsonViewer(jsonData, { collapsed: false });
+
+                // Show the modal
+                $("#filteredModal").modal("show");
             });
+            
             $("#filteredTable").removeClass("loading");
             $("html").animate({ scrollTop: 0 }, 300);
-        }
+        }              
     });
 
     $("#filteredTable select.method, #filteredTable input.filtered-name, #filteredTable input.elapsed").off().on("input", function () {
@@ -364,7 +370,7 @@ $(document).ready(function () {
             }
         },
         responsive: false,
-        paging: false,
+        paging: true,
         pageLength: 1e4,
         dom: "Btrtip",
         stateSave: true,

@@ -1115,3 +1115,22 @@ canvas {
 .container { 
     overflow: hidden; /* Prevents content from overflowing */
 }
+
+.modal-content {
+    background-color: #1e1e1e; /* Dark background similar to VSCode */
+    color: #dcdcdc; /* Light text color for readability */
+}
+
+.modal-header {
+    border-bottom: 1px solid #444444; /* Darker line for separation */
+}
+
+.modal-body {
+    max-height: 80vh; /* Limit height of modal body */
+    overflow-y: auto; /* Enable vertical scrolling */
+    overflow-x: auto; /* Enable horizontal scrolling */
+    white-space: pre-wrap; /* Preserve whitespace in JSON */
+    padding: 10px; /* Add some padding */
+    font-size: 16px; /* Increase font size for readability */
+}
+
