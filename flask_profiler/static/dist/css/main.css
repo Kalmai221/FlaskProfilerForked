@@ -1094,3 +1094,24 @@ div.dt-buttons {
 .sorting {
     color: #FFF;
 }
+
+canvas {
+    display: block; /* Prevents inline space issues */
+    max-width: 100%; /* Responsive behavior */
+    height: auto; /* Adjust height automatically */
+    margin: 0 auto; /* Centering if necessary */
+}
+
+#pieCanvas {
+    width: 400px;
+    height: 400px;
+}
+
+#lineCanvas {
+    height: 500px;
+    width: 500px;
+}
+
+.container { 
+    overflow: hidden; /* Prevents content from overflowing */
+}
