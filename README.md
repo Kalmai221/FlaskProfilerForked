@@ -23,7 +23,7 @@ Dashboard view displays a summary.
 
 You can create filters to investigate certain types of requests.
 
-![Alt text](resources/Filtering.png?raw=true "Filtering view")
+[![Filtering](https://github.com/Kalmai221/flask-profiler/blob/master/resources/Filtering.png?raw=true)
 
 ## Quick Start
 
