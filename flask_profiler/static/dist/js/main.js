@@ -364,7 +364,7 @@ $(document).ready(function () {
             }
         },
         responsive: false,
-        paging: true,
+        paging: false,
         pageLength: 1e4,
         dom: "Btrtip",
         stateSave: true,
@@ -429,14 +429,23 @@ $(document).ready(function () {
             $("#big-users-table tbody tr").off().on("click", function (a) {
                 if ("A" !== $(a.target).prop("tagName")) {
                     var b = $(".filtered-datepicker");
-                    $("#filteredTable .filter-row .filtered-name").val($(this).find("td.name").text()).trigger("input");
-                    $("#filteredTable .filter-row .method").val($(this).find(".method .row--method").text()).trigger("input");
-                    "object" == typeof b.data("daterangepicker") && (b.data("daterangepicker").setStartDate(moment.unix(window.profile.dateTime.startedAt).format("MM/DD/YYYY")), b.data("daterangepicker").setEndDate(moment.unix(window.profile.dateTime.endedAt).format("MM/DD/YYYY")));
+                    $("#filteredTable .filter-row .filtered-name")
+                        .val($(this).find("td.name").text())
+                        .trigger("input");
+                    $("#filteredTable .filter-row .method")
+                        .val($(this).find(".method .row--method").text())
+                        .trigger("input");
+                    if ("object" == typeof b.data("daterangepicker")) {
+                        b.data("daterangepicker").setStartDate(moment.unix(window.profile.dateTime.startedAt).format("DD/MM/YYYY"));
+                        b.data("daterangepicker").setEndDate(moment.unix(window.profile.dateTime.endedAt).format("MM/DD/YYYY"));
+                    }
                     setFilteredTable();
-                    $('[data-target="#tab-filtering"]').tab("show");
+        
+                    // Instead of using tab('show'), trigger a click on the tab
+                    $('a[href="#tab-filtering"]').trigger("click");
                 }
             });
-        },
+        },        
         initComplete: function () { }
     });
 
@@ -444,10 +453,14 @@ $(document).ready(function () {
         console.log(a);
     });
 
-    $('[data-target="#tab-filtering"]').on("show.bs.tab", function () {
-        setFilteredTable();
+    $('a[href="#tab-filtering"]').on('click', function (e) {
+        // Check if the table is already initialized
+        if (!$.fn.DataTable.isDataTable("#filteredTable")) {
+            // Initialize the filtered table if it's not already initialized
+            setFilteredTable();
+        }
     });
-
+    
     $(document).on("click", ".day-filter button", function () {
         $("#lineChart, #pieChart").addClass("loading");
     
