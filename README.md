@@ -2,7 +2,7 @@
 
 **version: 1.8.1.8**
 
-##### Flask-profiler measures endpoints defined in your flask application and provides you fine-grained reports through a web interface.
+##### Flask-profilerforked measures endpoints defined in your flask application and provides you fine-grained reports through a web interface.
 
 It gives answers to these questions:
 * Where are the bottlenecks in my application?
