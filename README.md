@@ -1,7 +1,7 @@
 # Flask-ProfilerFork
 
 
-**version: 1.8.FORK*
+**version: 1.8.1**
 
 ##### Flask-profiler measures endpoints defined in your flask application; and provides you fine-grained report through a web interface.
 
@@ -34,9 +34,9 @@ You can see all the details of a request.
 ## Quick Start
 It is easy to understand flask-profiler going through an example. Let's dive in.
 
-Install flask-profiler by pip.
+Install flask-profilerforked by pip.
 ```sh
-pip install flask_profilerfork
+pip install flask_profilerforked
 ```
 
 
