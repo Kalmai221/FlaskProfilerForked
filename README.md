@@ -35,10 +35,15 @@ You can see all the details of a request.
 
 It is easy to understand flask-profiler by going through an example. Let's dive in.
 
-Install `flask-profilerforked` via pip:
+Install `Flask-ProfilerForked` via pip:
 
 ```sh
-pip install flask-profilerforked
+pip install Flask-ProfilerForked
+```
+
+Or the Development version via Pip:
+```sh
+pip install git+https://github.com/Kalmai221/flask-profiler@master
 ```
 
 Edit your code where you are creating the Flask app:
