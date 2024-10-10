@@ -1,5 +1,3 @@
-
-
 class BaseStorage(object):
     """docstring for BaseStorage"""
     def __init__(self):
