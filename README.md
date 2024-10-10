@@ -19,17 +19,11 @@ With flask-profiler's web interface, you can monitor all your endpoints' perform
 
 Dashboard view displays a summary.
 
-![Alt text](resources/dashboard_screen.png?raw=true "Dashboard view")
+![Alt text](resources/Dashboard.png?raw=true "Dashboard view")
 
 You can create filters to investigate certain types of requests.
 
-![Alt text](resources/filtering_all_screen.png?raw=true "Filtering by endpoint")
-
-![Alt text](resources/filtering_method_screen.png?raw=true "Filtering by method")
-
-You can see all the details of a request.
-
-![Alt text](resources/filtering_detail_screen.png?raw=true "Request detail")
+![Alt text](resources/Filtering.png?raw=true "Filtering view")
 
 ## Quick Start
 
