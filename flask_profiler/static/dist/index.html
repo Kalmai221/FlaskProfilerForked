@@ -9,68 +9,6 @@
     <link rel="stylesheet" href="https://cdn.datatables.net/1.13.4/css/jquery.dataTables.min.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.css" />
     <link href="static/dist/css/jquery.json-viewer.css" type="text/css" rel="stylesheet">
-    <style>
-        /* Custom styles for dark mode */
-        body {
-            background-color: #343a40; /* Dark background */
-            color: #ffffff; /* Light text color */
-        }
-        .navbar-inverse {
-            background-color: #212529; /* Dark navbar */
-            border-color: #454d55; /* Dark border */
-        }
-        .panel {
-            background-color: #495057; /* Dark panel */
-            border-color: #6c757d; /* Dark border */
-        }
-        .table-hover tbody tr:hover {
-            color: #000000; /* Keep text color light on hover */
-        }
-        .filter-row select,
-        .filter-row input {
-            background-color: #495057; /* Dark input */
-            color: #ffffff; /* Light input text */
-            border: 1px solid #6c757d; /* Dark border */
-        }
-        /* Loading alert styles */
-        .loading-alert {
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: rgba(52, 58, 64, 0.8); /* Semi-transparent dark background */
-            backdrop-filter: blur(5px); /* Blur effect */
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            z-index: 1050; /* Bootstrap modal z-index */
-            transition: opacity 0.3s ease;
-            opacity: 0;
-            pointer-events: none; /* Disable pointer events when hidden */
-        }
-        .loading-alert.show {
-            opacity: 1;
-            pointer-events: auto; /* Enable pointer events when shown */
-        }
-        .admin-tab {
-            padding: 20px;
-        }
-        .admin-tab h3 {
-            margin-bottom: 20px;
-        }
-        .admin-tab .btn {
-            margin-top: 10px;
-            transition: background-color 0.3s;
-        }
-        .admin-tab .btn:hover {
-            background-color: #ff4d4d; /* Lighter red on hover */
-        }
-
-        .wide-select {
-            width: 200px; /* Adjust the width as needed */
-        }
-    </style>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
 </head>
 <header>
@@ -100,15 +38,15 @@
   </nav>
 </header>
 <main class="container">
-    <div >
+    <div>
         <div class="row">
             <div class="tab-content">
               <div role="tabpanel" class="tab-pane active" id="tab-dashboard">
                 <div class="card">
-                    <div class="card-header d-flex justify-content-between align-items-center">
+                    <div class="card-header d-flex justify-content-between align-items-center flex-wrap">
                         <h5 class="mb-0">Dashboard</h5>
                         <small class="created-time" style="text-align: right;"></small>
-                        <div class="btn-group day-filter" data-toggle="buttons">
+                        <div class="btn-group day-filter mt-2 mt-md-0" data-toggle="buttons">
                             <button class="btn btn-primary me-2" id="hours" autocomplete="off" title="Last 24 hours">
                                 <i class="fas fa-clock"></i> 24 Hours
                             </button>
@@ -120,17 +58,13 @@
                     <div class="panel-body">
                         <br>
                         <div class="row">
-                            <div class="col-md-12">
-                                <div class="row">
-                                    <div class="col-md-3 col-xs-6">
-                                        <h5 class="text-center">Method Distribution</h5>
-                                        <canvas id="pieCanvas"></canvas>
-                                    </div>
-                                    <div class="col-md-9 col-xs-12">
-                                        <h5 class="text-center">Request Count by Time</h5>
-                                        <canvas id="lineCanvas"></canvas>
-                                    </div>
-                                </div>
+                            <div class="col-12 col-md-3">
+                                <h5 class="text-center">Method Distribution</h5>
+                                <canvas id="pieCanvas"></canvas>
+                            </div>
+                            <div class="col-12 col-md-9">
+                                <h5 class="text-center">Request Count by Time</h5>
+                                <canvas id="lineCanvas"></canvas>
                             </div>
                         </div>
                         <hr>
@@ -141,69 +75,68 @@
                     <div class="card-footer text-body-secondary">
                     </div>
                 </div>
-            </div>
-
-            <div role="tabpanel" class="tab-pane" id="tab-filtering">
-              <div class="card">
-                  <div class="card-header">
-                      <h5 class="mb-0">Filtering</h5>
-                  </div>
-                  <br>
-                  <div class="panel-body">
-                    <div class="table-responsive">
-                      <table class="table table-hover" id="filteredTable">
-                          <thead>
-                              <tr class="filter-row">
-                                  <th>
-                                      <select class="form-select method wide-select" aria-label="Select HTTP Method">
-                                          <option value="ALL">ALL</option>
-                                          <option value="GET">GET</option>
-                                          <option value="POST">POST</option>
-                                          <option value="PUT">PUT</option>
-                                          <option value="DELETE">DELETE</option>
-                                          <option value="PATCH">PATCH</option>
-                                          <option value="COPY">COPY</option>
-                                          <option value="HEAD">HEAD</option>
-                                          <option value="OPTIONS">OPTIONS</option>
-                                          <option value="LINK">LINK</option>
-                                          <option value="UNLINK">UNLINK</option>
-                                          <option value="PURGE">PURGE</option>
-                                          <option value="LOCK">LOCK</option>
-                                          <option value="UNLOCK">UNLOCK</option>
-                                          <option value="PROPFIND">PROPFIND</option>
-                                          <option value="VIEW">VIEW</option>
-                                      </select>
-                                  </th>
-                                  <th>
-                                      <input type="text" class="form-control filtered-name" placeholder="Name" aria-label="Filter by Name">
-                                  </th>
-                                  <th>
-                                      <input type="text" class="form-control elapsed" placeholder="Elapsed Time" aria-label="Filter by Elapsed Time">
-                                  </th>
-                                  <th>
-                                      <input type="text" class="form-control filtered-datepicker" placeholder="Date" aria-label="Filter by Date">
-                                  </th>
-                              </tr>
-                              <tr>
-                                  <th></th>
-                                  <th></th>
-                                  <th></th>
-                                  <th></th>
-                              </tr>
-                          </thead>
-                      </table>
-                  </div>                  
-                  <div class="card-footer text-body-secondary"></div>                    
               </div>
-            </div>
-            </div>
-          
+
+              <div role="tabpanel" class="tab-pane" id="tab-filtering">
+                  <div class="card">
+                      <div class="card-header">
+                          <h5 class="mb-0">Filtering</h5>
+                      </div>
+                      <br>
+                      <div class="panel-body">
+                          <div class="table-responsive">
+                              <table class="table table-hover" id="filteredTable">
+                                  <thead>
+                                      <tr class="filter-row">
+                                          <th>
+                                              <select class="form-select method wide-select" aria-label="Select HTTP Method">
+                                                  <option value="ALL">ALL</option>
+                                                  <option value="GET">GET</option>
+                                                  <option value="POST">POST</option>
+                                                  <option value="PUT">PUT</option>
+                                                  <option value="DELETE">DELETE</option>
+                                                  <option value="PATCH">PATCH</option>
+                                                  <option value="COPY">COPY</option>
+                                                  <option value="HEAD">HEAD</option>
+                                                  <option value="OPTIONS">OPTIONS</option>
+                                                  <option value="LINK">LINK</option>
+                                                  <option value="UNLINK">UNLINK</option>
+                                                  <option value="PURGE">PURGE</option>
+                                                  <option value="LOCK">LOCK</option>
+                                                  <option value="UNLOCK">UNLOCK</option>
+                                                  <option value="PROPFIND">PROPFIND</option>
+                                                  <option value="VIEW">VIEW</option>
+                                              </select>
+                                          </th>
+                                          <th>
+                                              <input type="text" class="form-control filtered-name" placeholder="Name" aria-label="Filter by Name">
+                                          </th>
+                                          <th>
+                                              <input type="text" class="form-control elapsed" placeholder="Elapsed Time" aria-label="Filter by Elapsed Time">
+                                          </th>
+                                          <th>
+                                              <input type="text" class="form-control filtered-datepicker" placeholder="Date" aria-label="Filter by Date">
+                                          </th>
+                                      </tr>
+                                      <tr>
+                                          <th></th>
+                                          <th></th>
+                                          <th></th>
+                                          <th></th>
+                                      </tr>
+                                  </thead>
+                              </table>
+                          </div>                  
+                          <div class="card-footer text-body-secondary"></div>                    
+                      </div>
+                  </div>
+              </div>          
             <!-- Admin tab content -->
             <div role="tabpanel" class="tab-pane" id="tab-admin">
                 <div class="card shadow p-3 mb-5 rounded">
                     <h3>Admin Panel</h3>
                     <p class="mb-3">Use the button below to delete all data. This action is irreversible!</p>
-                    <button class="btn btn-outline-danger" id="deleteAllButton">
+                    <button class="btn btn-outline-danger w-100" id="deleteAllButton">
                         <i class="fas fa-trash-alt"></i> Delete All Data
                     </button>
                     
@@ -270,242 +203,6 @@
 <script src="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.js"></script>
 <script src="static/dist/js/jquery.json-viewer.js"></script>
 <script src="static/dist/js/main.js"></script>
-<script>
-    // JavaScript to handle loading alert visibility
-    function showLoading() {
-        const loadingAlert = document.getElementById("loadingAlert");
-        loadingAlert.classList.add("show");
-    }
-
-    function hideLoading() {
-        const loadingAlert = document.getElementById("loadingAlert");
-        loadingAlert.classList.remove("show");
-    }
-
-    // Simulate data loading for demonstration purposes
-    document.getElementById("hours").addEventListener("click", function() {
-        showLoading();
-        setTimeout(hideLoading, 3000); // Simulate a 3-second load
-    });
-
-    document.getElementById("days").addEventListener("click", function() {
-        showLoading();
-        setTimeout(hideLoading, 3000); // Simulate a 3-second load
-    });
-
-    window.onload = function() {
-      showLoading();
-      setTimeout(hideLoading, 3000);
-    };
-
-    function timeSince(date) {
-        const seconds = Math.floor((new Date() - date) / 1000);
-        let interval = Math.floor(seconds / 60);
-
-        if (interval === 0) return "Just now";
-        if (interval === 1) return "a minute ago";
-        if (interval < 60) return `${interval} minutes ago`;
-
-        interval = Math.floor(interval / 60);
-        if (interval === 1) return "an hour ago";
-        if (interval < 24) return `${interval} hours ago`;
-
-        interval = Math.floor(interval / 24);
-        if (interval === 1) return "Yesterday";
-        return `${interval} days ago`;
-    }
-
-    function showWarningToast(warningMessage) {
-        // Create a new toast element for warnings
-        var toastElement = document.createElement('div');
-        toastElement.classList.add('toast', 'bg-warning', 'text-dark');
-        toastElement.setAttribute('role', 'alert');
-        toastElement.setAttribute('aria-live', 'assertive');
-        toastElement.setAttribute('aria-atomic', 'true');
-        toastElement.style.marginBottom = '10px';
-
-        // Get the current time for the warning
-        const warningTime = new Date();
-
-        // Define the toast content with a warning icon and initial relative timestamp
-        toastElement.innerHTML = `
-            <div class="toast-header bg-warning text-dark">
-                <i class="fas fa-exclamation-triangle me-2"></i>
-                <strong class="me-auto">Warning</strong>
-                <small class="warning-time">${timeSince(warningTime)}</small>
-                <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
-            </div>
-            <div class="toast-body">${warningMessage}</div>
-        `;
-
-        // Append the new toast to the container
-        document.getElementById('toastContainer').appendChild(toastElement);
-
-        // Initialize and show the new toast
-        var toast = new bootstrap.Toast(toastElement, { autohide: false });
-        toast.show();
-
-        // Function to update the time displayed in the toast
-        function updateTime() {
-            const timeElement = toastElement.querySelector('.warning-time');
-            timeElement.textContent = timeSince(warningTime);
-        }
-
-        // Update the time every minute (60000 milliseconds)
-        const intervalId = setInterval(updateTime, 60000);
-
-        // Clean up the interval when the toast is hidden
-        toastElement.addEventListener('hidden.bs.toast', function () {
-            clearInterval(intervalId);
-            toastElement.remove();
-        });
-    }
-
-    function showErrorToast(errorMessage) {
-        // Create a new toast element for errors
-        var toastElement = document.createElement('div');
-        toastElement.classList.add('toast', 'bg-danger', 'text-white');
-        toastElement.setAttribute('role', 'alert');
-        toastElement.setAttribute('aria-live', 'assertive');
-        toastElement.setAttribute('aria-atomic', 'true');
-        toastElement.style.marginBottom = '10px';
-
-        // Get the current time for the error
-        const errorTime = new Date();
-
-        // Define the toast content with an error icon and initial relative timestamp
-        toastElement.innerHTML = `
-            <div class="toast-header bg-danger text-white">
-                <i class="fas fa-exclamation-circle me-2"></i>
-                <strong class="me-auto">Error</strong>
-                <small class="error-time">${timeSince(errorTime)}</small>
-                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="toast" aria-label="Close"></button>
-            </div>
-            <div class="toast-body">${errorMessage}</div>
-        `;
-
-        // Append the new toast to the container
-        document.getElementById('toastContainer').appendChild(toastElement);
-
-        // Initialize and show the new toast
-        var toast = new bootstrap.Toast(toastElement, { autohide: false });
-        toast.show();
-
-        // Function to update the time displayed in the toast
-        function updateTime() {
-            const timeElement = toastElement.querySelector('.error-time');
-            timeElement.textContent = timeSince(errorTime);
-        }
-
-        // Update the time every minute (60000 milliseconds)
-        const intervalId = setInterval(updateTime, 60000);
-
-        // Clean up the interval when the toast is hidden
-        toastElement.addEventListener('hidden.bs.toast', function () {
-            clearInterval(intervalId);
-            toastElement.remove();
-        });
-    }
-
-    window.onerror = function(message, source, lineno, colno, error) {
-
-        // Check for specific expected errors like Illegal invocation
-        if (message && message.includes('Illegal invocation')) {
-            // Show a warning toast for expected errors
-            showWarningToast(message);
-        } else {
-            // For all other errors, show the error toast
-            showErrorToast(message);
-        }
-    };
-
-    // Optionally handle resource loading errors (e.g., images, scripts)
-    window.addEventListener('error', function (event) {
-        if (event.target instanceof HTMLElement) {
-            console.error('Resource loading error:', event.target);
-            showErrorToast('A resource failed to load. Please try again.');
-        }
-    }, true);
-
-    const toggleSwitch = document.getElementById('darkModeSwitch');
-    const mainNavbar = document.getElementById('mainNavbar');
-
-    // Check the current theme on page load
-    const currentTheme = localStorage.getItem('theme') || 'light';
-    document.documentElement.setAttribute('data-bs-theme', currentTheme);
-    mainNavbar.setAttribute('data-bs-theme', currentTheme); // Set theme for the navbar
-
-    // Set the checkbox state based on the current theme
-    toggleSwitch.checked = currentTheme === 'dark';
-
-    toggleSwitch.addEventListener('change', function () {
-        const newTheme = this.checked ? 'dark' : 'light'; // Determine new theme
-        document.documentElement.setAttribute('data-bs-theme', newTheme); // Set the theme for the document
-        mainNavbar.setAttribute('data-bs-theme', newTheme); // Set the theme for the navbar
-        localStorage.setItem('theme', newTheme); // Store the new theme in localStorage
-        location.reload(); // Reload the page to apply the theme
-    });
-
-
-    function showUpdateToast(updateMessage) {
-        var toastElement = document.createElement('div');
-        toastElement.classList.add('toast');
-        toastElement.setAttribute('role', 'alert');
-        toastElement.setAttribute('aria-live', 'assertive');
-        toastElement.setAttribute('aria-atomic', 'true');
-        toastElement.style.marginBottom = '10px';  // Optional, for spacing between multiple toasts
-
-        const updatedTime = new Date();
-
-        toastElement.innerHTML = `
-            <div class="toast-header">
-                <strong class="me-auto">Update Available</strong>
-                <small class="update-time">${timeSince(updateTime)}</small>
-                <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
-            </div>
-            <div class="toast-body">
-                ${updateMessage}
-            </div>
-        `;
-
-
-        document.getElementById('toastContainer').appendChild(toastElement);
-
-        var toast = new bootstrap.Toast(toastElement, { autohide: false });
-        toast.show();
-
-        // Function to update the time displayed in the toast
-        function updateTime() {
-            const timeElement = toastElement.querySelector('.update-time');
-            timeElement.textContent = timeSince(updatedTime);
-        }
-
-        // Update the time every minute (60000 milliseconds)
-        const intervalId = setInterval(updateTime, 60000);
-
-        // Clean up the interval when the toast is hidden
-        toastElement.addEventListener('hidden.bs.toast', function () {
-            clearInterval(intervalId);
-            toastElement.remove();
-        });
-    }
-
-    // Fetch headers and show the update toast based on the response headers
-    document.addEventListener('DOMContentLoaded', function () {
-        // Fetch the current document's headers
-        fetch(window.location.href).then(function (response) {
-            // Get custom headers for update information
-            const updateAvailable = response.headers.get('X-Update-Available');
-            const localVersion = response.headers.get('X-Local-Version');
-            const remoteVersion = response.headers.get('X-Remote-Version');
-
-            // Check if update is available and show the toast
-            if (updateAvailable === 'True') {
-                showUpdateToast(`A new version of Flask-ProfilerForked (${remoteVersion}) is available. You are currently using ${localVersion}.`);
-            }
-        });
-    });
-
-</script>
+<script src="static/dist/js/main2.js"></script>
 </body>
 </html>

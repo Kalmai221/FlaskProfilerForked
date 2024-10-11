@@ -83,7 +83,7 @@ var setFilteredTable = function () {
         },
         responsive: true,
         paging: true,
-        pageLength: 100,
+        pageLength: 10,
         dom: "Btrtip",
         stateSave: true,
         order: [3, "desc"],
