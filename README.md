@@ -164,7 +164,7 @@ app.config["flask_profiler"] = {
 
 ## Changing Flask-Profiler Endpoint Root
 
-By default, Flask-Profiler is available at `/flask-profiler`. To change this:
+By default, Flask-Profiler is available at `/profiler`. To change this:
 
 ```python
 app.config["flask_profiler"] = {
