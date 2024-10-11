@@ -73,7 +73,6 @@
     </style>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
 </head>
-<body>
 <header>
   <nav class="navbar navbar-expand-lg bg-body-tertiary" id="mainNavbar" data-bs-theme="dark">
     <div class="container-fluid">
@@ -445,6 +444,66 @@
         mainNavbar.setAttribute('data-bs-theme', newTheme); // Set the theme for the navbar
         localStorage.setItem('theme', newTheme); // Store the new theme in localStorage
         location.reload(); // Reload the page to apply the theme
+    });
+
+
+    function showUpdateToast(updateMessage) {
+        var toastElement = document.createElement('div');
+        toastElement.classList.add('toast');
+        toastElement.setAttribute('role', 'alert');
+        toastElement.setAttribute('aria-live', 'assertive');
+        toastElement.setAttribute('aria-atomic', 'true');
+        toastElement.style.marginBottom = '10px';  // Optional, for spacing between multiple toasts
+
+        const updatedTime = new Date();
+
+        toastElement.innerHTML = `
+            <div class="toast-header">
+                <strong class="me-auto">Update Available</strong>
+                <small class="update-time">${timeSince(updateTime)}</small>
+                <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
+            </div>
+            <div class="toast-body">
+                ${updateMessage}
+            </div>
+        `;
+
+
+        document.getElementById('toastContainer').appendChild(toastElement);
+
+        var toast = new bootstrap.Toast(toastElement, { autohide: false });
+        toast.show();
+
+        // Function to update the time displayed in the toast
+        function updateTime() {
+            const timeElement = toastElement.querySelector('.update-time');
+            timeElement.textContent = timeSince(updatedTime);
+        }
+
+        // Update the time every minute (60000 milliseconds)
+        const intervalId = setInterval(updateTime, 60000);
+
+        // Clean up the interval when the toast is hidden
+        toastElement.addEventListener('hidden.bs.toast', function () {
+            clearInterval(intervalId);
+            toastElement.remove();
+        });
+    }
+
+    // Fetch headers and show the update toast based on the response headers
+    document.addEventListener('DOMContentLoaded', function () {
+        // Fetch the current document's headers
+        fetch(window.location.href).then(function (response) {
+            // Get custom headers for update information
+            const updateAvailable = response.headers.get('X-Update-Available');
+            const localVersion = response.headers.get('X-Local-Version');
+            const remoteVersion = response.headers.get('X-Remote-Version');
+
+            // Check if update is available and show the toast
+            if (updateAvailable === 'True') {
+                showUpdateToast(`A new version of Flask-ProfilerForked (${remoteVersion}) is available. You are currently using ${localVersion}.`);
+            }
+        });
     });
 
 </script>

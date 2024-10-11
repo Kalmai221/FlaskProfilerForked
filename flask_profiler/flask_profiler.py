@@ -4,14 +4,14 @@
 import functools
 import re
 import time
+import requests
+import os
 
 from pprint import pprint as pp
 
 import logging
 
-from flask import Blueprint
-from flask import jsonify
-from flask import request
+from flask import Blueprint, jsonify, request, make_response
 from flask_httpauth import HTTPBasicAuth
 
 from . import storage
@@ -24,6 +24,7 @@ logger = logging.getLogger("flask-profiler")
 
 _is_initialized = lambda: True if CONF else False
 
+CURRENT_VERSION = "V1.8.1.10"
 
 @auth.verify_password
 def verify_password(username, password):
@@ -163,7 +164,35 @@ def profile(*args, **kwargs):
         return wrapper
     raise Exception(
         "before measuring anything, you need to call init_app()")
+    
+def check_version():
+        # URL to fetch the remote version.txt
+        remote_url = 'https://raw.githubusercontent.com/Kalmai221/flask-profiler/refs/heads/master/flask_profiler/version.txt'
+        local_version = "Unknown"  # Default value in case of an error
 
+        try:
+            # Fetch remote version.txt content
+            response = requests.get(remote_url)
+            response.raise_for_status()  # Raise exception if the request fails
+            remote_version = response.text.strip()
+            print(f"Remote Version: {remote_version}")
+
+            with open("static/dist/version.txt", 'r') as local_file:
+                local_version = local_file.read().strip()
+                print(f"Local Version: {local_version}")
+
+            # Compare the versions
+            if remote_version == local_version:
+                return [True, local_version, remote_version]
+            else:
+                return [False, local_version, remote_version]
+
+        except requests.exceptions.RequestException:
+            return [None, local_version, "Error fetching remote version"]
+
+        except FileNotFoundError:
+            # Handle the case where version.txt does not exist
+            return [None, "File not found", "Error"]
 
 def registerInternalRouters(app):
     """
@@ -181,11 +210,48 @@ def registerInternalRouters(app):
         'flask-profiler', __name__,
         url_prefix="/" + urlPath,
         static_folder="static/dist/", static_url_path='/static/dist')
-
-    @fp.route("/".format(urlPath))
+    
+    @fp.route('/')
     @auth.login_required
     def index():
-        return fp.send_static_file("index.html")
+        # URLs to fetch the remote and local version.txt
+        if CONF["updateCheck"]:
+            remote_url = 'https://raw.githubusercontent.com/Kalmai221/flask-profiler/refs/heads/master/flask_profiler/static/dist/version.txt'
+            local_url = request.base_url + 'static/dist/version.txt'  # Update with your actual URL
+
+            try:
+                # Fetch remote version.txt content
+                remote_response = requests.get(remote_url)
+                remote_response.raise_for_status()  # Raise exception if the request fails
+                remote_version = remote_response.text.strip()
+
+                # Fetch local version.txt content
+                local_response = requests.get(local_url)
+                local_response.raise_for_status()  # Raise exception if the request fails
+                local_version = local_response.text.strip()
+
+                # Compare the versions
+                update_available = remote_version != local_version
+
+            except requests.exceptions.RequestException as e:
+                update_available = None
+                local_version = "Error"
+                remote_version = "Error"
+        else:
+            update_available = False
+            local_version = "Unknown"
+            remote_version = "Unknown"
+
+        # Serve the HTML file
+        response = fp.send_static_file("index.html")
+
+        # Set custom headers for version information
+        response.headers['X-Update-Available'] = str(update_available)
+        response.headers['X-Local-Version'] = local_version
+        response.headers['X-Remote-Version'] = remote_version
+
+        return response
+
 
     @fp.route("/api/measurements/".format(urlPath))
     @auth.login_required

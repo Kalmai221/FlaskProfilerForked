@@ -1,6 +1,6 @@
 # Flask-ProfilerForked
 
-**Version: 1.8.1.11**
+**Version: 1.8.1.12**
 
 ##### Flask-profilerforked measures endpoints defined in your flask application and provides you fine-grained reports through a web interface.
 
@@ -63,7 +63,8 @@ app.config["flask_profiler"] = {
     },
     "ignore": [
         "^/static/.*"
-    ]
+    ],
+    "updateCheck": False
 }
 
 @app.route('/product/<id>', methods=['GET'])
