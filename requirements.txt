@@ -11,3 +11,4 @@ simplejson==3.19.3
 mkdocs
 mkdocs-material
 mkdocs-git-revision-date-localized-plugin
+mkdocs-macros-plugin

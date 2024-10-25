@@ -6,6 +6,7 @@ theme:
     repo: fontawesome/brands/github
 
 extra:
+  version: V1.8.2.3
   generator: false
 
 repo_name: Flask-ProfilerForked
@@ -14,3 +15,5 @@ repo_url: https://github.com/Kalmai221/flask-profiler
 plugins:
   - git-revision-date-localized:
       enable_creation_date: true
+  - search
+  - macros
