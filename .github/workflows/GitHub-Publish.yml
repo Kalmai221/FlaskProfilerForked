@@ -1,0 +1,64 @@
+name: Publish Release and Upload Python Package
+
+on:
+  push:
+    branches:
+      - main  # Adjust to your default branch
+  release:
+    types: [published]
+
+permissions:
+  contents: read
+  packages: write  # Ensure that the workflow has permission to publish packages
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Check for PUBLISH commit message
+        id: check_publish
+        run: |
+          COMMIT_MESSAGE="${{ github.event.head_commit.message }}"
+          if [[ "$COMMIT_MESSAGE" != PUBLISH* ]]; then
+            echo "Not a PUBLISH commit. Exiting."
+            exit 1
+          fi
+          
+          # Extract version from the commit message
+          VERSION="${COMMIT_MESSAGE#PUBLISH }"  # Remove "PUBLISH " from the message
+          echo "VERSION=$VERSION" >> $GITHUB_ENV  # Set the version as an environment variable
+
+      - name: Set up Python
+        uses: actions/setup-python@v3
+        with:
+          python-version: '3.x'
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install build
+
+      - name: Build package
+        run: python -m build
+
+      - name: Create Release
+        id: create_release
+        run: |
+          TAG_NAME="${{ env.VERSION }}"  # Use the extracted version as the tag name
+          BODY="**Full Changelog**: https://github.com/Kalmai221/flask-profiler/compare/${{ github.event.release.tag_name }}...$TAG_NAME"
+          RESPONSE=$(curl -s -X POST \
+            -H "Authorization: token ${{ secrets.GIT_TOKEN }}" \
+            -H "Accept: application/vnd.github.v3+json" \
+            https://api.github.com/repos/${{ github.repository }}/releases \
+            -d "{\"tag_name\":\"$TAG_NAME\",\"name\":\"Release $TAG_NAME\",\"body\":\"$BODY\"}")
+
+          echo "Release created: $RESPONSE"
+
+      - name: Publish package
+        uses: pypa/gh-action-pypi-publish@27b31702a0e7fc50959f5ad993c78deac1bdfc29
+        with:
+          user: __token__
+          password: ${{ secrets.PYPI_API_TOKEN }}
