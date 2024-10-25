@@ -189,7 +189,7 @@ app.config["flask_profiler"] = {
 
 ---
 
-## Contributing
+## Contributing (Wiki coming soon)
 
 Contributions are welcome! Review the [Contributing Guidelines](https://github.com/Kalmai221/flask-profiler/wiki/Development) for more details on:
 
