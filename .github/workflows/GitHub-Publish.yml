@@ -46,7 +46,10 @@ jobs:
         id: create_release
         run: |
           TAG_NAME="${{ env.VERSION }}"  # Use the extracted version as the tag name
-          BODY="**Full Changelog**: https://github.com/Kalmai221/flask-profiler/compare/${{ github.event.release.tag_name }}...$TAG_NAME"
+          PREVIOUS_TAG="${{ github.event.release.tag_name }}"  # Get the previous release tag
+          
+          # Create body with the correct changelog URL
+          BODY="**Full Changelog**: https://github.com/Kalmai221/flask-profiler/compare/$PREVIOUS_TAG...$TAG_NAME"
           
           # Create release on GitHub
           RESPONSE=$(curl -s -X POST \
