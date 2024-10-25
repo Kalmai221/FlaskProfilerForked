@@ -1,0 +1,16 @@
+site_name: Flask-ProfilerForked Docs
+
+theme:
+  name: material
+  icon:
+    repo: fontawesome/brands/github
+
+extra:
+  generator: false
+
+repo_name: Flask-ProfilerForked
+repo_url: https://github.com/Kalmai221/flask-profiler
+
+plugins:
+  - git-revision-date-localized:
+      enable_creation_date: true
