@@ -2,7 +2,7 @@ name: Publish Release and Upload Python Package
 
 on:
   push:
-
+    
 permissions:
   contents: read
   packages: write  # Ensure that the workflow has permission to publish packages
@@ -38,21 +38,14 @@ jobs:
   build_and_publish:
     runs-on: ubuntu-latest
     needs: get_latest_release
+    if: startsWith(github.event.head_commit.message, 'PUBLISH')  # Only run if the commit message starts with "PUBLISH"
     steps:
       - uses: actions/checkout@v4
 
-      - name: Check for PUBLISH commit message
-        id: check_publish
+      - name: Extract version from commit message
         run: |
           COMMIT_MESSAGE="${{ github.event.head_commit.message }}"
           echo "COMMIT_MESSAGE: $COMMIT_MESSAGE"
-          if [[ "$COMMIT_MESSAGE" != PUBLISH* ]]; then
-            echo "Not a PUBLISH commit. Skipping build and publish steps."
-            echo "skip=true" >> $GITHUB_ENV  # Set a flag to skip the next steps
-            exit 0  # Exit without error
-          fi
-
-          # Extract version from the commit message
           VERSION="${COMMIT_MESSAGE#PUBLISH }"  # Remove "PUBLISH " from the message
           echo "VERSION=$VERSION" >> $GITHUB_ENV  # Set the version as an environment variable
 
@@ -96,7 +89,6 @@ jobs:
           echo "Release created: $RESPONSE"
 
       - name: Publish package
-        if: env.skip != 'true'  # Only run this step if the skip flag is not set
         run: |
           echo "Publishing package version $TAG_NAME to PyPI"
           python -m twine upload dist/* --username __token__ --password ${{ secrets.PYPI_API_TOKEN }} --repository pypi
