@@ -10,9 +10,36 @@ permissions:
   packages: write  # Ensure that the workflow has permission to publish packages
 
 jobs:
-  deploy:
+  get_latest_release:
     runs-on: ubuntu-latest
+    outputs:
+      previous_tag: ${{ steps.get_previous_tag.outputs.previous_tag }}
 
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Get latest release tag
+        id: get_previous_tag
+        run: |
+          RESPONSE=$(curl -s -H "Authorization: token ${{ secrets.GIT_TOKEN }}" \
+            -H "Accept: application/vnd.github.v3+json" \
+            https://api.github.com/repos/${{ github.repository }}/releases/latest)
+
+          # Extract the tag name from the response
+          TAG_NAME=$(echo "$RESPONSE" | jq -r .tag_name)
+
+          if [ "$TAG_NAME" == "null" ]; then
+            echo "No previous tag found."
+            echo "previous_tag=none" >> $GITHUB_ENV
+            echo "previous_tag=none" >> $GITHUB_OUTPUT
+          else
+            echo "Latest tag: $TAG_NAME"
+            echo "previous_tag=$TAG_NAME" >> $GITHUB_OUTPUT
+          fi
+
+  build_and_publish:
+    runs-on: ubuntu-latest
+    needs: get_latest_release
     steps:
       - uses: actions/checkout@v4
 
@@ -46,10 +73,13 @@ jobs:
         id: create_release
         run: |
           TAG_NAME="${{ env.VERSION }}"  # Use the extracted version as the tag name
-          PREVIOUS_TAG="${{ github.event.release.tag_name }}"  # Get the previous release tag
-          
-          # Create body with the correct changelog URL
-          BODY="**Full Changelog**: https://github.com/Kalmai221/flask-profiler/compare/$PREVIOUS_TAG...$TAG_NAME"
+          PREVIOUS_TAG="${{ needs.get_latest_release.outputs.previous_tag }}"  # Get the previous release tag
+
+          if [ "$PREVIOUS_TAG" == "none" ]; then
+            BODY="## Release $TAG_NAME\n\n✨ This is the first release of the package!\n\n"
+          else
+            BODY="## Release $TAG_NAME\n\n📦 New features and improvements since version $PREVIOUS_TAG:\n\n- [View full changes](https://github.com/Kalmai221/flask-profiler/compare/$PREVIOUS_TAG...$TAG_NAME)\n"
+          fi
           
           # Create release on GitHub
           RESPONSE=$(curl -s -X POST \
@@ -66,7 +96,6 @@ jobs:
           echo "Release created: $RESPONSE"
 
       - name: Publish package
-        uses: pypa/gh-action-pypi-publish@27b31702a0e7fc50959f5ad993c78deac1bdfc29
-        with:
-          user: __token__
-          password: ${{ secrets.PYPI_API_TOKEN }}
+        run: |
+          echo "Publishing package version $TAG_NAME to PyPI"
+          python -m twine upload dist/* --username __token__ --password ${{ secrets.PYPI_API_TOKEN }} --repository pypi
