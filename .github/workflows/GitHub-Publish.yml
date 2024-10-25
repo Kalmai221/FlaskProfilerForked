@@ -47,12 +47,19 @@ jobs:
         run: |
           TAG_NAME="${{ env.VERSION }}"  # Use the extracted version as the tag name
           BODY="**Full Changelog**: https://github.com/Kalmai221/flask-profiler/compare/${{ github.event.release.tag_name }}...$TAG_NAME"
+          
+          # Create release on GitHub
           RESPONSE=$(curl -s -X POST \
             -H "Authorization: token ${{ secrets.GIT_TOKEN }}" \
             -H "Accept: application/vnd.github.v3+json" \
             https://api.github.com/repos/${{ github.repository }}/releases \
             -d "{\"tag_name\":\"$TAG_NAME\",\"name\":\"Release $TAG_NAME\",\"body\":\"$BODY\"}")
 
+          # Check for errors in the response
+          if [[ $(echo "$RESPONSE" | jq -r .id) == "null" ]]; then
+            echo "Error creating release: $RESPONSE"
+            exit 1
+          fi
           echo "Release created: $RESPONSE"
 
       - name: Publish package
