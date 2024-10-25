@@ -399,11 +399,11 @@ document.addEventListener('DOMContentLoaded', function () {
 
     const consentGiven = localStorage.getItem('logConsent');
 
-    if (consentGiven !== 'accepted') {
+    if (consentGiven !== 'accepted' && consentGiven !== 'declined') {
         const consentModal = new bootstrap.Modal(document.getElementById('devConsentModal'));
         consentModal.show();
     }
-
+    
     document.getElementById('acceptDevConsent').addEventListener('click', function() {
         localStorage.setItem('logConsent', 'accepted');
         console.log("User accepted error logging.");
