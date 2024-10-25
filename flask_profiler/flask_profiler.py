@@ -5,7 +5,6 @@ import functools
 import re
 import time
 import requests
-import os
 
 from pprint import pprint as pp
 
@@ -163,35 +162,6 @@ def profile(*args, **kwargs):
     raise Exception(
         "before measuring anything, you need to call init_app()")
     
-def check_version():
-        # URL to fetch the remote version.txt
-        remote_url = 'https://raw.githubusercontent.com/Kalmai221/flask-profiler/refs/heads/master/flask_profiler/version.txt'
-        local_version = "Unknown"  # Default value in case of an error
-
-        try:
-            # Fetch remote version.txt content
-            response = requests.get(remote_url)
-            response.raise_for_status()  # Raise exception if the request fails
-            remote_version = response.text.strip()
-            print(f"Remote Version: {remote_version}")
-
-            with open("static/dist/version.txt", 'r') as local_file:
-                local_version = local_file.read().strip()
-                print(f"Local Version: {local_version}")
-
-            # Compare the versions
-            if remote_version == local_version:
-                return [True, local_version, remote_version]
-            else:
-                return [False, local_version, remote_version]
-
-        except requests.exceptions.RequestException:
-            return [None, local_version, "Error fetching remote version"]
-
-        except FileNotFoundError:
-            # Handle the case where version.txt does not exist
-            return [None, "File not found", "Error"]
-
 def registerInternalRouters(app):
     """
     These are the endpoints which are used to display measurements in the
