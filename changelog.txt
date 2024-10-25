@@ -1,5 +1,11 @@
 Version 1.8.2
 ====================
+- Bug Fixes
+- Added Optional Debug Logging to Developers
+- Added that you get redirected to GitHub Releases on cliclijg the Update Needed Toast
+
+Version 1.8.2
+====================
 - Optimisations for the website display
 - Improved Mobile Design
 

@@ -243,3 +243,46 @@ canvas {
 .wide-select {
     width: 200px; /* Adjust the width as needed */
 }
+
+#modalActions {
+    list-style-type: disc;
+    padding-left: 20px;
+}
+
+/* Styles for the development consent modal */
+#devConsentModal {
+    /* Optional: Add a max-width to the modal for better layout */
+    max-width: 500px;
+}
+
+/* Style the modal header */
+.dev-consent-header {
+    background-color: #cca81a; /* Bright color for visibility */
+}
+
+/* Style the modal body text */
+.dev-consent-body p {
+    font-size: 1rem;
+}
+
+/* Style the modal footer buttons */
+.dev-consent-footer .btn {
+    width: 100px; /* Fixed width for buttons */
+}
+
+/* Style for the Accept button */
+.dev-consent-footer .btn-primary {
+    background-color: #28a745; /* Green color for acceptance */
+    border-color: #28a745; /* Match border with background */
+}
+
+/* Style for the Decline button */
+.dev-consent-footer .btn-secondary {
+    background-color: #dc3545; /* Red color for decline */
+    border-color: #dc3545; /* Match border with background */
+}
+
+/* Optional: Add hover effects for buttons */
+.dev-consent-footer .btn:hover {
+    opacity: 0.9; /* Slightly transparent on hover */
+}

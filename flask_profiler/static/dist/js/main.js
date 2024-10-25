@@ -127,22 +127,27 @@ var setFilteredTable = function () {
             {
                 title: "Started At",
                 data: function (a) {
-                    return moment.unix(a.startedAt).format("DD/MM/YYYY h:mm:ss A");
+                    return moment.unix(a.startedAt).format("DD/MM/YYYY");
                 },
                 "class": "startedAt"
             }
         ],
         initComplete: function () {
             $("#filteredTable>thead").append($("#filteredTable .filter-row"));
+
+            // Initialize the date range picker with the correct date format
             $(".filtered-datepicker").daterangepicker({
-                timePicker: true,
-                timePickerSeconds: true,
+                timePicker: false, // Disable time picker
                 startDate: moment.unix(window.profile.dateTime.startedAt).format("DD/MM/YYYY"),
-                endDate: moment.unix(window.profile.dateTime.endedAt).format("DD/MM/YYYY")
-            }, function (b, c, d) {
+                endDate: moment.unix(window.profile.dateTime.endedAt).format("DD/MM/YYYY"),
+                locale: {
+                    format: "DD/MM/YYYY" // Set the locale format for the date picker
+                }
+            }, function (b, c) {
                 profile.dateTime = { startedAt: b.unix(), endedAt: c.unix() };
                 a.draw();
             });
+
             $("#filteredTable").removeClass("loading");
         },
         
@@ -168,6 +173,7 @@ var setFilteredTable = function () {
         a.draw();
     });
 };
+
 
 var getCharts = function () {
     // Fetch and render pie chart

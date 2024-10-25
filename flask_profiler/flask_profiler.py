@@ -24,8 +24,6 @@ logger = logging.getLogger("flask-profiler")
 
 _is_initialized = lambda: True if CONF else False
 
-CURRENT_VERSION = "V1.8.1.10"
-
 @auth.verify_password
 def verify_password(username, password):
     if "basicAuth" not in CONF or not CONF["basicAuth"]["enabled"]:
@@ -251,7 +249,6 @@ def registerInternalRouters(app):
         response.headers['X-Remote-Version'] = remote_version
 
         return response
-
 
     @fp.route("/api/measurements/".format(urlPath))
     @auth.login_required

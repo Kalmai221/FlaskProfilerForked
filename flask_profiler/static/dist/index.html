@@ -142,15 +142,23 @@
                     
                     <hr class="bg-warning mt-4">
                     
+                    <h4>Delete Saved Local Data</h4>
+                    <p class="mb-3">Use the button below to delete all saved local data from your browser.</p>
+                    <button class="btn btn-outline-danger w-100" id="deleteLocalDataButton">
+                        <i class="fas fa-trash-alt"></i> Delete Saved Local Data
+                    </button>
+            
+                    <hr class="bg-warning mt-4">
+                    
                     <h4>Settings</h4>
                     <div class="form-check">
                         <input class="form-check-input" type="checkbox" value="" id="darkModeSwitch">
-                        <label class="form-check-label" for="flexCheckDefault">
+                        <label class="form-check-label" for="darkModeSwitch">
                             Dark Mode
                         </label>
                     </div>
                 </div>
-            </div>
+            </div>            
         </div>
     </div>
 </main>
@@ -193,6 +201,43 @@
       An unexpected error has occurred on the profiler.
     </div>
   </div>
+</div>
+
+<div class="modal fade" id="devConsentModal" tabindex="-1" aria-labelledby="devConsentModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header dev-consent-header">
+                <h5 class="modal-title" id="devConsentModalLabel">Consent for Development Logging</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body dev-consent-body">
+                <p>We would like to log errors and warnings for development purposes to improve the app. Do you consent to allow error and warning logs to be stored for this session?</p>
+            </div>
+            <div class="modal-footer dev-consent-footer">
+                <button type="button" id="declineDevConsent" class="btn btn-secondary" data-bs-dismiss="modal">Decline</button>
+                <button type="button" id="acceptDevConsent" class="btn btn-primary" data-bs-dismiss="modal">Accept</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Confirmation Modal for Deleting Local Data -->
+<div class="modal fade" id="deleteLocalDataModal" tabindex="-1" aria-labelledby="deleteLocalDataModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="deleteLocalDataModalLabel">Confirm Deletion</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p>Are you sure you want to delete all saved local data? This action cannot be undone.</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" id="confirmDeleteLocalData" class="btn btn-danger">Delete</button>
+            </div>
+        </div>
+    </div>
 </div>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.1/moment.min.js"></script>
