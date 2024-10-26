@@ -26,7 +26,7 @@ pip install git+https://github.com/Kalmai221/flask-profiler@master
 
 Here’s an example Flask application using Flask-ProfilerForked:
 
-```python
+```python title="my_web_app.py"
 # app.py
 from flask import Flask
 import flask_profiler

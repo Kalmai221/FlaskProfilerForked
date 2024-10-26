@@ -2,7 +2,7 @@
 
 By default, Flask-Profiler is available at `/profiler`. To change this:
 
-```python
+```python title="my_web_app.py"
 app.config["flask_profiler"] = {
     "endpointRoot": "custom-profiler-root"
 }
@@ -14,7 +14,7 @@ app.config["flask_profiler"] = {
 
 To ignore specific endpoints from being tracked, use regex patterns:
 
-```python
+```python title="my_web_app.py"
 app.config["flask_profiler"] = {
     "ignore": [
         "^/static/.*",

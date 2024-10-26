@@ -3,7 +3,7 @@
 Flask-ProfilerForked supports **SQLite**, **MongoDB**, **PostgreSQL**, **MySQL**, and more. Here's how to set up some of the common database engines:
 
 ### SQLite Configuration:
-```python
+```python title="my_web_app.py"
 app.config["flask_profiler"] = {
     "storage": {
         "engine": "sqlite",
@@ -17,7 +17,7 @@ app.config["flask_profiler"] = {
 | `storage.TABLE` | Table name to store profiling data | `measurements`             |
 
 ### MongoDB Configuration:
-```python
+```python title="my_web_app.py"
 app.config["flask_profiler"] = {
     "storage": {
         "engine": "mongodb",
@@ -37,7 +37,7 @@ app.config["flask_profiler"] = {
 
 You can specify a custom storage engine as follows:
 
-```python
+```python title="my_web_app.py"
 app.config["flask_profiler"] = {
     "storage": {
         "engine": "custom.project.flask_profiler.mysql.MysqlStorage",
