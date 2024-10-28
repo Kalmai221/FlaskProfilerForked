@@ -88,7 +88,8 @@ jobs:
           fi
           echo "Release created: $RESPONSE"
 
-      - name: Publish package
-        run: |
-          echo "Publishing package version $TAG_NAME to PyPI"
-          python -m twine upload dist/* --username __token__ --password ${{ secrets.PYPI_API_TOKEN }} --repository pypi
+          - name: Publish package
+            uses: pypa/gh-action-pypi-publish@27b31702a0e7fc50959f5ad993c78deac1bdfc29
+            with:
+              user: __token__
+              password: ${{ secrets.PYPI_API_TOKEN }}
