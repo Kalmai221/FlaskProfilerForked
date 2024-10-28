@@ -36,19 +36,30 @@ app.config["DEBUG"] = True
 
 # Flask-Profiler configuration
 app.config["flask_profiler"] = {
+    "verbose": True,
     "enabled": app.config["DEBUG"],
     "storage": {
-        "engine": "sqlite"
+        "engine": "sqlalchmey",
+        "db_url": "sqlite:///flask_profiler.sql"  # optional
     },
-    "basicAuth": {
+    "basicAuth":{
         "enabled": True,
-        "username": "admin",
-        "password": "admin"
+        "users": {
+            "1": {
+                "username": "admin",
+                "password": "password"
+            },
+            "2": {
+                "username": "user",
+                "password": "password"
+            }
+        }
     },
     "ignore": [
-        "^/static/.*"
+        "/static/*",
+        "/secrets/password/"
     ],
-    "updateCheck": False
+    "updateCheck": True,
 }
 
 @app.route('/product/<id>', methods=['GET'])

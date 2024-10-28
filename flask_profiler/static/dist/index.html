@@ -12,153 +12,244 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
 </head>
 <header>
-  <nav class="navbar navbar-expand-lg bg-body-tertiary" id="mainNavbar" data-bs-theme="dark">
-    <div class="container-fluid">
-      <a class="navbar-brand" href="./">Flask Profiler</a>
-      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarText" aria-controls="navbarText" aria-expanded="false" aria-label="Toggle navigation">
-        <span class="navbar-toggler-icon"></span>
-      </button>
-      <div class="collapse navbar-collapse" id="navbarText" role="navigation">
-        <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-          <li class="nav-item">
-            <a class="nav-link active" data-target="#tab-dashboard" role="tab" data-bs-toggle="tab" data-tab-history="true" data-tab-history-changer="push" data-tab-history-update-url="true" href="#tab-dashboard">Dashboard</a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" data-target="#tab-filtering" role="tab" data-bs-toggle="tab" data-tab-history="true" data-tab-history-changer="push" data-tab-history-update-url="true" href="#tab-filtering">Filtering</a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" data-target="#tab-admin" role="tab" data-bs-toggle="tab" data-tab-history="true" data-tab-history-changer="push" data-tab-history-update-url="true" href="#tab-admin">Admin</a>         
-          </li>
-        </ul>
-        <span class="navbar-text">
-          Forked version of Flask Profiler by muatik
-        </span>
+    <nav class="navbar navbar-expand-lg bg-dark shadow-sm" id="mainNavbar" data-bs-theme="dark">
+      <div class="container-fluid">
+        <a class="navbar-brand text-light fw-bold" href="./">Flask Profiler</a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarText" aria-controls="navbarText" aria-expanded="false" aria-label="Toggle navigation">
+          <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarText" role="navigation">
+          <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+            <li class="nav-item">
+              <a class="nav-link active text-light" data-target="#tab-dashboard" role="tab" data-bs-toggle="tab" data-tab-history="true" data-tab-history-changer="push" data-tab-history-update-url="true" href="#tab-dashboard">Dashboard</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link text-light" data-target="#tab-filtering" role="tab" data-bs-toggle="tab" data-tab-history="true" data-tab-history-changer="push" data-tab-history-update-url="true" href="#tab-filtering">Filtering</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link text-light" data-target="#tab-emulation" role="tab" data-bs-toggle="tab" data-tab-history="true" data-tab-history-changer="push" data-tab-history-update-url="true" href="#tab-emulation">Emulation</a>         
+            </li>
+            <li class="nav-item">
+              <a class="nav-link text-light" data-target="#tab-admin" role="tab" data-bs-toggle="tab" data-tab-history="true" data-tab-history-changer="push" data-tab-history-update-url="true" href="#tab-admin">Admin</a>         
+            </li>
+          </ul>
+          <span class="navbar-text text-light d-none d-lg-inline">
+            Forked version of Flask Profiler originally by muatik
+          </span>
+        </div>
       </div>
-    </div>
-  </nav>
-</header>
+    </nav>
+  </header>
+  
+  
 <main class="container">
     <div>
         <div class="row">
             <div class="tab-content">
               <div role="tabpanel" class="tab-pane active" id="tab-dashboard">
-                <div class="card">
-                    <div class="card-header d-flex justify-content-between align-items-center flex-wrap">
+                <div class="card border-light shadow-sm">
+                    <div class="card-header d-flex justify-content-between align-items-center flex-wrap bg-primary text-white">
                         <h5 class="mb-0">Dashboard</h5>
-                        <small class="created-time" style="text-align: right;"></small>
+                        <small class="created-time text-white" style="text-align: right;"></small>
                         <div class="btn-group day-filter mt-2 mt-md-0" data-toggle="buttons">
-                            <button class="btn btn-primary me-2" id="hours" autocomplete="off" title="Last 24 hours">
+                            <button class="btn btn-outline-white me-2" id="hours" autocomplete="off" title="Last 24 hours">
                                 <i class="fas fa-clock"></i> 24 Hours
                             </button>
-                            <button class="btn btn-primary" id="days" autocomplete="off" title="Last 7 days">
+                            <button class="btn btn-outline-white" id="days" autocomplete="off" title="Last 7 days">
                                 <i class="fas fa-calendar-week"></i> 7 Days
                             </button>
                         </div>
                     </div>
-                    <div class="panel-body">
-                        <br>
+                    <div class="card-body">
                         <div class="row">
-                            <div class="col-12 col-md-3">
+                            <div class="col-12 col-md-3 mb-4">
                                 <h5 class="text-center">Method Distribution</h5>
                                 <canvas id="pieCanvas"></canvas>
                             </div>
-                            <div class="col-12 col-md-9">
+                            <div class="col-12 col-md-9 mb-4">
                                 <h5 class="text-center">Request Count by Time</h5>
                                 <canvas id="lineCanvas"></canvas>
                             </div>
                         </div>
                         <hr>
                         <div class="table-responsive">
-                            <table class="table table-hover table-striped" id="big-users-table"></table>
+                            <table class="table table-hover table-striped" id="big-users-table">
+                            </table>
                         </div>
                     </div>
                     <div class="card-footer text-body-secondary">
+                        <!-- Optional footer content -->
                     </div>
                 </div>
-              </div>
+            </div>
 
-              <div role="tabpanel" class="tab-pane" id="tab-filtering">
-                  <div class="card">
-                      <div class="card-header">
-                          <h5 class="mb-0">Filtering</h5>
-                      </div>
-                      <br>
-                      <div class="panel-body">
-                          <div class="table-responsive">
-                              <table class="table table-hover" id="filteredTable">
-                                  <thead>
-                                      <tr class="filter-row">
-                                          <th>
-                                              <select class="form-select method wide-select" aria-label="Select HTTP Method">
-                                                  <option value="ALL">ALL</option>
-                                                  <option value="GET">GET</option>
-                                                  <option value="POST">POST</option>
-                                                  <option value="PUT">PUT</option>
-                                                  <option value="DELETE">DELETE</option>
-                                                  <option value="PATCH">PATCH</option>
-                                                  <option value="COPY">COPY</option>
-                                                  <option value="HEAD">HEAD</option>
-                                                  <option value="OPTIONS">OPTIONS</option>
-                                                  <option value="LINK">LINK</option>
-                                                  <option value="UNLINK">UNLINK</option>
-                                                  <option value="PURGE">PURGE</option>
-                                                  <option value="LOCK">LOCK</option>
-                                                  <option value="UNLOCK">UNLOCK</option>
-                                                  <option value="PROPFIND">PROPFIND</option>
-                                                  <option value="VIEW">VIEW</option>
-                                              </select>
-                                          </th>
-                                          <th>
-                                              <input type="text" class="form-control filtered-name" placeholder="Name" aria-label="Filter by Name">
-                                          </th>
-                                          <th>
-                                              <input type="text" class="form-control elapsed" placeholder="Elapsed Time" aria-label="Filter by Elapsed Time">
-                                          </th>
-                                          <th>
-                                              <input type="text" class="form-control filtered-datepicker" placeholder="Date" aria-label="Filter by Date">
-                                          </th>
-                                      </tr>
-                                      <tr>
-                                          <th></th>
-                                          <th></th>
-                                          <th></th>
-                                          <th></th>
-                                      </tr>
-                                  </thead>
-                              </table>
-                          </div>                  
-                          <div class="card-footer text-body-secondary"></div>                    
-                      </div>
-                  </div>
-              </div>          
+
+            <div role="tabpanel" class="tab-pane" id="tab-filtering">
+                <div class="card border-light shadow-sm">
+                    <div class="card-header bg-primary text-white">
+                        <h5 class="mb-0">Filtering</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <table class="table table-hover" id="filteredTable">
+                                <thead>
+                                    <tr class="filter-row">
+                                        <th>
+                                            <select class="form-select method wide-select" aria-label="Select HTTP Method">
+                                                <option value="ALL">ALL</option>
+                                                <option value="GET">GET</option>
+                                                <option value="POST">POST</option>
+                                                <option value="PUT">PUT</option>
+                                                <option value="DELETE">DELETE</option>
+                                                <option value="PATCH">PATCH</option>
+                                                <option value="COPY">COPY</option>
+                                                <option value="HEAD">HEAD</option>
+                                                <option value="OPTIONS">OPTIONS</option>
+                                                <option value="LINK">LINK</option>
+                                                <option value="UNLINK">UNLINK</option>
+                                                <option value="PURGE">PURGE</option>
+                                                <option value="LOCK">LOCK</option>
+                                                <option value="UNLOCK">UNLOCK</option>
+                                                <option value="PROPFIND">PROPFIND</option>
+                                                <option value="VIEW">VIEW</option>
+                                            </select>
+                                        </th>
+                                        <th>
+                                            <input type="text" class="form-control filtered-name" placeholder="Name" aria-label="Filter by Name">
+                                        </th>
+                                        <th>
+                                            <input type="text" class="form-control elapsed" placeholder="Elapsed Time" aria-label="Filter by Elapsed Time">
+                                        </th>
+                                        <th>
+                                            <input type="text" class="form-control filtered-datepicker" placeholder="Date" aria-label="Filter by Date">
+                                        </th>
+                                    </tr>
+                                    <tr>
+                                        <th></th>
+                                        <th></th>
+                                        <th></th>
+                                        <th></th>
+                                    </tr>
+                                </thead>
+                            </table>
+                        </div>
+                    </div>
+                    <div class="card-footer text-body-secondary">
+                        <!-- Optional footer content -->
+                    </div>
+                </div>
+            </div>                      
             <!-- Admin tab content -->
             <div role="tabpanel" class="tab-pane" id="tab-admin">
-                <div class="card shadow p-3 mb-5 rounded">
-                    <h3>Admin Panel</h3>
-                    <p class="mb-3">Use the button below to delete all data. This action is irreversible!</p>
-                    <button class="btn btn-outline-danger w-100" id="deleteAllButton">
-                        <i class="fas fa-trash-alt"></i> Delete All Data
-                    </button>
-                    
-                    <hr class="bg-warning mt-4">
-                    
-                    <h4>Delete Saved Local Data</h4>
-                    <p class="mb-3">Use the button below to delete all saved local data from your browser.</p>
-                    <button class="btn btn-outline-danger w-100" id="deleteLocalDataButton">
-                        <i class="fas fa-trash-alt"></i> Delete Saved Local Data
-                    </button>
+                <div class="card border-light shadow-sm">
+                    <div class="card-header bg-primary text-white">
+                        <h5 class="mb-0">Settings</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" value="" id="darkModeSwitch">
+                            <label class="form-check-label" for="darkModeSwitch">Dark Mode</label>
+                        </div>
+                
+                        <hr class="bg-warning mt-4">
+                
+                        <!-- Delete Data Section -->
+                        <h4>Delete Data</h4>
+                        <button class="btn btn-outline-danger w-100" id="deleteAllButton">
+                            <i class="fas fa-trash-alt"></i> Delete All Data
+                        </button>
+                
+                        <hr class="bg-warning mt-4">
+                
+                        <!-- Delete Local Site Data Section -->
+                        <h4>Delete Local Site Data</h4>
+                        <button class="btn btn-outline-danger w-100" id="deleteLocalDataButton">
+                            <i class="fas fa-trash-alt"></i> Delete Saved Local Data
+                        </button>
+                    </div>
+                </div>   
+            </div>     
+            <div role="tabpanel" class="tab-pane" id="tab-emulation">
+                <div class="card border-light shadow-sm">
+                    <div class="card-header bg-primary text-white">
+                        <h5 class="mb-0">Emulation</h5>
+                    </div>
+                    <div class="card-body">
+                        <p>Create and send custom requests to test endpoints.</p>
             
-                    <hr class="bg-warning mt-4">
-                    
-                    <h4>Settings</h4>
-                    <div class="form-check">
-                        <input class="form-check-input" type="checkbox" value="" id="darkModeSwitch">
-                        <label class="form-check-label" for="darkModeSwitch">
-                            Dark Mode
-                        </label>
+                        <!-- Request Form -->
+                        <form id="emulationForm">
+                            <div class="mb-3">
+                                <label for="requestMethod" class="form-label">HTTP Method</label>
+                                <select id="requestMethod" class="form-select">
+                                    <option value="GET">GET</option>
+                                    <option value="POST">POST</option>
+                                    <option value="PUT">PUT</option>
+                                    <option value="DELETE">DELETE</option>
+                                    <option value="PATCH">PATCH</option>
+                                    <option value="COPY">COPY</option>
+                                    <option value="HEAD">HEAD</option>
+                                    <option value="OPTIONS">OPTIONS</option>
+                                    <option value="LINK">LINK</option>
+                                    <option value="UNLINK">UNLINK</option>
+                                    <option value="PURGE">PURGE</option>
+                                    <option value="LOCK">LOCK</option>
+                                    <option value="UNLOCK">UNLOCK</option>
+                                    <option value="PROPFIND">PROPFIND</option>
+                                    <option value="VIEW">VIEW</option>
+                                </select>
+                            </div>
+                            <div class="mb-3">
+                                <label for="requestUrl" class="form-label">Request URL</label>
+                                <input type="text" id="requestUrl" class="form-control" placeholder="Enter the endpoint URL" required>
+                            </div>
+            
+                            <!-- Dynamic Headers Section -->
+                            <div id="headersContainer" class="mb-3">
+                                <label class="form-label">Headers</label>
+                                <div class="input-group mb-1">
+                                    <input type="text" class="form-control header-key" placeholder="Header Name">
+                                    <input type="text" class="form-control header-value" placeholder="Header Value">
+                                    <button type="button" class="btn btn-outline-secondary btn-remove-header">Remove</button>
+                                </div>
+                            </div>
+                            <button type="button" id="addHeaderBtn" class="btn btn-outline-primary mb-3">Add Header</button>
+            
+                            <!-- Body Section -->
+                            <div class="mb-3">
+                                <label for="requestBody" class="form-label">Body (JSON or plain text)</label>
+                                <textarea id="requestBody" class="form-control" rows="5" placeholder='{"key": "value"}'></textarea>
+                            </div>
+            
+                            <!-- Authentication & Timeout -->
+                            <div class="mb-3">
+                                <label for="timeout" class="form-label">Timeout (ms)</label>
+                                <input type="number" id="timeout" class="form-control" placeholder="3000">
+                            </div>
+                            <div class="mb-3 form-check">
+                                <input type="checkbox" class="form-check-input" id="saveToHistory">
+                                <label class="form-check-label" for="saveToHistory">Save to History</label>
+                            </div>
+            
+                            <button type="submit" class="btn btn-primary">Send Request</button>
+                        </form>
+            
+                        <!-- Response Display -->
+                        <hr>
+                        <h5>Response</h5>
+                        <div id="responseInfo">
+                            <small id="responseStatus" class="text-muted"></small>
+                            <small id="responseTime" class="text-muted"></small>
+                        </div>
+                        <pre id="responseOutput" class="bg-white text-black p-3 border rounded"></pre>
+            
+                        <!-- History Section -->
+                        <hr>
+                        <h5>Request History</h5>
+                        <ul id="historyList" class="list-group"></ul>
                     </div>
                 </div>
-            </div>            
+            </div>                      
         </div>
     </div>
 </main>
@@ -239,6 +330,11 @@
         </div>
     </div>
 </div>
+
+<!-- Help Icon Badge -->
+<a href="https://flask-profiler.readthedocs.io/en/latest/" target="_blank" class="btn btn-info btn-floating" style="position: fixed; bottom: 20px; right: 20px; z-index: 1000;">
+    <i class="fas fa-question-circle"></i>
+</a>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.1/moment.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>

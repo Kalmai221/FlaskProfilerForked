@@ -25,15 +25,19 @@ _is_initialized = lambda: True if CONF else False
 
 @auth.verify_password
 def verify_password(username, password):
-    if "basicAuth" not in CONF or not CONF["basicAuth"]["enabled"]:
+    if "basicAuth" not in CONF or not CONF["basicAuth"].get("enabled", False):
         return True
 
-    c = CONF["basicAuth"]
-    if username == c["username"] and password == c["password"]:
-        return True
+    # Loop through users in the configuration
+    users = CONF["basicAuth"].get("users", {})
+    for user in users.values():
+        # Check if 'username' and 'password' exist in user dictionary
+        if 'username' in user and 'password' in user:
+            if username == user["username"] and password == user["password"]:
+                return True
+
     logging.warn("flask-profiler authentication failed")
     return False
-
 
 class Measurement(object):
     """represents an endpoint measurement"""
@@ -245,7 +249,70 @@ def registerInternalRouters(app):
                 return jsonify({"message": "No measurements found to delete."}), 404
         except Exception as e:
             return jsonify({"error": f"An error occurred: {str(e)}"}), 500
+    
+    @fp.route("/api/measurements/insert", methods=["POST"])
+    @auth.login_required
+    def insert_measurement():
+        try:
+            # Get the JSON data from the request
+            measurement_data = request.get_json()
 
+            # Ensure measurement_data is not None
+            if not measurement_data:
+                return jsonify({"error": "No measurement data provided."}), 400
+
+            # Call the insert method
+            inserted = collection.insert(measurement_data)
+
+            # Check if the insertion was successful
+            if inserted:
+                return jsonify({"message": "Measurement inserted successfully."}), 201
+            else:
+                return jsonify({"message": "Failed to insert measurement."}), 500
+
+        except Exception as e:
+            return jsonify({"error": f"An error occurred: {str(e)}"}), 500
+        
+    @fp.route("/api/webhook/save", methods=["POST"])
+    @auth.login_required
+    def save_webhook():
+        try:
+            # Get the JSON data from the request
+            webhook_data = request.get_json()
+
+            # Ensure webhook_data is not None and contains necessary fields
+            if not webhook_data or 'url' not in webhook_data or 'preset' not in webhook_data or 'json' not in webhook_data:
+                return jsonify({"error": "Webhook data must include url, preset, and json."}), 400
+
+            # Call the insert method (assuming you have a method to insert data)
+            inserted = collection.insert(webhook_data)
+
+            # Check if the insertion was successful
+            if inserted:
+                return jsonify({"message": "Webhook saved successfully."}), 201
+            else:
+                return jsonify({"message": "Failed to save webhook."}), 500
+
+        except Exception as e:
+            return jsonify({"error": f"An error occurred: {str(e)}"}), 500
+
+
+    @fp.route("/api/webhook/get", methods=["GET"])
+    @auth.login_required
+    def get_webhook():
+        try:
+            # Retrieve the webhook data from your storage (adjust based on your database schema)
+            webhook_data = collection.find_one()  # Modify as needed to get the correct webhook entry
+
+            if webhook_data:
+                # Optionally, you may want to format the response if needed
+                return jsonify({"webhook": webhook_data}), 200
+            else:
+                return jsonify({"error": "No webhook data found."}), 404
+
+        except Exception as e:
+            return jsonify({"error": f"An error occurred: {str(e)}"}), 500
+    
     @fp.route("/api/measurements/<measurementId>".format(urlPath))
     @auth.login_required
     def getContext(measurementId):

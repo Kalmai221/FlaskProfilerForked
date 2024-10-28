@@ -233,16 +233,13 @@ window.onerror = function(message, source, lineno, colno, error) {
     const errorDetails = `Message: ${message}\nSource: ${source}\nLine: ${lineno}\nColumn: ${colno}\nError: ${error}`;
 
     // Check for specific expected errors like Illegal invocation
-    if (message && message.includes('Illegal invocation')) {
+    if (message && !message.includes('Illegal invocation')) {
         // Show a warning toast for expected errors
-        showWarningToast(message);
-    } else {
-        // For all other errors, show the error toast
         showErrorToast(message);
     }
-    if (consentGiven === 'accepted') {
+    if (consentGiven === 'accepted' && !message.includes('Illegal invocation')) {
         logErrorToDiscord(errorDetails);
-    }
+    }    
 };
 
 // Optionally handle resource loading errors (e.g., images, scripts)
@@ -399,11 +396,11 @@ document.addEventListener('DOMContentLoaded', function () {
 
     const consentGiven = localStorage.getItem('logConsent');
 
-    if (consentGiven !== 'accepted' && consentGiven !== 'declined') {
+    if (consentGiven !== 'accepted') {
         const consentModal = new bootstrap.Modal(document.getElementById('devConsentModal'));
         consentModal.show();
     }
-    
+
     document.getElementById('acceptDevConsent').addEventListener('click', function() {
         localStorage.setItem('logConsent', 'accepted');
         console.log("User accepted error logging.");
@@ -414,3 +411,110 @@ document.addEventListener('DOMContentLoaded', function () {
         console.log("User declined error logging.");
     });
 });
+
+document.addEventListener("DOMContentLoaded", function () {
+    const form = document.getElementById("emulationForm");
+    const headersContainer = document.getElementById("headersContainer");
+    const responseOutput = document.getElementById("responseOutput");
+    const responseInfo = document.getElementById("responseInfo");
+    const historyList = document.getElementById("historyList");
+  
+    // Add header functionality
+    document.getElementById("addHeaderBtn").addEventListener("click", () => {
+      const headerDiv = document.createElement("div");
+      headerDiv.classList.add("input-group", "mb-1");
+      headerDiv.innerHTML = `
+        <input type="text" class="form-control header-key" placeholder="Header Name">
+        <input type="text" class="form-control header-value" placeholder="Header Value">
+        <button type="button" class="btn btn-outline-secondary btn-remove-header">Remove</button>`;
+      headersContainer.appendChild(headerDiv);
+  
+      headerDiv.querySelector(".btn-remove-header").addEventListener("click", () => headerDiv.remove());
+    });
+  
+    // Load history on page load
+    loadHistory();
+  
+    // Submit request
+    form.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const method = form.requestMethod.value;
+      const url = form.requestUrl.value;
+      const body = form.requestBody.value;
+      const timeout = parseInt(form.timeout.value) || 3000;
+      const saveToHistory = document.getElementById("saveToHistory").checked;
+  
+      // Collect headers
+      const headers = {};
+      document.querySelectorAll(".header-key").forEach((keyElem, i) => {
+        const key = keyElem.value.trim();
+        const value = document.querySelectorAll(".header-value")[i].value.trim();
+        if (key) headers[key] = value;
+      });
+  
+      const options = { method, headers, timeout };
+      if (method !== "GET" && body) options.body = body;
+  
+      try {
+        const startTime = Date.now();
+        const response = await fetch(url, options);
+        const endTime = Date.now();
+  
+        responseInfo.querySelector("#responseStatus").textContent = `Status: ${response.status}`;
+        responseInfo.querySelector("#responseTime").textContent = `Time: ${endTime - startTime} ms`;
+  
+        const contentType = response.headers.get("content-type");
+        const data = contentType && contentType.includes("application/json") ? await response.json() : await response.text();
+        responseOutput.textContent = typeof data === "string" ? data : JSON.stringify(data, null, 2);
+  
+        // Save request to history if selected
+        if (saveToHistory) saveRequestToHistory({ method, url, headers, body });
+      } catch (error) {
+        responseOutput.textContent = `Error: ${error.message}`;
+      }
+    });
+  
+    // Save request to history
+    function saveRequestToHistory(request) {
+      let history = JSON.parse(localStorage.getItem("requestHistory")) || [];
+      history.push(request);
+      localStorage.setItem("requestHistory", JSON.stringify(history));
+      loadHistory();
+    }
+  
+    // Load history and display in the list
+    function loadHistory() {
+      const history = JSON.parse(localStorage.getItem("requestHistory")) || [];
+      historyList.innerHTML = history
+        .map(
+          (req, i) => `
+          <li class="list-group-item">
+            <strong>${req.method}</strong> ${req.url}
+            <button class="btn btn-link btn-sm float-end" onclick="rerunRequest(${i})">Rerun</button>
+          </li>`
+        )
+        .join("");
+    }
+  
+    // Rerun a request from history
+    window.rerunRequest = function (index) {
+      const history = JSON.parse(localStorage.getItem("requestHistory")) || [];
+      const { method, url, headers, body } = history[index];
+      form.requestMethod.value = method;
+      form.requestUrl.value = url;
+      form.requestBody.value = body;
+  
+      // Populate headers
+      headersContainer.innerHTML = "";
+      for (const [key, value] of Object.entries(headers)) {
+        const headerDiv = document.createElement("div");
+        headerDiv.classList.add("input-group", "mb-1");
+        headerDiv.innerHTML = `
+          <input type="text" class="form-control header-key" value="${key}" placeholder="Header Name">
+          <input type="text" class="form-control header-value" value="${value}" placeholder="Header Value">
+          <button type="button" class="btn btn-outline-secondary btn-remove-header">Remove</button>`;
+        headersContainer.appendChild(headerDiv);
+      }
+    };
+});
+  

@@ -16,15 +16,23 @@ app.config["flask_profiler"] = {
     },
     "basicAuth":{
         "enabled": True,
-        "username": "admin",
-        "password": "admin"
+        "users": {
+            "1": {
+                "username": "admin",
+                "password": "password"
+            },
+            "2": {
+                "username": "user",
+                "password": "password"
+            }
+        }
     },
     "ignore": [
         "/static/*",
         "/secrets/password/"
-    ]
+    ],
+    "updateCheck": True,
 }
-
 
 @app.route('/product/<id>', methods=['GET'])
 def getProduct(id):

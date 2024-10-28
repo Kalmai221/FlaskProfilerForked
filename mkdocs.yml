@@ -28,7 +28,7 @@ theme:
   features:
     - content.code.copy
 extra:
-  version: V1.8.2.3
+  version: V1.8.3
   generator: false
 
 repo_name: Flask-ProfilerForked

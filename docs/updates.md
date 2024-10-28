@@ -1,8 +1,15 @@
 Version 1.8.2.3
 ====================
+- Added an Emulation Tab
+- Improved the design of the site
+- Added Multi-user support
+- Added a help button redirecting to the documentation website
+
+Version 1.8.2.3
+====================
 - Bug Fixes
 - Added Optional Debug Logging to Developers
-- Added that you get redirected to GitHub Releases on cliclijg the Update Needed Toast
+- Added that you get redirected to GitHub Releases on clicking the Update Needed Toast
 
 Version 1.8.2
 ====================
