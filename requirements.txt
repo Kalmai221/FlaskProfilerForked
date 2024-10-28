@@ -8,7 +8,3 @@ MarkupSafe==3.0.2
 Werkzeug==3.0.6
 sqlalchemy==2.0.36
 simplejson==3.19.3
-mkdocs
-mkdocs-material
-mkdocs-git-revision-date-localized-plugin
-mkdocs-macros-plugin
