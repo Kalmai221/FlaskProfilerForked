@@ -5,6 +5,6 @@ Flask-Testing==0.8.1
 itsdangerous==2.2.0
 Jinja2==3.1.4
 MarkupSafe==3.0.2
-Werkzeug==3.0.6
+Werkzeug==3.1.1
 sqlalchemy==2.0.36
 simplejson==3.19.3
