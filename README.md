@@ -27,6 +27,13 @@ Flask-ProfilerForked allows you to monitor all your endpoints' performance and i
 
 ---
 
+## Planned Features
+
+- More modern UI
+- Addition of user access levels
+
+---
+
 ## Screenshots
 
 ### Dashboard View
