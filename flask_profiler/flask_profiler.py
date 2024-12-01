@@ -10,35 +10,26 @@ from pprint import pprint as pp
 
 import logging
 
-from flask import Blueprint, jsonify, request, make_response
-from flask_httpauth import HTTPBasicAuth
+from flask import Blueprint, jsonify, request, make_response, session, redirect, url_for, render_template
+from flask_login import LoginManager, UserMixin, login_user, login_required, current_user, logout_user
 
 from . import storage
 
 CONF = {}
 collection = None
-auth = HTTPBasicAuth()
 
 logger = logging.getLogger("flask-profiler")
 
 _is_initialized = lambda: True if CONF else False
 
-@auth.verify_password
-def verify_password(username, password):
-    if "basicAuth" not in CONF or not CONF["basicAuth"].get("enabled", False):
-        return True
+global user_role
 
-    # Loop through users in the configuration
-    users = CONF["basicAuth"].get("users", {})
-    for user in users.values():
-        # Check if 'username' and 'password' exist in user dictionary
-        if 'username' in user and 'password' in user:
-            if username == user["username"] and password == user["password"]:
-                return True
-
-    logging.warn("flask-profiler authentication failed")
-    return False
-
+# Define User class (UserMixin provides default implementations for required methods)
+class User(UserMixin):
+    def __init__(self, id, role):
+        self.id = id
+        self.role = role
+        
 class Measurement(object):
     """represents an endpoint measurement"""
     DECIMAL_PLACES = 6
@@ -181,10 +172,46 @@ def registerInternalRouters(app):
     fp = Blueprint(
         'flask-profiler', __name__,
         url_prefix="/" + urlPath,
-        static_folder="static/dist/", static_url_path='/static/dist')
-    
+        static_folder="static/dist/", static_url_path='/static/dist',
+        template_folder='static/dist/')
+
+    # Login route with POST and GET handling
+    @fp.route('/login', methods=['GET', 'POST'])
+    def login():
+        error = None  # Variable for error message
+        if request.method == 'POST':
+            username = request.form['username']
+            password = request.form['password']
+            
+            # Check if username and password match
+            users = CONF["basicAuth"].get("users", {})
+            for user_id, user in users.items():
+                if username == user["username"] and password == user["password"]:
+                    # User authenticated, log them in
+                    user_role = user.get("role", "user")
+                    logging.info(f"User {username} logged in successfully with role {user_role}")
+                    user_obj = User(user_id, user_role)
+                    login_user(user_obj)
+                    return redirect(url_for('flask-profiler.index'))
+
+            error = "Invalid credentials"  # Set error message if authentication fails
+            logging.warning(f"Authentication failed for user {username}")
+
+        # Serve the HTML file
+        response = fp.send_static_file("login.html")
+
+        # Set custom headers for version information and user role
+        response.headers['X-Request-Method'] = str(request.method)
+        if error != None:
+            response.headers['X-Error'] = str(error)
+        else:
+            response.headers['X-Error'] = "No Error"
+        
+        response.headers["X-Url-Path"] = CONF.get("endpointRoot", "profiler")
+        return response
+
     @fp.route('/')
-    @auth.login_required
+    @login_required
     def index():
         # URLs to fetch the remote and local version.txt
         if CONF["updateCheck"]:
@@ -217,29 +244,35 @@ def registerInternalRouters(app):
         # Serve the HTML file
         response = fp.send_static_file("index.html")
 
-        # Set custom headers for version information
+        # Set custom headers for version information and user role
         response.headers['X-Update-Available'] = str(update_available)
         response.headers['X-Local-Version'] = local_version
         response.headers['X-Remote-Version'] = remote_version
+        response.headers['X-User-Role'] = current_user.role
 
         return response
 
+    @fp.route('/logout')
+    def logout():
+        logout_user()  # Logs the user out
+        return redirect(url_for('flask-profiler.index'))
+
     @fp.route("/api/measurements/".format(urlPath))
-    @auth.login_required
+    @login_required
     def filterMeasurements():
         args = dict(request.args.items())
         measurements = collection.filter(args)
         return jsonify({"measurements": list(measurements)})
 
     @fp.route("/api/measurements/grouped".format(urlPath))
-    @auth.login_required
+    @login_required
     def getMeasurementsSummary():
         args = dict(request.args.items())
         measurements = collection.getSummary(args)
         return jsonify({"measurements": list(measurements)})
     
     @fp.route("/api/measurements/deleteall".format(urlPath))
-    @auth.login_required
+    @login_required
     def delete_all_measurements():
         try:
             deleted_count = collection.delete_all()
@@ -251,7 +284,7 @@ def registerInternalRouters(app):
             return jsonify({"error": f"An error occurred: {str(e)}"}), 500
     
     @fp.route("/api/measurements/insert", methods=["POST"])
-    @auth.login_required
+    @login_required
     def insert_measurement():
         try:
             # Get the JSON data from the request
@@ -274,7 +307,7 @@ def registerInternalRouters(app):
             return jsonify({"error": f"An error occurred: {str(e)}"}), 500
         
     @fp.route("/api/webhook/save", methods=["POST"])
-    @auth.login_required
+    @login_required
     def save_webhook():
         try:
             # Get the JSON data from the request
@@ -298,7 +331,7 @@ def registerInternalRouters(app):
 
 
     @fp.route("/api/webhook/get", methods=["GET"])
-    @auth.login_required
+    @login_required
     def get_webhook():
         try:
             # Retrieve the webhook data from your storage (adjust based on your database schema)
@@ -314,25 +347,25 @@ def registerInternalRouters(app):
             return jsonify({"error": f"An error occurred: {str(e)}"}), 500
     
     @fp.route("/api/measurements/<measurementId>".format(urlPath))
-    @auth.login_required
+    @login_required
     def getContext(measurementId):
         return jsonify(collection.get(measurementId))
 
     @fp.route("/api/measurements/timeseries/".format(urlPath))
-    @auth.login_required
+    @login_required
     def getRequestsTimeseries():
         args = dict(request.args.items())
         return jsonify({"series": collection.getTimeseries(args)})
 
     @fp.route("/api/measurements/methodDistribution/".format(urlPath))
-    @auth.login_required
+    @login_required
     def getMethodDistribution():
         args = dict(request.args.items())
         return jsonify({
             "distribution": collection.getMethodDistribution(args)})
 
     @fp.route("/db/dumpDatabase")
-    @auth.login_required
+    @login_required
     def dumpDatabase():
         response = jsonify({
             "summary": collection.getSummary()})
@@ -340,7 +373,7 @@ def registerInternalRouters(app):
         return response
 
     @fp.route("/db/deleteDatabase")
-    @auth.login_required
+    @login_required
     def deleteDatabase():
         response = jsonify({
             "status": collection.truncate()})
@@ -366,7 +399,7 @@ def init_app(app):
             raise Exception(
                 "to init flask-profiler, provide "
                 "required config through flask app's config. please refer: "
-                "https://github.com/muatik/flask-profiler")
+                "https://github.com/Kalmai221/flask-profiler")
 
     if not CONF.get("enabled", False):
         return
@@ -376,9 +409,19 @@ def init_app(app):
     wrapAppEndpoints(app)
     registerInternalRouters(app)
 
-    basicAuth = CONF.get("basicAuth", None)
-    if not basicAuth or not basicAuth["enabled"]:
-        logging.warn(" * CAUTION: flask-profiler is working without basic auth!")
+    login_manager = LoginManager()
+    login_manager.init_app(app)
+    login_manager.login_view = 'flask-profiler.login'  # Redirect to 'login' if the user is not logged in
+    
+    # User loader function for Flask-Login
+    @login_manager.user_loader
+    def load_user(user_id):
+        users = CONF["basicAuth"].get("users", {})
+        user = users.get(user_id)
+        if user:
+            return User(user_id, user.get("role", "user"))
+        return None
+
 
 
 class Profiler(object):

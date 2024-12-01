@@ -379,18 +379,29 @@ function showSuccessToast(successMessage) {
 }
 
 
-// Fetch headers and show the update toast based on the response headers
 document.addEventListener('DOMContentLoaded', function () {
     // Fetch the current document's headers
     fetch(window.location.href).then(function (response) {
-        // Get custom headers for update information
+        // Get the custom headers for update information
         const updateAvailable = response.headers.get('X-Update-Available');
         const localVersion = response.headers.get('X-Local-Version');
         const remoteVersion = response.headers.get('X-Remote-Version');
+        const userRole = response.headers.get('X-User-Role');  // Get the role from the header
 
         // Check if update is available and show the toast
         if (updateAvailable === 'True') {
             showUpdateToast(`A new version of Flask-ProfilerForked (${remoteVersion}) is available. You are currently using ${localVersion}.`);
+        }
+
+        // Role-based functionality
+        if (userRole === 'admin') {
+            // Show the admin tab link for admins
+            document.getElementById('adminTabLink').style.display = 'block';
+        } else if (userRole === 'user') {
+            // Hide the admin tab link for users
+            document.getElementById('adminTabLink').style.display = 'none';
+        } else {
+            console.log('No specific role assigned');
         }
     });
 
@@ -517,4 +528,11 @@ document.addEventListener("DOMContentLoaded", function () {
       }
     };
 });
-  
+
+document.addEventListener('DOMContentLoaded', function () {
+    // Get the current path and append "/logout"
+    var logoutUrl = window.location.pathname + "/logout";
+
+    // Set the href attribute of the logout link
+    document.getElementById('logout-link').href = logoutUrl;
+});

@@ -66,11 +66,13 @@ app.config["flask_profiler"] = {
         "users": {
             "1": {
                 "username": "admin",
-                "password": "password"
+                "password": "password",
+                "role": "admin"
             },
             "2": {
                 "username": "user",
-                "password": "password"
+                "password": "password",
+                "role": "user"
             }
         }
     },
