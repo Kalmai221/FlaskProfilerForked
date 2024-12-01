@@ -15,6 +15,25 @@ Flask-ProfilerForked allows you to monitor all your endpoints' performance and i
 
 ---
 
+## Difference between Flask-Profiler and Flask-ProfilerForked
+
+- More Modern UI
+- Improved and Maintained Features
+- Light and Dark Mode system 
+- Multiple Users System
+- Update Checking
+- Error Handing for Developers
+- Less storage taken by the Profiler
+
+---
+
+## Planned Features
+
+- More modern UI
+- Addition of user access levels
+
+---
+
 ## Screenshots
 
 ### Dashboard View
