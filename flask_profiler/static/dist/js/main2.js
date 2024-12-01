@@ -291,16 +291,16 @@ function showUpdateToast(updateMessage) {
     const updatedTime = new Date();
 
     toastElement.innerHTML = `
-        <div class="clickable">
+        <div>
             <div class="toast-header">
                 <strong class="me-auto">Update Available</strong>
                 <small class="update-time">${timeSince(updatedTime)}</small>
                 <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
             </div>
-            <div class="toast-body">
+            <div class="toast-body clickable">
                 ${updateMessage}
             </div>
-            <div class="toast-body">
+            <div class="toast-body clickable">
                 Click to view the release on GitHub.
             </div>
         </div>
@@ -331,6 +331,41 @@ function showUpdateToast(updateMessage) {
         window.open('https://github.com/Kalmai221/flask-profiler/releases', '_blank');
     });    
 }
+
+document.getElementById('deleteDataButton').addEventListener('click', function() {
+    // Show confirmation modal
+    const deleteDataModal = new bootstrap.Modal(document.getElementById('deleteDataModal'));
+    deleteDataModal.show();
+});
+
+document.getElementById('confirmDeleteData').addEventListener('click', function() {
+    // Get the current full URL, append /api/measurements/deleteall
+    const baseUrl = window.location.origin + window.location.pathname.replace(/\/$/, ''); // Ensure no trailing slash
+    const apiUrl = baseUrl + "/api/measurements/deleteall";
+    console.log(apiUrl)
+
+    // Send the request (defaults to GET method)
+    fetch(apiUrl)
+    .then(response => {
+        if (response.ok) {
+            // Optionally, show a success toast or modal
+            showSuccessToast('All saved data has been deleted successfully.');
+        } else {
+            // Handle error (e.g., show error message)
+            showErrorToast('An error occurred while deleting the data.');
+        }
+    })
+    .catch(error => {
+        // Handle network errors or other issues
+        console.error('Error:', error);
+        showErrorToast('An error occurred while deleting the data.');
+    });
+
+    // Close the modal
+    const deleteDataModal = bootstrap.Modal.getInstance(document.getElementById('deleteDataModal'));
+    deleteDataModal.hide();
+});
+
 
 document.getElementById('deleteLocalDataButton').addEventListener('click', function() {
     // Show confirmation modal
@@ -382,11 +417,43 @@ function showSuccessToast(successMessage) {
 document.addEventListener('DOMContentLoaded', function () {
     // Fetch the current document's headers
     fetch(window.location.href).then(function (response) {
-        // Get the custom headers for update information
+        // Get the custom headers for filtering and emulation
+        const filteringEnabled = response.headers.get('X-Filtering-Enabled');
+        const filteringRole = response.headers.get('X-Filtering-Role');
+        const emulationEnabled = response.headers.get('X-Emulation-Enabled');
+        const emulationRole = response.headers.get('X-Emulation-Role');
         const updateAvailable = response.headers.get('X-Update-Available');
         const localVersion = response.headers.get('X-Local-Version');
         const remoteVersion = response.headers.get('X-Remote-Version');
-        const userRole = response.headers.get('X-User-Role');  // Get the role from the header
+        const userRole = response.headers.get('X-User-Role');
+
+        // Handle filtering feature
+        if (filteringEnabled === 'True') {
+            console.log("Filtering is enabled for role:", filteringRole);
+            // Show the filtering tab link based on role (admins can see it regardless of filteringRole)
+            if (userRole === 'admin' || filteringRole === userRole) {
+                document.getElementById('filteringTabLink').style.display = 'block';
+            } else {
+                document.getElementById('filteringTabLink').style.display = 'none';
+            }
+        } else {
+            console.log("Filtering is disabled.");
+            document.getElementById('filteringTabLink').style.display = 'none';
+        }
+
+        // Handle emulation feature
+        if (emulationEnabled === 'True') {
+            console.log("Emulation is enabled for role:", emulationRole);
+            // Show the emulation tab link based on role (admins can see it regardless of emulationRole)
+            if (userRole === 'admin' || emulationRole === userRole) {
+                document.getElementById('emulationTabLink').style.display = 'block';
+            } else {
+                document.getElementById('emulationTabLink').style.display = 'none';
+            }
+        } else {
+            console.log("Emulation is disabled.");
+            document.getElementById('emulationTabLink').style.display = 'none';
+        }
 
         // Check if update is available and show the toast
         if (updateAvailable === 'True') {
@@ -422,6 +489,7 @@ document.addEventListener('DOMContentLoaded', function () {
         console.log("User declined error logging.");
     });
 });
+
 
 document.addEventListener("DOMContentLoaded", function () {
     const form = document.getElementById("emulationForm");

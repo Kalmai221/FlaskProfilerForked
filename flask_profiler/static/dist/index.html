@@ -24,10 +24,10 @@
               <a class="nav-link active text-light" data-target="#tab-dashboard" role="tab" data-bs-toggle="tab" data-tab-history="true" data-tab-history-changer="push" data-tab-history-update-url="true" href="#tab-dashboard">Dashboard</a>
             </li>
             <li class="nav-item">
-              <a class="nav-link text-light" data-target="#tab-filtering" role="tab" data-bs-toggle="tab" data-tab-history="true" data-tab-history-changer="push" data-tab-history-update-url="true" href="#tab-filtering">Filtering</a>
+              <a id="filteringTabLink"  class="nav-link text-light" data-target="#tab-filtering" role="tab" data-bs-toggle="tab" data-tab-history="true" data-tab-history-changer="push" data-tab-history-update-url="true" href="#tab-filtering">Filtering</a>
             </li>
             <li class="nav-item">
-              <a class="nav-link text-light" data-target="#tab-emulation" role="tab" data-bs-toggle="tab" data-tab-history="true" data-tab-history-changer="push" data-tab-history-update-url="true" href="#tab-emulation">Emulation</a>         
+              <a id="emulationTabLink" class="nav-link text-light" data-target="#tab-emulation" role="tab" data-bs-toggle="tab" data-tab-history="true" data-tab-history-changer="push" data-tab-history-update-url="true" href="#tab-emulation">Emulation</a>         
             </li>
             <li class="nav-item">
               <a id="adminTabLink" class="nav-link text-light" data-target="#tab-admin" role="tab" data-bs-toggle="tab" data-tab-history="true" data-tab-history-changer="push" data-tab-history-update-url="true" href="#tab-admin">Admin</a>         
@@ -155,7 +155,7 @@
                 
                         <!-- Delete Data Section -->
                         <h4>Delete Data</h4>
-                        <button class="btn btn-outline-danger w-100" id="deleteAllButton">
+                        <button class="btn btn-outline-danger w-100" id="deleteDataButton">
                             <i class="fas fa-trash-alt"></i> Delete All Data
                         </button>
                 
@@ -326,6 +326,25 @@
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
                 <button type="button" id="confirmDeleteLocalData" class="btn btn-danger">Delete</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Confirmation Modal for Deleting Local Data -->
+<div class="modal fade" id="deleteDataModal" tabindex="-1" aria-labelledby="deleteDataModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="deleteDataModalLabel">Confirm Deletion</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p>Are you sure you want to delete all saved data from the database? This action cannot be undone.</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" id="confirmDeleteData" class="btn btn-danger">Delete</button>
             </div>
         </div>
     </div>

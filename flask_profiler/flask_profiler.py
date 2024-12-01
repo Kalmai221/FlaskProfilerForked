@@ -32,7 +32,7 @@ class User(UserMixin):
         
 class Measurement(object):
     """represents an endpoint measurement"""
-    DECIMAL_PLACES = 6
+    DECIMAL_PLACES = 3
 
     def __init__(self, name, args, kwargs, method, context=None):
         super(Measurement, self).__init__()
@@ -91,7 +91,7 @@ def measure(f, name, method, context=None):
             raise Exception(
                 "if sampling_function is provided to flask-profiler via config, "
                 "it must be callable, refer to: "
-                "https://github.com/muatik/flask-profiler#sampling")
+                "https://github.com/Kalmai221/flask-profiler#sampling")
 
         if 'sampling_function' in CONF and not CONF['sampling_function']():
             return f(*args, **kwargs)
@@ -249,7 +249,11 @@ def registerInternalRouters(app):
         response.headers['X-Local-Version'] = local_version
         response.headers['X-Remote-Version'] = remote_version
         response.headers['X-User-Role'] = current_user.role
-
+        response.headers['X-Filtering-Enabled'] = str(CONF["features"].get("filtering", {})["enabled"])
+        response.headers['X-Filtering-Role'] = str(CONF["features"].get("filtering", {})["role"])
+        response.headers['X-Emulation-Enabled'] = str(CONF["features"].get("emulation", {})["enabled"])
+        response.headers['X-Emulation-Role'] = str(CONF["features"].get("emulation", {})["role"])
+        
         return response
 
     @fp.route('/logout')

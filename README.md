@@ -95,6 +95,16 @@ app.config["flask_profiler"] = {
             }
         }
     },
+    "features": {
+        "filtering":{
+            "enabled": True,
+            "role": "user"
+        },
+        "emulation": {
+            "enabled": True,
+            "role": "admin"
+        }
+    },
     "ignore": [
         "^/static/.*"
     ],
