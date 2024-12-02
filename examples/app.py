@@ -19,12 +19,24 @@ app.config["flask_profiler"] = {
         "users": {
             "1": {
                 "username": "admin",
-                "password": "password"
+                "password": "password",
+                "role": "admin"
             },
             "2": {
                 "username": "user",
-                "password": "password"
+                "password": "password",
+                "role": "user"
             }
+        }
+    },
+    "features": {
+        "filtering":{
+            "enabled": True,
+            "role": "user"
+        },
+        "emulation": {
+            "enabled": True,
+            "role": "admin"
         }
     },
     "ignore": [

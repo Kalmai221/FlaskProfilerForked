@@ -333,7 +333,6 @@ def registerInternalRouters(app):
         except Exception as e:
             return jsonify({"error": f"An error occurred: {str(e)}"}), 500
 
-
     @fp.route("/api/webhook/get", methods=["GET"])
     @login_required
     def get_webhook():
@@ -390,7 +389,6 @@ def registerInternalRouters(app):
 
     app.register_blueprint(fp)
 
-
 def init_app(app):
     global collection, CONF
 
@@ -425,8 +423,6 @@ def init_app(app):
         if user:
             return User(user_id, user.get("role", "user"))
         return None
-
-
 
 class Profiler(object):
     """ Wrapper for extension. """

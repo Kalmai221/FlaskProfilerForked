@@ -1,3 +1,10 @@
+## Version 1.8.4
+
+- Changed the Login system to Flask-Login, now includes support for Logging out
+- Added User Permissions
+- Added the ability to enable and disable features of the Profiler
+- Major bug fix on the Delete All Data Button
+
 ## Version 1.8.3
 
 - Added an Emulation Tab

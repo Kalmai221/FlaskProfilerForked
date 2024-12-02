@@ -13,13 +13,13 @@ from setuptools import setup
 
 install_requires = [
     'Flask',
-    'Flask-HTTPAuth',
+    'Flask-Login',
     'simplejson'
 ]
 
 setup(
     name='Flask-ProfilerForked',
-    version='1.8.3',
+    version='1.8.4',
     url='https://github.com/Kalmai221/flask-profiler',
     license=open('LICENSE').read(),
     author='Kalmai221',
