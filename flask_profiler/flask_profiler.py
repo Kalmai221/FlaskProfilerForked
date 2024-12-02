@@ -285,7 +285,8 @@ def registerInternalRouters(app):
             else:
                 return jsonify({"message": "No measurements found to delete."}), 404
         except Exception as e:
-            return jsonify({"error": f"An error occurred: {str(e)}"}), 500
+            logging.error("An error occurred: %s", str(e))
+            return jsonify({"error": "An internal error has occurred."}), 500
     
     @fp.route("/api/measurements/insert", methods=["POST"])
     @login_required
@@ -308,7 +309,8 @@ def registerInternalRouters(app):
                 return jsonify({"message": "Failed to insert measurement."}), 500
 
         except Exception as e:
-            return jsonify({"error": f"An error occurred: {str(e)}"}), 500
+            logging.error("An error occurred: %s", str(e))
+            return jsonify({"error": "An internal error has occurred."}), 500
         
     @fp.route("/api/webhook/save", methods=["POST"])
     @login_required
@@ -331,7 +333,8 @@ def registerInternalRouters(app):
                 return jsonify({"message": "Failed to save webhook."}), 500
 
         except Exception as e:
-            return jsonify({"error": f"An error occurred: {str(e)}"}), 500
+            logging.error("An error occurred: %s", str(e))
+            return jsonify({"error": "An internal error has occurred."}), 500
 
     @fp.route("/api/webhook/get", methods=["GET"])
     @login_required
@@ -347,7 +350,8 @@ def registerInternalRouters(app):
                 return jsonify({"error": "No webhook data found."}), 404
 
         except Exception as e:
-            return jsonify({"error": f"An error occurred: {str(e)}"}), 500
+            logging.error("An error occurred: %s", str(e))
+            return jsonify({"error": "An internal error has occurred."}), 500
     
     @fp.route("/api/measurements/<measurementId>".format(urlPath))
     @login_required
