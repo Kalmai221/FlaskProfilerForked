@@ -26,6 +26,6 @@ It is highly encouraged to follow this link and understand git branching model e
 ## Dont' know where to start? 
 There are usually several TODO comments scattered around the codebase, maybe
 check them out and see if you have ideas, or can help with them. Also, check
-the [open issues](https://github.com/muatik/flask-profiler/issues) in case there's something that sparks your interest. What
+the [open issues](https://github.com/Kalmai221/flask-profiler/issues) in case there's something that sparks your interest. What
 about documentation?  I suck at english so if you're fluent with it (or notice
 any error), why not help with that? 

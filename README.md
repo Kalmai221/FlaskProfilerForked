@@ -1,6 +1,6 @@
 # Flask-ProfilerForked
 
-**Version: 1.8.4**
+**Version: 1.8.4.1**
 
 Flask-ProfilerForked measures the performance of your Flask application endpoints and provides detailed reports through a user-friendly web interface.
 
