@@ -29,7 +29,7 @@ Here’s an example Flask application using Flask-ProfilerForked:
 ```python title="my_web_app.py"
 # app.py
 from flask import Flask
-import flask_profiler
+import flask_profilerforked
 
 app = Flask(__name__)
 app.config["DEBUG"] = True

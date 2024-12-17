@@ -1,3 +1,8 @@
+## Update 1.8.4.2
+
+- Fixed update checking
+- Changed the package name so does not conflict with the original project
+
 ## Version 1.8.4
 
 - Changed the Login system to Flask-Login, now includes support for Logging out
