@@ -1,3 +1,8 @@
+## Version 1.8.4.3
+
+- Fixed Major bugs in previous versions
+- Added a tooltip to the button redirecting to the profiler's documentation
+
 ## Version 1.8.4
 
 - Changed the Login system to Flask-Login, now includes support for Logging out
