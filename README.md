@@ -24,15 +24,15 @@ Flask-ProfilerForked allows you to monitor all your endpoints' performance and i
 - Update Checking
 - Error Handing for Developers
 - Less storage taken by the Profiler as less code is used.
+- User Access Levels
 
 ---
 
 ## Planned Features
 
 - Improved UI (Next Update)
-- Addition of user access levels (Next Update)
 - Creation of a testing website (Coming Soon)
-- Addition of an introduction system (
+- Addition of an introduction system 
 
 ---
 
