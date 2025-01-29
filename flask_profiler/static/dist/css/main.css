@@ -13,7 +13,6 @@
 }
 
 a.navbar-brand {
-    background: url(../images/python-flask.png) no-repeat;
     padding-left: 43px;
     background-size: contain;
     text-shadow: 0 2px 2px #113365;
@@ -299,89 +298,246 @@ canvas {
     display: none;
 }
 
-.faq-button {
-    width: 50px;
-    height: 50px;
-    border-radius: 50%;
-    border: none;
-    background-color: #1e3a8a; /* Dark blue */
-    background-image: linear-gradient(147deg, #1e3a8a 0%, #3b82f6 74%); /* Blue gradient */
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    cursor: pointer;
-    box-shadow: 0px 10px 10px rgba(0, 0, 0, 0.151);
-    position: fixed;
-    bottom: 20px;
-    right: 20px;
-    z-index: 1000;
+/* High Contrast Mode Button Styles */
+.high-contrast .btn-outline-danger {
+    background-color: #ff0000 !important;
+    border-color: #ff0000 !important;
+    color: #fff !important;
+}
+
+.high-contrast .btn-outline-danger:hover {
+    background-color: #d90000 !important;
+    border-color: #d90000 !important;
+}
+
+.high-contrast .btn-outline-success {
+    background-color: #28a745 !important;
+    border-color: #28a745 !important;
+    color: #fff !important;
+}
+
+.high-contrast .btn-outline-success:hover {
+    background-color: #218838 !important;
+    border-color: #218838 !important;
+}
+
+.high-contrast .btn-outline-primary {
+    background-color: #007bff !important;
+    border-color: #007bff !important;
+    color: #fff !important;
+}
+
+.high-contrast .btn-outline-primary:hover {
+    background-color: #0069d9 !important;
+    border-color: #0062cc !important;
+}
+
+.high-contrast .btn-outline-secondary {
+    background-color: #6c757d !important;
+    border-color: #6c757d !important;
+    color: #fff !important;
+}
+
+.high-contrast .btn-outline-secondary:hover {
+    background-color: #5a6268 !important;
+    border-color: #545b62 !important;
+}
+
+    /* Style for FAQ button */
+    .faq-button {
+        width: 60px;
+        height: 60px;
+        border-radius: 50%;
+        border: none;
+        background-color: #1e3a8a; /* Dark blue */
+        background-image: linear-gradient(147deg, #1e3a8a 0%, #3b82f6 74%); /* Blue gradient */
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        box-shadow: 0px 10px 20px rgba(0, 0, 0, 0.151);
+        position: fixed;
+        bottom: 20px;
+        right: 20px;
+        z-index: 1000;
+        transition: box-shadow 0.3s, transform 0.3s;
     }
 
     .faq-button svg {
-    height: 1.5em;
-    fill: white;
+        height: 1.6em;
+        fill: white;
     }
 
     .faq-button:hover svg {
-    animation: jello-vertical 0.7s both;
+        animation: jello-vertical 0.7s both;
     }
 
+    /* Hover effect */
+    .faq-button:hover {
+        box-shadow: 0px 15px 25px rgba(0, 0, 0, 0.2);
+        transform: scale(1.1);
+    }
+
+    /* Keyframe for button animation */
     @keyframes jello-vertical {
-    0% {
-        transform: scale3d(1, 1, 1);
-    }
-    30% {
-        transform: scale3d(0.75, 1.25, 1);
-    }
-    40% {
-        transform: scale3d(1.25, 0.75, 1);
-    }
-    50% {
-        transform: scale3d(0.85, 1.15, 1);
-    }
-    65% {
-        transform: scale3d(1.05, 0.95, 1);
-    }
-    75% {
-        transform: scale3d(0.95, 1.05, 1);
-    }
-    100% {
-        transform: scale3d(1, 1, 1);
-    }
+        0% {
+            transform: scale3d(1, 1, 1);
+        }
+        30% {
+            transform: scale3d(0.75, 1.25, 1);
+        }
+        40% {
+            transform: scale3d(1.25, 0.75, 1);
+        }
+        50% {
+            transform: scale3d(0.85, 1.15, 1);
+        }
+        65% {
+            transform: scale3d(1.05, 0.95, 1);
+        }
+        75% {
+            transform: scale3d(0.95, 1.05, 1);
+        }
+        100% {
+            transform: scale3d(1, 1, 1);
+        }
     }
 
+    /* Tooltip styling */
     .tooltip {
-    position: absolute;
-    top: -20px;
-    opacity: 0;
-    background-color: #1e3a8a; /* Dark blue */
-    background-image: linear-gradient(147deg, #1e3a8a 0%, #3b82f6 74%); /* Blue gradient */
-    color: white;
-    padding: 5px 10px;
-    border-radius: 5px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    transition-duration: 0.2s;
-    pointer-events: none;
-    letter-spacing: 0.5px;
+        position: absolute;
+        top: -30px;
+        opacity: 0;
+        background-color: #1e3a8a; /* Dark blue */
+        background-image: linear-gradient(147deg, #1e3a8a 0%, #3b82f6 74%); /* Blue gradient */
+        color: white;
+        padding: 5px 10px;
+        border-radius: 5px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition-duration: 0.2s;
+        pointer-events: none;
+        letter-spacing: 0.5px;
     }
 
     .tooltip::before {
-    position: absolute;
-    content: "";
-    width: 10px;
-    height: 10px;
-    background-color: #3b82f6; /* Light blue */
-    background-size: 1000%;
-    background-position: center;
-    transform: rotate(45deg);
-    bottom: -15%;
-    transition-duration: 0.3s;
+        position: absolute;
+        content: "";
+        width: 10px;
+        height: 10px;
+        background-color: #3b82f6; /* Light blue */
+        background-size: 1000%;
+        background-position: center;
+        transform: rotate(45deg);
+        bottom: -15%;
+        transition-duration: 0.3s;
     }
 
     .faq-button:hover .tooltip {
-    top: -40px;
-    opacity: 1;
-    transition-duration: 0.3s;
+        top: -50px;
+        opacity: 1;
+        transition-duration: 0.3s;
     }
+
+    /* Modal iframe styling */
+    .faq-modal-iframe {
+        height: 60vh;
+        min-height: 400px;
+        border: none;
+        margin-top: -50px;
+    }
+
+    /* Modal button styling */
+    .faq-modal-redirect-btn {
+        background-color: #1e3a8a;
+        border-color: #3b82f6;
+        color: white;
+        margin-top: -50px;
+    }
+
+    .faq-modal-redirect-btn:hover {
+        background-color: #3b82f6;
+        border-color: #1e3a8a;
+    }
+
+/* Styling for the search bar */
+.navbar .form-control {
+    width: 150px;
+    transition: width 0.3s ease;
+  }
+
+  .navbar .form-control:focus {
+    width: 200px;
+  }
+
+  /* Expand the search bar on focus */
+  .navbar .form-control:focus + .btn-outline-light {
+    background-color: #3b82f6;
+    border-color: #1e3a8a;
+  }
+
+  /* Improve hover effect on nav items */
+  .navbar-nav .nav-link:hover {
+    background-color: #3b82f6;
+    border-radius: 5px;
+  }
+
+  /* Increase icon size on hover */
+  .navbar-nav .nav-link:hover i {
+    transform: scale(1.1);
+    transition: transform 0.2s ease;
+  }
+
+  /* Style for active tab */
+  .navbar-nav .nav-link.active {
+    background-color: #1e3a8a;
+    border-radius: 5px;
+  }
+
+  /* Sidebar styling (for Admin tab) */
+  @media (max-width: 768px) {
+    .navbar-nav {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .navbar-nav .nav-item {
+      margin: 5px 0;
+    }
+
+    .navbar .form-control {
+      width: 100%;
+      margin-top: 10px;
+    }
+  }
+
+  .cookie-banner {
+    position: fixed;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: #1e293b;
+    color: #fff;
+    border-radius: 8px;
+    max-width: 500px;
+    width: 90%;
+    text-align: center;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.5s ease-in-out, visibility 0.5s;
+}
+
+.cookie-banner.show {
+    opacity: 1;
+    visibility: visible;
+}
+
+.btn-success {
+    background-color: #4CAF50;
+    border-color: #4CAF50;
+}
+
+.btn-success:hover {
+    background-color: #45a045;
+}

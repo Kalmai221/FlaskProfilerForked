@@ -1,6 +1,6 @@
 # Flask-ProfilerForked
 
-**Version: 1.8.4.4**
+**Version: 1.8.5**
 
 Flask-ProfilerForked measures the performance of your Flask application endpoints and provides detailed reports through a user-friendly web interface.
 
@@ -30,21 +30,20 @@ Flask-ProfilerForked allows you to monitor all your endpoints' performance and i
 
 ## Planned Features
 
-- Improved UI (Next Update)
 - Creation of a testing website (Coming Soon)
 - Addition of an introduction system 
 
 ---
 
-## Screenshots (OUTDATED)
+## Screenshots
 
 ### Dashboard View
 The dashboard provides a summary of the application’s performance:
-![Dashboard View](https://github.com/Kalmai221/flask-profiler/blob/master/resources/Dashboard.png?raw=true)
+![Dashboard View](https://github.com/Kalmai221/FlaskProfilerForked/blob/master/resources/Dashboard.png?raw=true)
 
 ### Filtering Requests
 You can apply filters to investigate specific requests:
-![Filtering](https://github.com/Kalmai221/flask-profiler/blob/master/resources/Filtering.png?raw=true)
+![Filtering](https://github.com/Kalmai221/FlaskProfilerForked/blob/master/resources/Filtering.png?raw=true)
 
 ---
 
@@ -135,7 +134,7 @@ if __name__ == '__main__':
 ## Using with Different Databases
 
 Flask-ProfilerForked supports **SQLite**, **MongoDB**, **PostgreSQL**, **MySQL**, and more.
-NOTE. When being developed, this has been tested using MongoDB. There may be errors with other databases. If there are other errors, please create an [issue](https://github.com/Kalmai221/flask-profiler/issues).
+NOTE. When being developed, this has been tested using MongoDB. There may be errors with other databases. If there are other errors, please create an [issue](https://github.com/Kalmai221/FlaskProfilerForked/issues).
 
 Here's how to set up some of the common database engines:
 
@@ -235,7 +234,7 @@ app.config["flask_profiler"] = {
 
 ## Contributing (Wiki coming soon)
 
-Contributions are welcome! Review the [Contributing Guidelines](https://github.com/Kalmai221/flask-profiler/wiki/Development) for more details on:
+Contributions are welcome! Review the [Contributing Guidelines](https://github.com/Kalmai221/FlaskProfilerForked/wiki/Development) for more details on:
 
 - Submitting issues
 - Contributing solutions

@@ -7,160 +7,196 @@
     <link href="static/dist/css/main.css" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
     <link rel="stylesheet" href="https://cdn.datatables.net/1.13.4/css/jquery.dataTables.min.css">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.css" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.css">
     <link href="static/dist/css/jquery.json-viewer.css" type="text/css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
 </head>
 <header>
-    <nav class="navbar navbar-expand-lg bg-dark shadow-sm" id="mainNavbar" data-bs-theme="dark">
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark shadow-sm fixed-top" id="mainNavbar">
       <div class="container-fluid">
-        <a class="navbar-brand text-light fw-bold" href="./">Flask Profiler</a>
+        <a class="navbar-brand text-light fw-bold" href="./">
+          <i class="fas fa-chart-line"></i> Flask Profiler
+        </a>
+  
+        <!-- Navbar Toggle (For Mobile) -->
         <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarText" aria-controls="navbarText" aria-expanded="false" aria-label="Toggle navigation">
           <span class="navbar-toggler-icon"></span>
         </button>
+  
+        <!-- Navbar Links -->
         <div class="collapse navbar-collapse" id="navbarText" role="navigation">
           <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+            <!-- Dashboard Tab -->
             <li class="nav-item">
-              <a class="nav-link active text-light" data-target="#tab-dashboard" role="tab" data-bs-toggle="tab" data-tab-history="true" data-tab-history-changer="push" data-tab-history-update-url="true" href="#tab-dashboard">Dashboard</a>
+              <a class="nav-link active text-light" data-target="#tab-dashboard" role="tab" data-bs-toggle="tab" href="#tab-dashboard" aria-current="page">
+                <i class="fas fa-tachometer-alt"></i> Dashboard
+              </a>
             </li>
+            <!-- Filtering Tab -->
             <li class="nav-item">
-              <a id="filteringTabLink"  class="nav-link text-light" data-target="#tab-filtering" role="tab" data-bs-toggle="tab" data-tab-history="true" data-tab-history-changer="push" data-tab-history-update-url="true" href="#tab-filtering">Filtering</a>
+              <a id="filteringTabLink" class="nav-link text-light" data-target="#tab-filtering" role="tab" data-bs-toggle="tab" href="#tab-filtering">
+                <i class="fas fa-filter"></i> Filtering
+              </a>
             </li>
+            <!-- Emulation Tab -->
             <li class="nav-item">
-              <a id="emulationTabLink" class="nav-link text-light" data-target="#tab-emulation" role="tab" data-bs-toggle="tab" data-tab-history="true" data-tab-history-changer="push" data-tab-history-update-url="true" href="#tab-emulation">Emulation</a>         
+              <a id="emulationTabLink" class="nav-link text-light" data-target="#tab-emulation" role="tab" data-bs-toggle="tab" href="#tab-emulation">
+                <i class="fas fa-tools"></i> Emulation
+              </a>
             </li>
+            <!-- Settings Tab -->
             <li class="nav-item">
-              <a id="adminTabLink" class="nav-link text-light" data-target="#tab-admin" role="tab" data-bs-toggle="tab" data-tab-history="true" data-tab-history-changer="push" data-tab-history-update-url="true" href="#tab-admin">Admin</a>         
+              <a id="settingsTabLink" class="nav-link text-light" data-target="#tab-settings" role="tab" data-bs-toggle="tab" href="#tab-settings">
+                <i class="fas fa-cogs"></i> Settings
+              </a>
+            </li>
+            <!-- Admin Tab (Visible only for Admins) -->
+            <li class="nav-item">
+              <a id="adminTabLink" class="nav-link text-light" data-target="#tab-admin" role="tab" data-bs-toggle="tab" href="#tab-admin">
+                <i class="fas fa-user-cog"></i> Admin
+              </a>
             </li>
           </ul>
-          <span class="navbar-text text-light d-none d-lg-inline">
-            <a class="nav-link active text-light" id="logout-link" href="#">Log out</a>
+  
+          <!-- Logout Button -->
+          <span class="navbar-text text-light d-none d-lg-inline ms-3">
+            <a class="btn btn-outline-light btn-sm" id="logout-link" href="#">
+              <i class="fas fa-sign-out-alt"></i> Log out
+            </a>
           </span>
         </div>
       </div>
     </nav>
   </header>
   
-  
 <main class="container">
     <div>
         <div class="row">
             <div class="tab-content">
-              <div role="tabpanel" class="tab-pane active" id="tab-dashboard">
-                <div class="card border-light shadow-sm">
-                    <div class="card-header d-flex justify-content-between align-items-center flex-wrap bg-primary text-white">
-                        <h5 class="mb-0">Dashboard</h5>
-                        <small class="created-time text-white" style="text-align: right;"></small>
-                        <div class="btn-group day-filter mt-2 mt-md-0" data-toggle="buttons">
-                            <button class="btn btn-outline-white me-2" id="hours" autocomplete="off" title="Last 24 hours">
-                                <i class="fas fa-clock"></i> 24 Hours
-                            </button>
-                            <button class="btn btn-outline-white" id="days" autocomplete="off" title="Last 7 days">
-                                <i class="fas fa-calendar-week"></i> 7 Days
-                            </button>
+                <div role="tabpanel" class="tab-pane active" id="tab-dashboard">
+                    <div class="card border-0 shadow-sm rounded-4">
+                      <!-- Card Header -->
+                      <div class="card-header bg-gradient-primary d-flex justify-content-between align-items-center py-3 px-4">
+                        <h5 class="fw-bold mb-0">Dashboard</h5>
+                        <div class="btn-group day-filter">
+                          <button class="btn btn-outline-primary btn-sm me-2" id="hours" autocomplete="off" title="Last 24 hours">
+                            <i class="fas fa-clock me-1"></i> 24 Hours
+                          </button>
+                          <button class="btn btn-outline-primary btn-sm" id="days" autocomplete="off" title="Last 7 days">
+                            <i class="fas fa-calendar-week me-1"></i> 7 Days
+                          </button>
                         </div>
-                    </div>
-                    <div class="card-body">
-                        <div class="row">
-                            <div class="col-12 col-md-3 mb-4">
-                                <h5 class="text-center">Method Distribution</h5>
-                                <canvas id="pieCanvas"></canvas>
+                      </div>
+                  
+                      <!-- Card Body -->
+                      <div class="card-body px-4 py-3">
+                        <div class="row mb-4">
+                          <!-- Left Column: Pie Chart -->
+                          <div class="col-12 col-md-3">
+                            <div class="card border-0 shadow-sm rounded-3">
+                              <div class="card-body">
+                                <h6 class="text-center fw-bold">Method Distribution</h6>
+                                <canvas id="pieCanvas" class="mt-3"></canvas>
+                              </div>
                             </div>
-                            <div class="col-12 col-md-9 mb-4">
-                                <h5 class="text-center">Request Count by Time</h5>
-                                <canvas id="lineCanvas"></canvas>
+                          </div>
+                  
+                          <!-- Right Column: Line Chart -->
+                          <div class="col-12 col-md-9">
+                            <div class="card border-0 shadow-sm rounded-3">
+                              <div class="card-body">
+                                <h6 class="text-center fw-bold">Request Count by Time</h6>
+                                <canvas id="lineCanvas" class="mt-3"></canvas>
+                              </div>
                             </div>
+                          </div>
                         </div>
-                        <hr>
+                  
+                        <!-- Divider -->
+                        <hr class="my-4">
+                  
+                        <!-- Table Section -->
                         <div class="table-responsive">
-                            <table class="table table-hover table-striped" id="big-users-table">
-                            </table>
+                          <table class="table table-hover table-striped align-middle" id="big-users-table">
+                            <!-- Table content dynamically generated -->
+                          </table>
                         </div>
+                      </div>
+                  
+                      <!-- Optional Footer -->
+                      <div class="card-footer text-muted text-center py-2">
+                        <!-- Add any footer content here -->
+                      </div>
                     </div>
-                    <div class="card-footer text-body-secondary">
-                        <!-- Optional footer content -->
-                    </div>
-                </div>
-            </div>
+                  </div>
+                  
 
-
-            <div role="tabpanel" class="tab-pane" id="tab-filtering">
-                <div class="card border-light shadow-sm">
-                    <div class="card-header bg-primary text-white">
-                        <h5 class="mb-0">Filtering</h5>
-                    </div>
-                    <div class="card-body">
+                  <div role="tabpanel" class="tab-pane" id="tab-filtering">
+                    <div class="card border-0 shadow-sm rounded-4">
+                      <!-- Card Header -->
+                      <div class="card-header bg-gradient-primary py-3 px-4">
+                        <h5 class="fw-bold mb-0">Filtering</h5>
+                      </div>
+                  
+                      <!-- Card Body -->
+                      <div class="card-body px-4 py-3">
                         <div class="table-responsive">
-                            <table class="table table-hover" id="filteredTable">
-                                <thead>
-                                    <tr class="filter-row">
-                                        <th>
-                                            <select class="form-select method wide-select" aria-label="Select HTTP Method">
-                                                <option value="ALL">ALL</option>
-                                                <option value="GET">GET</option>
-                                                <option value="POST">POST</option>
-                                                <option value="PUT">PUT</option>
-                                                <option value="DELETE">DELETE</option>
-                                                <option value="PATCH">PATCH</option>
-                                                <option value="COPY">COPY</option>
-                                                <option value="HEAD">HEAD</option>
-                                                <option value="OPTIONS">OPTIONS</option>
-                                                <option value="LINK">LINK</option>
-                                                <option value="UNLINK">UNLINK</option>
-                                                <option value="PURGE">PURGE</option>
-                                                <option value="LOCK">LOCK</option>
-                                                <option value="UNLOCK">UNLOCK</option>
-                                                <option value="PROPFIND">PROPFIND</option>
-                                                <option value="VIEW">VIEW</option>
-                                            </select>
-                                        </th>
-                                        <th>
-                                            <input type="text" class="form-control filtered-name" placeholder="Name" aria-label="Filter by Name">
-                                        </th>
-                                        <th>
-                                            <input type="text" class="form-control elapsed" placeholder="Elapsed Time" aria-label="Filter by Elapsed Time">
-                                        </th>
-                                        <th>
-                                            <input type="text" class="form-control filtered-datepicker" placeholder="Date" aria-label="Filter by Date">
-                                        </th>
-                                    </tr>
-                                    <tr>
-                                        <th></th>
-                                        <th></th>
-                                        <th></th>
-                                        <th></th>
-                                    </tr>
-                                </thead>
-                            </table>
+                          <table class="table table-hover align-middle" id="filteredTable">
+                            <thead>
+                              <!-- Placeholder Row for Table Content -->
+                              <tr>
+                                <th></th>
+                                <th></th>
+                                <th></th>
+                                <th></th>
+                              </tr>
+                            </thead>
+                          </table>
                         </div>
+                      </div>
+                  
+                      <!-- Optional Card Footer -->
+                      <div class="card-footer text-muted text-center py-2">
+                        <!-- Add any footer content if needed -->
+                      </div>
                     </div>
-                    <div class="card-footer text-body-secondary">
-                        <!-- Optional footer content -->
-                    </div>
-                </div>
-            </div>                      
+                  </div>
             <!-- Admin tab content -->
-            <div role="tabpanel" class="tab-pane" id="tab-admin">
-                <div class="card border-light shadow-sm">
-                    <div class="card-header bg-primary text-white">
-                        <h5 class="mb-0">Settings</h5>
+            <div role="tabpanel" class="tab-pane" id="tab-settings">
+                <div class="card border-0 shadow-sm rounded-4">
+                    <!-- Card Header -->
+                    <div class="card-header bg-gradient-primary d-flex justify-content-between align-items-center py-3 px-4">
+                          <h5 class="fw-bold mb-0">User Settings</h5>
                     </div>
                     <div class="card-body">
                         <div class="form-check">
                             <input class="form-check-input" type="checkbox" value="" id="darkModeSwitch">
                             <label class="form-check-label" for="darkModeSwitch">Dark Mode</label>
                         </div>
-                
+            
                         <hr class="bg-warning mt-4">
-                
-                        <!-- Delete Data Section -->
-                        <h4>Delete Data</h4>
-                        <button class="btn btn-outline-danger w-100" id="deleteDataButton">
-                            <i class="fas fa-trash-alt"></i> Delete All Data
-                        </button>
-                
+
+                        <!-- Accessibility Settings -->
+                        <h4>Accessibility Settings</h4>
+
+                        <!-- Text Size Adjustment -->
+                        <div class="mb-3">
+                            <label for="textSizeSelect" class="form-label">Text Size</label>
+                            <select class="form-select" id="textSizeSelect">
+                                <option value="default">Default</option>
+                                <option value="large">Large</option>
+                                <option value="xlarge">Extra Large</option>
+                            </select>
+                        </div>
+
+                        <!-- High Contrast Mode -->
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" value="" id="highContrastSwitch">
+                            <label class="form-check-label" for="highContrastSwitch">High Contrast Mode</label>
+                        </div>
+
                         <hr class="bg-warning mt-4">
-                
+            
                         <!-- Delete Local Site Data Section -->
                         <h4>Delete Local Site Data</h4>
                         <button class="btn btn-outline-danger w-100" id="deleteLocalDataButton">
@@ -168,12 +204,31 @@
                         </button>
                     </div>
                 </div>   
-            </div>     
-            <div role="tabpanel" class="tab-pane" id="tab-emulation">
-                <div class="card border-light shadow-sm">
-                    <div class="card-header bg-primary text-white">
-                        <h5 class="mb-0">Emulation</h5>
+            </div>            
+            <!-- Admin tab content -->
+            <div role="tabpanel" class="tab-pane" id="tab-admin">
+                <div class="card border-0 shadow-sm rounded-4">
+                    <!-- Card Header -->
+                    <div class="card-header bg-gradient-primary d-flex justify-content-between align-items-center py-3 px-4">
+                          <h5 class="fw-bold mb-0">Admin Settings</h5>
                     </div>
+                    <div class="card-body">
+  
+                        <!-- Delete Data Section -->
+                        <h4>Delete Data</h4>
+                        <button class="btn btn-outline-danger w-100" id="deleteDataButton">
+                            <i class="fas fa-trash-alt"></i> Delete All Data
+                        </button>
+            
+                    </div>
+                </div>   
+            </div>            
+            <div role="tabpanel" class="tab-pane" id="tab-emulation">
+                <div class="card border-0 shadow-sm rounded-4">
+                    <!-- Card Header -->
+                    <div class="card-header bg-gradient-primary d-flex justify-content-between align-items-center py-3 px-4">
+                          <h5 class="fw-bold mb-0">Emulation</h5>
+                        </div>
                     <div class="card-body">
                         <p>Create and send custom requests to test endpoints.</p>
             
@@ -248,6 +303,9 @@
                         <h5>Request History</h5>
                         <ul id="historyList" class="list-group"></ul>
                     </div>
+                    <div class="card-footer text-muted text-center py-2">
+                        <!-- Add any footer content if needed -->
+                      </div>
                 </div>
             </div>                      
         </div>
@@ -255,29 +313,34 @@
 </main>
 
 <!-- Modal Structure -->
-<div class="modal fade" id="filteredModal" tabindex="-1" role="dialog" aria-labelledby="filteredModalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-lg" role="document" style="max-width: 90%;">
-        <div class="modal-content">
+<div class="modal fade" id="filteredModal" tabindex="-1" role="dialog" aria-labelledby="filteredModalLabel" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
+    <div class="modal-dialog modal-lg" role="document" style="max-width: 90%; width: 80%;">
+        <div class="modal-content rounded-4 shadow-sm">
             <div class="modal-header">
                 <h5 class="modal-title" id="filteredModalLabel">Filtered Results</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
-                <!-- JSON content will be injected here -->
+                <!-- Dynamic content injection -->
+                <div id="modalContent" class="py-2"></div>
             </div>
-            <div class="modal-footer"></div>
+            <div class="modal-footer">
+            </div>
         </div>
     </div>
 </div>
 
+
 <!-- Loading Alert -->
 <div class="loading-alert" id="loadingAlert">
-    <div class="text-center">
-        <div class="spinner-border text-light" role="status">
+    <div class="d-flex justify-content-center align-items-center flex-column py-5">
+        <div class="spinner-border text-primary" role="status">
             <span class="visually-hidden">Loading...</span>
         </div>
-        <p class="text-light mt-2">Loading data, please wait...</p>
+        <p class="text-primary mt-3 fs-5">Loading data, please wait...</p>
     </div>
 </div>
+
 
 <!-- Toast container for stacking toasts -->
 <div id="toastContainer" aria-live="polite" aria-atomic="true" class="position-fixed bottom-0 end-0 p-3" style="z-index: 9999">
@@ -331,7 +394,7 @@
     </div>
 </div>
 
-<!-- Confirmation Modal for Deleting Local Data -->
+<!-- Confirmation Modal for Deleting Data from Database -->
 <div class="modal fade" id="deleteDataModal" tabindex="-1" aria-labelledby="deleteDataModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
@@ -350,15 +413,43 @@
     </div>
 </div>
 
-<button class="faq-button" onclick="window.open('https://flask-profiler.readthedocs.io/en/latest/', '_blank')">
+<!-- FAQ Button -->
+<button class="faq-button" onclick="openFAQModal()">
     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512">
-      <path
-        d="M80 160c0-35.3 28.7-64 64-64h32c35.3 0 64 28.7 64 64v3.6c0 21.8-11.1 42.1-29.4 53.8l-42.2 27.1c-25.2 16.2-40.4 44.1-40.4 74V320c0 17.7 14.3 32 32 32s32-14.3 32-32v-1.4c0-8.2 4.2-15.8 11-20.2l42.2-27.1c36.6-23.6 58.8-64.1 58.8-107.7V160c0-70.7-57.3-128-128-128H144C73.3 32 16 89.3 16 160c0 17.7 14.3 32 32 32s32-14.3 32-32zm80 320a40 40 0 1 0 0-80 40 40 0 1 0 0 80z"
-      ></path>
+        <path d="M80 160c0-35.3 28.7-64 64-64h32c35.3 0 64 28.7 64 64v3.6c0 21.8-11.1 42.1-29.4 53.8l-42.2 27.1c-25.2 16.2-40.4 44.1-40.4 74V320c0 17.7 14.3 32 32 32s32-14.3 32-32v-1.4c0-8.2 4.2-15.8 11-20.2l42.2-27.1c36.6-23.6 58.8-64.1 58.8-107.7V160c0-70.7-57.3-128-128-128H144C73.3 32 16 89.3 16 160c0 17.7 14.3 32 32 32s32-14.3 32-32zm80 320a40 40 0 1 0 0-80 40 40 0 1 0 0 80z"></path>
     </svg>
     <span class="tooltip">Docs</span>
-  </button>
+</button>
 
+<!-- FAQ Modal -->
+<div class="faq-modal" id="faqModal">
+    <div class="modal fade" id="faqModalContent" tabindex="-1" aria-labelledby="faqModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="faqModalLabel">FAQ - Documentation</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" onclick="closeFAQModal()"></button>
+                </div>
+                <div class="modal-body">
+                    <iframe src="https://flask-profiler.readthedocs.io/en/latest/" class="faq-modal-iframe w-100" frameborder="0"></iframe>
+                    <button class="btn btn-primary w-100 mt-3" onclick="window.open('https://flask-profiler.readthedocs.io/en/latest/', '_blank')">Go to Docs</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Cookie Consent Banner -->
+<div id="cookie-banner" class="cookie-banner shadow-lg p-3">
+  <div class="d-flex align-items-center justify-content-between">
+      <p class="mb-0">
+        🍪 This site uses cookies to improve your experience.
+      </p>
+      <button id="accept-cookies" class="btn btn-success btn-sm fw-bold px-3">Got it</button>
+  </div>
+</div>
+
+<!-- Scripts -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.1/moment.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>

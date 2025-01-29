@@ -95,7 +95,7 @@ if __name__ == '__main__':
 
 ## Contributing
 
-Contributions are welcome! Review the [Contributing Guidelines](https://github.com/Kalmai221/flask-profiler/wiki/Development) for more details on:
+Contributions are welcome! Review the [Contributing Guidelines](https://github.com/Kalmai221/FlaskProfilerForked/wiki/Development) for more details on:
 
 - Submitting issues
 - Contributing solutions

@@ -19,8 +19,8 @@ install_requires = [
 
 setup(
     name='Flask-ProfilerForked',
-    version='1.8.4.4',
-    url='https://github.com/Kalmai221/flask-profiler',
+    version='1.8.5',
+    url='https://github.com/Kalmai221/FlaskProfilerForked',
     license=open('LICENSE').read(),
     author='Kalmai221',
     author_email='Kalmai221PlaysOfficial@gmail.com',
@@ -29,7 +29,7 @@ setup(
         'profiler', 'flask', 'performance', 'optimization'
     ],
     long_description=open('README.md').read(),
-    long_description_content_type='text/markdown',  # Specify the content type for long description
+    long_description_content_type='text/markdown', 
     packages=['flask_profiler'],
     package_data={
         'flask_profiler': [
@@ -38,7 +38,7 @@ setup(
             'static/dist/css/*',
             'static/dist/js/*',
             'static/dist/images/*',
-            'static/dist/*',  # Fixed missing comma here
+            'static/dist/*',
             'static/dist/index.html',
         ]
     },

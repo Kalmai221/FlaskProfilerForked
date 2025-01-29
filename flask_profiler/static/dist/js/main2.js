@@ -276,7 +276,6 @@ toggleSwitch.addEventListener('change', function () {
     document.documentElement.setAttribute('data-bs-theme', newTheme); // Set the theme for the document
     mainNavbar.setAttribute('data-bs-theme', newTheme); // Set the theme for the navbar
     localStorage.setItem('theme', newTheme); // Store the new theme in localStorage
-    location.reload(); // Reload the page to apply the theme
 });
 
 
@@ -328,7 +327,7 @@ function showUpdateToast(updateMessage) {
 
     // Redirect on toast body click, except the close button
     toastElement.querySelector('.clickable').addEventListener('click', function() {
-        window.open('https://github.com/Kalmai221/flask-profiler/releases', '_blank');
+        window.open('https://github.com/Kalmai221/FlaskProfilerForked/releases', '_blank');
     });    
 }
 
@@ -603,4 +602,119 @@ document.addEventListener('DOMContentLoaded', function () {
 
     // Set the href attribute of the logout link
     document.getElementById('logout-link').href = logoutUrl;
+});
+
+// Initialize the settings on page load
+document.addEventListener("DOMContentLoaded", function() {
+    // Load saved settings from localStorage
+    const savedTextSize = localStorage.getItem('textSize') || 'default';
+    const savedHighContrast = localStorage.getItem('highContrast') === 'true';
+
+    // Apply text size
+    setTextSize(savedTextSize);
+
+    // Apply high contrast mode
+    if (savedHighContrast) {
+        document.body.classList.add('high-contrast');
+        document.getElementById('highContrastSwitch').checked = true;
+    }
+
+    // Set the text size select box to the saved value
+    document.getElementById('textSizeSelect').value = savedTextSize;
+
+    // Ensure main content is not overlapped by navbar
+    adjustContentSpacing();
+});
+
+// Function to change the text size
+document.getElementById('textSizeSelect').addEventListener('change', function() {
+    const textSize = this.value;
+    setTextSize(textSize);
+
+    // Save the text size to localStorage
+    localStorage.setItem('textSize', textSize);
+});
+
+// Function to set the text size
+function setTextSize(size) {
+    let fontSize, headingSize;
+
+    switch (size) {
+        case 'large':
+            fontSize = '1.2rem';
+            headingSize = '1.5rem';
+            break;
+        case 'xlarge':
+            fontSize = '1.5rem';
+            headingSize = '1.8rem';
+            break;
+        case 'default':
+        default:
+            fontSize = '1rem';
+            headingSize = '1.3rem';
+            break;
+    }
+
+    // Apply font size to body and headings
+    document.body.style.fontSize = fontSize;
+    document.querySelectorAll("h1, h2, h3, h4, h5, h6").forEach(heading => {
+        heading.style.fontSize = headingSize;
+    });
+
+    adjustContentSpacing();
+}
+
+// Function to adjust main content spacing
+function adjustContentSpacing() {
+    const navbar = document.querySelector("#mainNavbar");
+    const mainContent = document.querySelector("main");
+
+    if (navbar && mainContent) {
+        // Ensure there's enough top margin to prevent overlap
+        const navbarHeight = navbar.offsetHeight;
+        mainContent.style.marginTop = `${navbarHeight + 10}px`;
+    }
+}
+
+// Ensure content resizes when the window resizes
+window.addEventListener("resize", adjustContentSpacing);
+
+// Toggle high contrast mode
+document.getElementById('highContrastSwitch').addEventListener('change', function() {
+    if (this.checked) {
+        document.body.classList.add('high-contrast');
+        // Save the high contrast mode to localStorage
+        localStorage.setItem('highContrast', 'true');
+    } else {
+        document.body.classList.remove('high-contrast');
+        // Save the high contrast mode to localStorage
+        localStorage.setItem('highContrast', 'false');
+    }
+});
+
+// Open the FAQ modal with iframe
+function openFAQModal() {
+    var modal = new bootstrap.Modal(document.getElementById('faqModalContent'));
+    modal.show();
+}
+
+function closeFAQModal() {
+    var modal = new bootstrap.Modal(document.getElementById('faqModalContent'));
+    modal.hide();
+}
+
+document.addEventListener("DOMContentLoaded", function () {
+    const banner = document.getElementById("cookie-banner");
+    const acceptBtn = document.getElementById("accept-cookies");
+
+    // Check if user has already accepted cookies
+    if (!localStorage.getItem("cookiesAccepted")) {
+        banner.classList.add("show");
+    }
+
+    // Accept cookies and hide the banner
+    acceptBtn.addEventListener("click", function () {
+        localStorage.setItem("cookiesAccepted", "true");
+        banner.classList.remove("show");
+    });
 });

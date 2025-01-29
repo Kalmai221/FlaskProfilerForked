@@ -1,112 +1,543 @@
-<!DOCTYPE html>
-<html data-bs-theme="dark">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="robots" content="noindex, nofollow">
-    <title>Login</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
-    <link href="static/dist/css/main.css" rel="stylesheet">
-    <style>
-        body {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            height: 100vh;
-            margin: 0;
-            background-color: #121212;
-        }
-        .login-card {
-            background: #1e1e2f;
-            border-radius: 8px;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-            padding: 2rem;
-            width: 100%;
-            max-width: 400px;
-        }
-        .login-header {
-            text-align: center;
-            margin-bottom: 1.5rem;
-        }
-        .login-header h3, .login-header p, .form-label {
-            color: #e0e0e0;
-        }
-        .btn-primary {
-            background-color: #4caf50;
-            border-color: #4caf50;
-        }
-        .btn-primary:hover {
-            background-color: #45a045;
-        }
-        .alert {
-            margin-top: 1rem;
-        }
-        .alert-success {
-            background-color: #2e7d32;
-            color: #fff;
-        }
-        .alert-danger {
-            background-color: #d32f2f;
-            color: #fff;
-        }
-    </style>
-</head>
-<body>
+.navbar-inverse {
+    background-color: #3360A3;
+    border-color: #184A93
+}
 
-<div class="login-card">
-    <div class="login-header">
-        <h5><a class="navbar-brand text-light" href="./">Flask Profiler</a></h5>
-        <h3 class="text-light">Welcome Back</h3>
-        <p>Please login to your account</p>
-    </div>
-    <form id="loginForm" method="POST">
-        <div class="mb-3">
-            <label for="username" class="form-label">Username</label>
-            <input type="text" class="form-control" id="username" name="username" required placeholder="Enter your username">
-        </div>
-        <div class="mb-3">
-            <label for="password" class="form-label">Password</label>
-            <input type="password" class="form-control" id="password" name="password" required placeholder="Enter your password">
-        </div>
-        <button type="submit" class="btn btn-primary btn-block w-100">Login</button>
-    </form>
+.navbar-inverse .navbar-nav a {
+    cursor: pointer
+}
 
-    <!-- Alerts -->
-    <div id="login-success" class="alert alert-success mt-3" style="display: none;">
-        Login successful!
-    </div>
-    <div id="login-error" class="alert alert-danger mt-3" style="display: none;">
-        <!-- Error message will be dynamically added here -->
-    </div>
-</div>
+.navbar-inverse .navbar-nav>.active>a,.navbar-inverse .navbar-nav>.active>a:focus,.navbar-inverse .navbar-nav>.active>a:hover {
+    color: #fff;
+    background-color: #537DB6
+}
 
-<script>
-    document.addEventListener('DOMContentLoaded', function () {
-        // Fetch the current document's headers
-        fetch(window.location.href).then(function (response) {
-            // Get the custom headers for update information
-            const method = response.headers.get('X-Request-Method');
-            const error = response.headers.get('X-Error');
+a.navbar-brand {
+    padding-left: 43px;
+    background-size: contain;
+    text-shadow: 0 2px 2px #113365;
+    font-size: 1.6em;
+    margin-right: 30px
+}
 
-            // Set the form action dynamically
-            var loginForm = document.getElementById('loginForm');
-            var loginUrl = window.location.href.split('#')[0]; // Remove fragment if present
-            loginForm.action = loginUrl;
+.panel-default {
+    border: 1px solid #dce0e5
+}
 
-            // Check if there's an error and it's not "No Error"
-            if (method === 'POST') {
-                if (error && error !== "No Error") {
-                    // Show error message with the content of the error header
-                    document.getElementById('login-error').textContent = error;
-                    document.getElementById('login-error').style.display = 'block';
-                } else {
-                    // Show success message if no error
-                    document.getElementById('login-success').style.display = 'block';
-                }
-            }
-        });
-    });
-</script>
+.panel-default>.panel-heading {
+    background-color: #fafafb;
+    border-radius: 5px 5px 0 0;
+    -webkit-font-smoothing: antialiased;
+    padding: 19px 25px;
+    border-bottom: solid 1px #eff0f3
+}
 
-</body>
-</html>
+.panel-default .panel-title {
+    font-size: 18px;
+    color: #37404e;
+    line-height: 25px
+}
+
+.btn-group .btn {
+    padding: 3px 7px;
+    margin-bottom: 0;
+    font-size: 13px
+}
+
+table.dataTable {
+    width: 100%!important
+}
+
+#filteredTable th>input,#filteredTable th>select {
+    height: 25px;
+    width: 100%;
+    max-width: 250px
+}
+
+#filteredTable th>select {
+    width: 65px;
+    padding: 0;
+    font-size: 10px
+}
+
+#filteredTable th>select option {
+    font-size: 14px;
+    padding: 3px 12px;
+    line-height: 14px
+}
+
+#filteredTable th.startedAt {
+    width: 186px!important
+}
+
+body>.container {
+    margin-top: 65px
+}
+
+.row--method {
+    color: #fff;
+    padding: 2px 4px;
+    border-radius: 3px;
+    background-color: #9A9A9A
+}
+
+.row--method.post {
+    background-color: #2758E4
+}
+
+.row--method.get {
+    background-color: #4BB74B
+}
+
+.row--method.put {
+    background-color: #0C8DFB
+}
+
+.row--method.delete {
+    background-color: #FB6464
+}
+
+.number {
+    width: 61px!important
+}
+
+.method {
+    width: 65px!important
+}
+
+.method choice {
+    text-size-adjust: 10px;
+}
+
+td.name {
+    font-family: monospace;
+    white-space: normal
+}
+
+td.number {
+    padding-right: 30px!important
+}
+
+.pager li,.pagination>li,div.dataTables_info {
+    display: none
+}
+
+#filteredTable_next,li#filteredTable_previous {
+    display: inline!important
+}
+
+
+.dataTables_processing {
+    z-index: 10;
+    background: rgba(255,255,255,.77);
+    padding-top: 66px
+}
+
+div.dt-buttons {
+    position: relative;
+    float: right
+}
+
+/* Custom styles for select dropdown in dark mode */
+.filter-row select.form-select {
+    text-size-adjust: 100px;
+}
+
+.filter-row select.form-select:focus {
+    border-color: #007bff; /* Blue border on focus */
+    outline: none; /* Remove default outline */
+}
+
+.filter-row .form-select,
+.filter-row .form-control {
+    background-color: #495057; /* Dark background */
+    color: #ffffff; /* Light text color */
+    border: 1px solid #6c757d; /* Dark border */
+}
+
+.filter-row .form-select:focus,
+.filter-row .form-control:focus {
+    border-color: #007bff; /* Blue border on focus */
+    box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25); /* Blue shadow on focus */
+    outline: none; /* Remove default outline */
+}
+
+.sorting {
+    color: #FFF;
+}
+
+canvas {
+    display: block; /* Prevents inline space issues */
+    max-width: 100%; /* Responsive behavior */
+    height: auto; /* Adjust height automatically */
+    margin: 0 auto; /* Centering if necessary */
+}
+
+#pieCanvas {
+    width: 270px!important;
+    height: 270px!important
+}
+
+#lineCanvas {
+    height: 550px;
+    width: 550px;
+}
+
+.container { 
+    overflow: hidden; /* Prevents content from overflowing */
+}
+
+.modal-content {
+    background-color: #1e1e1e; /* Dark background similar to VSCode */
+    color: #dcdcdc; /* Light text color for readability */
+}
+
+.modal-header {
+    border-bottom: 1px solid #444444; /* Darker line for separation */
+}
+
+.modal-body {
+    max-height: 80vh; /* Limit height of modal body */
+    overflow-y: auto; /* Enable vertical scrolling */
+    overflow-x: auto; /* Enable horizontal scrolling */
+    white-space: pre-wrap; /* Preserve whitespace in JSON */
+    padding: 10px; /* Add some padding */
+    font-size: 16px; /* Increase font size for readability */
+}
+
+.loading-alert {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(52, 58, 64, 0.8); /* Semi-transparent dark background */
+    backdrop-filter: blur(5px); /* Blur effect */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1050; /* Bootstrap modal z-index */
+    transition: opacity 0.3s ease;
+    opacity: 0;
+    pointer-events: none; /* Disable pointer events when hidden */
+}
+.loading-alert.show {
+    opacity: 1;
+    pointer-events: auto; /* Enable pointer events when shown */
+}
+.admin-tab {
+    padding: 20px;
+}
+.admin-tab h3 {
+    margin-bottom: 20px;
+}
+.admin-tab .btn {
+    margin-top: 10px;
+    transition: background-color 0.3s;
+}
+.admin-tab .btn:hover {
+    background-color: #ff4d4d; /* Lighter red on hover */
+}
+
+.wide-select {
+    width: 200px; /* Adjust the width as needed */
+}
+
+#modalActions {
+    list-style-type: disc;
+    padding-left: 20px;
+}
+
+/* Styles for the development consent modal */
+#devConsentModal {
+    /* Optional: Add a max-width to the modal for better layout */
+    max-width: 500px;
+}
+
+/* Style the modal header */
+.dev-consent-header {
+    background-color: #cca81a; /* Bright color for visibility */
+}
+
+/* Style the modal body text */
+.dev-consent-body p {
+    font-size: 1rem;
+}
+
+/* Style the modal footer buttons */
+.dev-consent-footer .btn {
+    width: 100px; /* Fixed width for buttons */
+}
+
+/* Style for the Accept button */
+.dev-consent-footer .btn-primary {
+    background-color: #28a745; /* Green color for acceptance */
+    border-color: #28a745; /* Match border with background */
+}
+
+/* Style for the Decline button */
+.dev-consent-footer .btn-secondary {
+    background-color: #dc3545; /* Red color for decline */
+    border-color: #dc3545; /* Match border with background */
+}
+
+/* Optional: Add hover effects for buttons */
+.dev-consent-footer .btn:hover {
+    opacity: 0.9; /* Slightly transparent on hover */
+}
+
+#filteringTabLink {
+    display: none;
+}
+
+#emulationTabLink {
+    display: none;
+}
+
+#adminTabLink {
+    display: none;
+}
+
+/* High Contrast Mode Button Styles */
+.high-contrast .btn-outline-danger {
+    background-color: #ff0000 !important;
+    border-color: #ff0000 !important;
+    color: #fff !important;
+}
+
+.high-contrast .btn-outline-danger:hover {
+    background-color: #d90000 !important;
+    border-color: #d90000 !important;
+}
+
+.high-contrast .btn-outline-success {
+    background-color: #28a745 !important;
+    border-color: #28a745 !important;
+    color: #fff !important;
+}
+
+.high-contrast .btn-outline-success:hover {
+    background-color: #218838 !important;
+    border-color: #218838 !important;
+}
+
+.high-contrast .btn-outline-primary {
+    background-color: #007bff !important;
+    border-color: #007bff !important;
+    color: #fff !important;
+}
+
+.high-contrast .btn-outline-primary:hover {
+    background-color: #0069d9 !important;
+    border-color: #0062cc !important;
+}
+
+.high-contrast .btn-outline-secondary {
+    background-color: #6c757d !important;
+    border-color: #6c757d !important;
+    color: #fff !important;
+}
+
+.high-contrast .btn-outline-secondary:hover {
+    background-color: #5a6268 !important;
+    border-color: #545b62 !important;
+}
+
+    /* Style for FAQ button */
+    .faq-button {
+        width: 60px;
+        height: 60px;
+        border-radius: 50%;
+        border: none;
+        background-color: #1e3a8a; /* Dark blue */
+        background-image: linear-gradient(147deg, #1e3a8a 0%, #3b82f6 74%); /* Blue gradient */
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        box-shadow: 0px 10px 20px rgba(0, 0, 0, 0.151);
+        position: fixed;
+        bottom: 20px;
+        right: 20px;
+        z-index: 1000;
+        transition: box-shadow 0.3s, transform 0.3s;
+    }
+
+    .faq-button svg {
+        height: 1.6em;
+        fill: white;
+    }
+
+    .faq-button:hover svg {
+        animation: jello-vertical 0.7s both;
+    }
+
+    /* Hover effect */
+    .faq-button:hover {
+        box-shadow: 0px 15px 25px rgba(0, 0, 0, 0.2);
+        transform: scale(1.1);
+    }
+
+    /* Keyframe for button animation */
+    @keyframes jello-vertical {
+        0% {
+            transform: scale3d(1, 1, 1);
+        }
+        30% {
+            transform: scale3d(0.75, 1.25, 1);
+        }
+        40% {
+            transform: scale3d(1.25, 0.75, 1);
+        }
+        50% {
+            transform: scale3d(0.85, 1.15, 1);
+        }
+        65% {
+            transform: scale3d(1.05, 0.95, 1);
+        }
+        75% {
+            transform: scale3d(0.95, 1.05, 1);
+        }
+        100% {
+            transform: scale3d(1, 1, 1);
+        }
+    }
+
+    /* Tooltip styling */
+    .tooltip {
+        position: absolute;
+        top: -30px;
+        opacity: 0;
+        background-color: #1e3a8a; /* Dark blue */
+        background-image: linear-gradient(147deg, #1e3a8a 0%, #3b82f6 74%); /* Blue gradient */
+        color: white;
+        padding: 5px 10px;
+        border-radius: 5px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition-duration: 0.2s;
+        pointer-events: none;
+        letter-spacing: 0.5px;
+    }
+
+    .tooltip::before {
+        position: absolute;
+        content: "";
+        width: 10px;
+        height: 10px;
+        background-color: #3b82f6; /* Light blue */
+        background-size: 1000%;
+        background-position: center;
+        transform: rotate(45deg);
+        bottom: -15%;
+        transition-duration: 0.3s;
+    }
+
+    .faq-button:hover .tooltip {
+        top: -50px;
+        opacity: 1;
+        transition-duration: 0.3s;
+    }
+
+    /* Modal iframe styling */
+    .faq-modal-iframe {
+        height: 60vh;
+        min-height: 400px;
+        border: none;
+        margin-top: -50px;
+    }
+
+    /* Modal button styling */
+    .faq-modal-redirect-btn {
+        background-color: #1e3a8a;
+        border-color: #3b82f6;
+        color: white;
+        margin-top: -50px;
+    }
+
+    .faq-modal-redirect-btn:hover {
+        background-color: #3b82f6;
+        border-color: #1e3a8a;
+    }
+
+/* Styling for the search bar */
+.navbar .form-control {
+    width: 150px;
+    transition: width 0.3s ease;
+  }
+
+  .navbar .form-control:focus {
+    width: 200px;
+  }
+
+  /* Expand the search bar on focus */
+  .navbar .form-control:focus + .btn-outline-light {
+    background-color: #3b82f6;
+    border-color: #1e3a8a;
+  }
+
+  /* Improve hover effect on nav items */
+  .navbar-nav .nav-link:hover {
+    background-color: #3b82f6;
+    border-radius: 5px;
+  }
+
+  /* Increase icon size on hover */
+  .navbar-nav .nav-link:hover i {
+    transform: scale(1.1);
+    transition: transform 0.2s ease;
+  }
+
+  /* Style for active tab */
+  .navbar-nav .nav-link.active {
+    background-color: #1e3a8a;
+    border-radius: 5px;
+  }
+
+  /* Sidebar styling (for Admin tab) */
+  @media (max-width: 768px) {
+    .navbar-nav {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .navbar-nav .nav-item {
+      margin: 5px 0;
+    }
+
+    .navbar .form-control {
+      width: 100%;
+      margin-top: 10px;
+    }
+  }
+
+  .cookie-banner {
+    position: fixed;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: #1e293b;
+    color: #fff;
+    border-radius: 8px;
+    max-width: 500px;
+    width: 90%;
+    text-align: center;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.5s ease-in-out, visibility 0.5s;
+}
+
+.cookie-banner.show {
+    opacity: 1;
+    visibility: visible;
+}
+
+.btn-success {
+    background-color: #4CAF50;
+    border-color: #4CAF50;
+}
+
+.btn-success:hover {
+    background-color: #45a045;
+}

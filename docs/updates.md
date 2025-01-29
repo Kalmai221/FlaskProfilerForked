@@ -1,3 +1,15 @@
+## Version 1.8.5
+
+- Improved the UI
+    - Added Icons
+    - Reformed the design of each view
+    - Improved the responsivness of the UI
+- Improved the Docs button
+- Added a Cookies Prompt
+- Added Accessibility Settings
+- Seperated User Settings and Admin Settings
+- Fixed some bugs
+
 ## Version 1.8.4.3
 
 - Fixed Major bugs in previous versions
