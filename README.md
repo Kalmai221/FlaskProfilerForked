@@ -23,18 +23,20 @@ Flask-ProfilerForked allows you to monitor all your endpoints' performance and i
 - Multiple Users System
 - Update Checking
 - Error Handing for Developers
-- Less storage taken by the Profiler
+- Less storage taken by the Profiler as less code is used.
 
 ---
 
 ## Planned Features
 
-- More modern UI
-- Addition of user access levels
+- Improved UI (Next Update)
+- Addition of user access levels (Next Update)
+- Creation of a testing website (Coming Soon)
+- Addition of an introduction system (
 
 ---
 
-## Screenshots
+## Screenshots (OUTDATED)
 
 ### Dashboard View
 The dashboard provides a summary of the application’s performance:
@@ -132,7 +134,10 @@ if __name__ == '__main__':
 
 ## Using with Different Databases
 
-Flask-ProfilerForked supports **SQLite**, **MongoDB**, **PostgreSQL**, **MySQL**, and more. Here's how to set up some of the common database engines:
+Flask-ProfilerForked supports **SQLite**, **MongoDB**, **PostgreSQL**, **MySQL**, and more.
+NOTE. When being developed, this has been tested using MongoDB. There may be errors with other databases. If there are other errors, please create an [issue](https://github.com/Kalmai221/flask-profiler/issues).
+
+Here's how to set up some of the common database engines:
 
 ### SQLite Configuration:
 ```python
