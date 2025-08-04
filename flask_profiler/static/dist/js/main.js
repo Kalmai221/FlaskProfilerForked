@@ -176,6 +176,10 @@ var setFilteredTable = function () {
 
 
 var getCharts = function () {
+    // Initialize ECharts instances
+    const pieChart = echarts.init(document.getElementById('pieChart'));
+    const lineChart = echarts.init(document.getElementById('lineChart'));
+
     // Fetch and render pie chart
     $.ajax({
         type: "GET",
@@ -186,57 +190,38 @@ var getCharts = function () {
             startedAt: window.profile.dateTime.startedAt,
             endedAt: window.profile.dateTime.endedAt
         },
-        success: function (a) {
-            var b = a.distribution, c = [];
-            for (key in b) {
-                if (b.hasOwnProperty(key)) {
-                    c.push({ label: key, value: b[key] });
-                }
-            }
+        success: function (response) {
+            const distribution = response.distribution;
+            const pieData = Object.entries(distribution).map(([method, count]) => ({
+                name: method,
+                value: count
+            }));
 
-            var pieLabels = c.map(item => item.label);
-            var pieData = c.map(item => item.value);
-
-            var ctxPie = document.getElementById('pieCanvas').getContext('2d');
-
-            // Destroy the previous chart if it exists
-            if (window.pieChart) {
-                window.pieChart.destroy();
-            }
-
-            window.pieChart = new Chart(ctxPie, {
-                type: 'pie',
-                data: {
-                    labels: pieLabels,
-                    datasets: [{
-                        data: pieData,
-                        backgroundColor: [
-                            "#4BB74B",
-                            "#0C8DFB",
-                            "#FB6464",
-                            "#2758E4"
-                        ]
-                    }]
+            // Pie chart options
+            const pieOption = {
+                tooltip: {
+                    trigger: 'item',
+                    formatter: '{b}: {c} ({d}%)'
                 },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: true,
-                    plugins: {
-                        tooltip: {
-                            callbacks: {
-                                label: function (context) {
-                                    let label = context.label || '';
-                                    if (label) {
-                                        label += ': ';
-                                    }
-                                    label += context.raw; // Display the value
-                                    return label;
-                                }
-                            }
+                legend: {
+                    orient: 'vertical',
+                    left: 'left'
+                },
+                series: [{
+                    type: 'pie',
+                    radius: '70%',
+                    data: pieData,
+                    emphasis: {
+                        itemStyle: {
+                            shadowBlur: 10,
+                            shadowOffsetX: 0,
+                            shadowColor: 'rgba(0, 0, 0, 0.5)'
                         }
                     }
-                }
-            });
+                }]
+            };
+
+            pieChart.setOption(pieOption);
         },
         error: function () {
             console.error("Error fetching pie chart data.");
@@ -255,63 +240,50 @@ var getCharts = function () {
             endedAt: window.profile.dateTime.endedAt
         },
         success: function (data) {
-            var labels = [];
-            var chartData = [];
-            var series = data.series;
+            const series = data.series;
+            const timeData = Object.entries(series).map(([time, count]) => {
+                const formattedTime = window.dayFilterValue === "hours" 
+                    ? moment(time).format("HH:mm")
+                    : moment(time).format("DD/MM/YYYY");
+                return [formattedTime, count];
+            }).sort((a, b) => moment(a[0]).valueOf() - moment(b[0]).valueOf());
 
-            for (var key in series) {
-                if (series.hasOwnProperty(key)) {
-                    // Format based on interval: daily as DD/MM/YYYY, hourly as HH:MM
-                    var formattedKey;
-                    if (window.dayFilterValue === "hours") {
-                        // Format as HH:MM for hourly data
-                        formattedKey = moment(key, moment.ISO_8601).isValid() ? moment(key).format("HH:mm") : "Invalid Date";
-                    } else {
-                        // Format as DD/MM/YYYY for daily data
-                        formattedKey = moment(key, moment.ISO_8601).isValid() ? moment(key).format("DD/MM/YYYY") : "Invalid Date";
-                    }
-
-                    // If the formatted date is valid, push it to labels
-                    if (formattedKey !== "Invalid Date") {
-                        labels.push(formattedKey);
-                        chartData.push(series[key]);
-                    }
-                }
-            }
-
-            var ctxLine = document.getElementById('lineCanvas').getContext('2d');
-
-            // Destroy the previous chart if it exists
-            if (window.lineChart) {
-                window.lineChart.destroy();
-            }
-
-            window.lineChart = new Chart(ctxLine, {
-                type: 'line',
-                data: {
-                    labels: labels,
-                    datasets: [{
-                        label: 'Total Requests',
-                        data: chartData,
-                        backgroundColor: 'rgba(236, 91, 25, 0.2)',
-                        borderColor: '#EC5B19',
-                        borderWidth: 1,
-                        fill: true
-                    }]
+            // Line chart options
+            const lineOption = {
+                tooltip: {
+                    trigger: 'axis'
                 },
-                options: {
-                    responsive: true,
-                    scales: {
-                        y: {
-                            beginAtZero: true
-                        }
+                xAxis: {
+                    type: 'category',
+                    data: timeData.map(item => item[0]),
+                    axisLabel: {
+                        rotate: 45
                     }
-                }
-            });
+                },
+                yAxis: {
+                    type: 'value'
+                },
+                series: [{
+                    data: timeData.map(item => item[1]),
+                    type: 'line',
+                    smooth: true,
+                    areaStyle: {
+                        opacity: 0.3
+                    }
+                }]
+            };
+
+            lineChart.setOption(lineOption);
         },
         error: function () {
             console.error("Error fetching time series data.");
         }
+    });
+
+    // Handle window resize
+    window.addEventListener('resize', function() {
+        pieChart && pieChart.resize();
+        lineChart && lineChart.resize();
     });
 };
 
@@ -516,3 +488,30 @@ $(document).ready(function () {
 $(document).on("show.bs.tab", '[data-target="#tab-filtering"]', function (a) {
     setFilteredTable();
 });
+
+function updateCharts(data) {
+    // Format data for pie chart
+    const methodCounts = {};
+    data.forEach(item => {
+        methodCounts[item.method] = (methodCounts[item.method] || 0) + 1;
+    });
+    
+    const pieData = Object.entries(methodCounts).map(([method, count]) => ({
+        name: method,
+        value: count
+    }));
+    
+    // Format data for line chart
+    const timeData = {};
+    data.forEach(item => {
+        const hour = moment(item.startedAt).format('YYYY-MM-DD HH:00');
+        timeData[hour] = (timeData[hour] || 0) + 1;
+    });
+    
+    const sortedLabels = Object.keys(timeData).sort();
+    const sortedValues = sortedLabels.map(label => timeData[label]);
+    
+    // Update charts
+    updatePieChart(pieData);
+    updateLineChart(sortedLabels, sortedValues);
+}
