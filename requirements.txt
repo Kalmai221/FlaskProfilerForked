@@ -6,6 +6,6 @@ Jinja2==3.1.6
 MarkupSafe==3.0.2
 Werkzeug==3.1.3
 simplejson==3.20.1
-sqlalchemy==2.0.43
+sqlalchemy==2.0.44
 Flask_Login==0.6.3
 requests==2.32.4
